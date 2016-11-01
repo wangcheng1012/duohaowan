@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+
+    <ImageView
+        android:id="@+id/item_home_recyclerView_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/project_bg"
+        android:text="TextView" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/item_home_recyclerView_image"
+        android:layout_marginTop="10dp"
+        android:background="@color/black2" />
+
+    <ImageButton
+        android:id="@+id/home_fat_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/icon_home_fat_in"
+        />
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/home_fat_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/icon_home_fat_out"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingBottom="5dp"
+        android:paddingLeft="25dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:id="@+id/item_home_rv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="w《破壁》 浊者 "
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            />
+
+        <TextView
+            android:id="@+id/item_home_rv_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="124x52cm 2016"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

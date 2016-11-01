@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:drawable="@drawable/progress_bg_small" />
+    <item android:state_enabled="false" android:drawable="@drawable/progress_go_small" />
+</selector>

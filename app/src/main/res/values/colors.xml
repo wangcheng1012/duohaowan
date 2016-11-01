@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>  //textColorPrimary  toolbar
+    <color name="colorPrimaryDark">@color/black</color>   //状态栏颜色 statusBarColor
+    <color name="colorAccent">#FF4081</color>  // 输入框  单选按钮  seekbar等
+
+    <color name="_7f7f7">#f7f7f7</color>
+    <color name="_e2e2e2">#e2e2e2</color>
+    <color name="_ededed">#ededed</color>
+
+</resources>

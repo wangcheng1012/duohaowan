@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#202020</color>
+    <color name="black1">#666666</color>
+    <color name="black2">#aaaaaa</color>
+    <color name="white">#ffffff</color>
+
+    <color name="colorPrimaryDark">@color/black</color>   //状态栏颜色 statusBarColor
+
+</resources>

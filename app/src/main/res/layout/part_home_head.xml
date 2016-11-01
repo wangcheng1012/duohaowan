@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/_e2e2e2"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/home_autoScrollViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/home_header_new"
+        style="@style/text_base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/_7f7f7"
+        android:drawableLeft="@drawable/icon_laba"
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:padding="10dp"
+        android:text="作者名称上穿"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/_7f7f7"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <TextView
+            style="@style/home_classify"
+            android:background="@drawable/icon_artist"
+            android:text="艺术家" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            style="@style/home_classify"
+            android:background="@drawable/icon_artgallery"
+            android:text="艺术馆" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            style="@style/home_classify"
+            android:background="@drawable/icon_workofart"
+            android:text="艺术品" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            style="@style/home_classify"
+            android:background="@drawable/icon_artview"
+            android:text="艺术观" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/black2" />
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="热门"
+            android:textColor="@color/black1" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/black2" />
+
+    </LinearLayout>
+
+
+    <com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView
+        android:id="@+id/id_horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/_ededed"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:scrollbars="none">
+
+        <com.hd.wlj.duohaowan.ui.home.view.KamLinearLayout
+            android:id="@+id/id_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal" />
+
+    </com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/black2" />
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="最新"
+            android:textColor="@color/black1" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/black2" />
+
+    </LinearLayout>
+
+</LinearLayout>

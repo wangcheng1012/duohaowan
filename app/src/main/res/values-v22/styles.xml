@@ -1,0 +1,14 @@
+<resources>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+
+        <!-- 使用 API Level 22 編譯的話，要拿掉前綴字 -->
+        <item name="windowNoTitle">true</item>
+
+        <!-- 状态栏透明-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+    </style>
+
+
+</resources>

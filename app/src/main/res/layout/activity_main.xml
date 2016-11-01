@@ -1,0 +1,152 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:id="@+id/frameMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shape_hui_white"
+        android:orientation="horizontal">
+
+        <!-- 首页 -->
+
+        <FrameLayout
+            android:id="@+id/layout_home"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_home"
+                android:src="@drawable/tab_home_select"
+                style="@style/tabbar_img" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:text="@string/home"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+        <!-- 搜索 -->
+
+        <FrameLayout
+            android:id="@+id/layout_seach"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_seach"
+                style="@style/tabbar_img"
+                android:src="@drawable/tab_seach_select" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:text="@string/seach"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+        <!-- 留白 -->
+
+        <FrameLayout
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"></FrameLayout>
+
+        <!-- 关注 -->
+
+        <FrameLayout
+            android:id="@+id/layout_follow"
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_follow"
+                style="@style/tabbar_img"
+                android:src="@drawable/tab_follow_select" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:text="@string/follow"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+        <!-- 我 -->
+
+        <FrameLayout
+            android:id="@+id/layout_my"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_my"
+                style="@style/tabbar_img"
+                android:src="@drawable/tab_my_select" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:text="@string/my"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </FrameLayout>
+    </LinearLayout>
+
+
+    <!-- 中间按钮背景 -->
+
+    <ImageView
+        android:id="@+id/toggle_btn"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/frameMenu"
+        android:layout_centerInParent="true"
+        android:src="@drawable/tab_fabu" />
+
+    <!-- 中间按钮 -->
+
+    <FrameLayout
+        android:id="@+id/frame_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/frameMenu">
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/plus_btn"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tab_fabu"
+        android:layout_below="@+id/frame_content"
+        android:layout_alignLeft="@+id/toggle_btn"
+        android:layout_alignStart="@+id/toggle_btn" />
+
+
+</RelativeLayout>
