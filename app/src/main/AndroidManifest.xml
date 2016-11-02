@@ -24,13 +24,11 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".ui.LoginActivity"
@@ -38,13 +36,14 @@
         <activity
             android:name=".ui.RegesterActivity"
             android:label="@string/title_activity_regester"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.ForgetPSWActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.detailswork.WorkDetailsActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.home.classify.ClassifyListActivity"></activity>
     </application>
 
 </manifest>

@@ -21,15 +21,21 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
+import com.hd.wlj.duohaowan.ui.detailswork.WorkDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListActivity;
 import com.hd.wlj.duohaowan.ui.home.contract.HomeContract;
+import com.hd.wlj.duohaowan.ui.home.model.HomeModelImpl;
 import com.hd.wlj.duohaowan.ui.home.presenter.HomePresenterImpl;
 import com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView;
 import com.wlj.base.bean.Base;
+import com.wlj.base.util.GoToHelp;
+import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
 import com.wlj.base.util.img.LoadImage;
 import com.wlj.base.util.statusbar.StatusBarUtil;
 import com.wlj.base.widget.SwitchViewPager;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
@@ -53,25 +59,19 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @BindView(R.id.home_recyclerView)
     RecyclerView homeRecyclerView;
-//    @BindView(R.id.fab)
-//    FloatingActionButton fab;
 
     private OnFragmentInteractionListener mListener;
     private HomePresenterImpl homePresenter;
-    //    private ViewPager honmeClassifyViewPager;
     private FrameLayout bannerViewGroup;
     private List<Base> mData;
     private View part_home_head;
     private TextView header_new;
     private HeaderAndFooterWrapper<Base> mHeaderAndFooterWrapper;
-//    private HorizontalScrollView mHorizontalScrollView;
-//    private HorizontalScrollViewAdapter mAdapter;
     private LinearLayout mGallery;
     private List<Base> hostList;
     private KamHorizontalScrollView mHorizontalScrollView;
 
     public HomeFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -129,6 +129,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         bannerViewGroup = (FrameLayout) part_home_head.findViewById(R.id.home_autoScrollViewPager);
         header_new = (TextView) part_home_head.findViewById(R.id.home_header_new);
 
+        initClassify();
         initHot();
 
 //        honmeClassifyViewPager =  (ViewPager) part_home_head.findViewById(R.id.honme_classify_viewPager);
@@ -136,13 +137,20 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 //        honmeClassifyViewPager.setPageMargin(20);
 //        //设置缓存的页面数量
 //        honmeClassifyViewPager.setOffscreenPageLimit(4);
+    }
 
+    private void initClassify() {
+
+        part_home_head.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
+        part_home_head.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
+        part_home_head.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
+        part_home_head.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
     }
 
     private void initHot() {
 
 //        mHorizontalScrollView = (HorizontalScrollView) part_home_head.findViewById(R.id.id_horizontalScrollView);
-        mGallery = (LinearLayout)part_home_head.findViewById(R.id.id_gallery);
+        mGallery = (LinearLayout) part_home_head.findViewById(R.id.id_gallery);
         mHorizontalScrollView = (KamHorizontalScrollView) part_home_head.findViewById(R.id.id_horizontalScrollView);
 
         mHorizontalScrollView.setCreatItem(new KamHorizontalScrollView.CreatItem() {
@@ -153,7 +161,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         });
     }
-
 
     private void initRecyclerView() {
         // RecyclerView
@@ -166,38 +173,69 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
                 JSONObject resultJsonObject = o.getResultJsonObject();
                 ImageView view = holder.getView(R.id.item_home_recyclerView_image);
-                holder.setImageResource(R.id.item_home_recyclerView_image,R.drawable.project_bg);
+                holder.setImageResource(R.id.item_home_recyclerView_image, R.drawable.project_bg);
                 // Glide.with(HomeFragment.this).load(Urls.HOST + resultJsonObject.optString("pic")).crossFade().placeholder(R.drawable.project_bg).into(view);
                 LoadImage.getinstall().addTask(Urls.HOST + resultJsonObject.optString("pic"), view);
                 LoadImage.getinstall().doTask();
 
+                //
+                final HomeModelImpl homemodelimpl = (HomeModelImpl) o;
                 final ImageButton fat_in = holder.getView(R.id.home_fat_in);
                 final LinearLayout fat_out = holder.getView(R.id.home_fat_out);
-                holder.setText(R.id.item_home_rv_name,resultJsonObject.optString("") + " " + resultJsonObject.optString(""));
-                holder.setText(R.id.item_home_rv_year,resultJsonObject.optString("") + " " + resultJsonObject.optString(""));
+                if (homemodelimpl.getTag() == HomeModelImpl.Tag.in) {
+
+                    fat_out.setVisibility(View.GONE);
+                    fat_in.setVisibility(View.VISIBLE);
+                } else {
+                    fat_out.setVisibility(View.VISIBLE);
+                    fat_in.setVisibility(View.GONE);
+                }
+
+                holder.setText(R.id.item_home_rv_name, resultJsonObject.optString("name") + "  " + resultJsonObject.optString("zuozhe"));
+
+                String years = resultJsonObject.optString("years");
+                String cicun = resultJsonObject.optString("cicun");
+                if (StringUtils.isEmpty(cicun) || StringUtils.isEmpty(years)) {
+                    //其中一个为空 不加"／"
+                    holder.setText(R.id.item_home_rv_year, cicun + "" + years);
+                } else {
+                    holder.setText(R.id.item_home_rv_year, cicun + "/" + years);
+                }
 
                 fat_in.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         v.setVisibility(View.GONE);
                         fat_out.setVisibility(View.VISIBLE);
+                        homemodelimpl.setTag(HomeModelImpl.Tag.out);
                     }
                 });
 
-                fat_out. setOnClickListener(new View.OnClickListener() {
+                fat_out.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         v.setVisibility(View.GONE);
                         fat_in.setVisibility(View.VISIBLE);
+                        homemodelimpl.setTag(HomeModelImpl.Tag.in);
                     }
                 });
-
 
             }
         };
 
         homeRecyclerView.setAdapter(commonAdapter);
+        //item点击
+        commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                GoToHelp.go(getActivity(), WorkDetailsActivity.class);
+            }
 
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
         //添加header
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper<Base>(commonAdapter);
         mHeaderAndFooterWrapper.addHeaderView(part_home_head);
@@ -246,27 +284,27 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public void showNews(Base base) {
         JSONObject jsonObject = base.getResultJsonObject();
 //        Html.fromHtml("s");
-        header_new.setText( jsonObject.optString("name") );
+        header_new.setText(jsonObject.optString("name"));
     }
 
     @Override
-    public void showHot(List<Base> list ) {
+    public void showHot(List<Base> list) {
         hostList = list;
         for (int i = 0; i < list.size(); i++) {
             mGallery.addView(createHotItem(i));
         }
-        for (int i = list.size()-1; i >= 0; i--) {
+        for (int i = list.size() - 1; i >= 0; i--) {
 
             mHorizontalScrollView.addLeft(createHotItem(i));
         }
     }
 
-    private View createHotItem(int  index) {
-        
-        View view =  LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_hot, null);
+    private View createHotItem(int index) {
+
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_hot, null);
         ImageView mImg = (ImageView) view.findViewById(R.id.home_hot_img);
         int width = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / 2 - width/10, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / 2 - width / 10, LinearLayout.LayoutParams.MATCH_PARENT);
         //
         JSONObject resultJsonObject = hostList.get(index).getResultJsonObject();
 
@@ -289,7 +327,14 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
 
-public interface OnFragmentInteractionListener {
-    void onFragmentInteraction(Uri uri);
-}
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
+    private class ClassifyOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            GoToHelp.go(getActivity(), ClassifyListActivity.class);
+        }
+    }
 }

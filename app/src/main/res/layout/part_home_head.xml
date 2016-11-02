@@ -9,7 +9,6 @@
         android:id="@+id/home_autoScrollViewPager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
     </FrameLayout>
 
     <TextView
@@ -34,11 +33,14 @@
         android:orientation="horizontal"
         android:paddingBottom="10dp"
         android:paddingTop="10dp">
+
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
+
         <TextView
+            android:id="@+id/home_artist"
             style="@style/home_classify"
             android:background="@drawable/icon_artist"
             android:text="艺术家" />
@@ -49,6 +51,7 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/home_artgallery"
             style="@style/home_classify"
             android:background="@drawable/icon_artgallery"
             android:text="艺术馆" />
@@ -59,6 +62,7 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/home_workofart"
             style="@style/home_classify"
             android:background="@drawable/icon_workofart"
             android:text="艺术品" />
@@ -69,9 +73,11 @@
             android:layout_weight="1" />
 
         <TextView
+            android:id="@+id/home_artview"
             style="@style/home_classify"
             android:background="@drawable/icon_artview"
             android:text="艺术观" />
+
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -94,14 +100,14 @@
             android:layout_weight="1"
             android:background="@color/black2" />
 
-        <TextView
-            style="@style/text_base"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:gravity="center_horizontal"
             android:padding="10dp"
+            android:src="@drawable/icon_hot"
             android:text="热门"
             android:textColor="@color/black1" />
 
@@ -149,7 +155,7 @@
             android:layout_weight="1"
             android:background="@color/black2" />
 
-        <TextView
+        <ImageView
             style="@style/text_base"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -157,8 +163,7 @@
             android:layout_marginRight="10dp"
             android:gravity="center_horizontal"
             android:padding="10dp"
-            android:text="最新"
-            android:textColor="@color/black1" />
+            android:src="@drawable/icon_newest" />
 
         <View
             android:layout_width="0dp"
