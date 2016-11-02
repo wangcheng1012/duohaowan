@@ -16,7 +16,7 @@
         style="@style/text_base"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/_7f7f7"
+        android:background="@color/white"
         android:drawableLeft="@drawable/icon_laba"
         android:drawablePadding="20dp"
         android:gravity="center_vertical"
@@ -28,11 +28,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/_7f7f7"
+        android:layout_marginTop="8dp"
+        android:background="@color/white"
         android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp">
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
 
         <View
             android:layout_width="0dp"
@@ -88,7 +88,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -103,8 +103,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
             android:gravity="center_horizontal"
             android:padding="10dp"
             android:src="@drawable/icon_hot"
@@ -118,7 +117,6 @@
             android:background="@color/black2" />
 
     </LinearLayout>
-
 
     <com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView
         android:id="@+id/id_horizontalScrollView"
@@ -159,8 +157,7 @@
             style="@style/text_base"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
             android:gravity="center_horizontal"
             android:padding="10dp"
             android:src="@drawable/icon_newest" />

@@ -32,7 +32,6 @@ public class BaseFragmentActivity extends AppCompatActivity {
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 		AppManager.getAppManager().addActivity(this);
-
 	}
 
 	@Override
@@ -43,8 +42,7 @@ public class BaseFragmentActivity extends AppCompatActivity {
 
 	protected void setStatusBar() {
 
-		StatusBarUtil.setTranslucent(this, 127);
-
+		StatusBarUtil.setTranslucent(this, 255);
 	};
 
 	@Override
