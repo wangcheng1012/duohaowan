@@ -26,9 +26,19 @@ public class BaseList implements Serializable {
         return this.allCount;
     }
 
+    public void setAllCount(int paramInt) {
+
+        this.allCount = paramInt;
+    }
+
     public Base getBaseData() {
 
         return this.baseData;
+    }
+
+    public void setBaseData(Base paramBase) {
+
+        this.baseData = paramBase;
     }
 
     public String getId() {
@@ -36,9 +46,19 @@ public class BaseList implements Serializable {
         return this.id;
     }
 
+    public void setId(String paramString) {
+
+        this.id = paramString;
+    }
+
     public int getLastpage() {
 
         return this.lastpage;
+    }
+
+    public void setLastpage(int paramInt) {
+
+        this.lastpage = paramInt;
     }
 
     public List<Base> getList() {
@@ -46,9 +66,19 @@ public class BaseList implements Serializable {
         return this.list;
     }
 
+    public void setList(List<Base> paramList) {
+
+        this.list = paramList;
+    }
+
     public int getPageIndex() {
 
         return this.pageIndex;
+    }
+
+    public void setPageIndex(int paramInt) {
+
+        this.pageIndex = paramInt;
     }
 
     public String getPic() {
@@ -56,18 +86,27 @@ public class BaseList implements Serializable {
         return this.pic;
     }
 
+    public void setPic(String paramString) {
+
+        this.pic = paramString;
+    }
+
     public BaseList parse(JSONObject paramJSONObject, Base paramBase)
             throws JSONException {
 
         setAllCount(paramJSONObject.optInt("count"));
         int i = paramJSONObject.optInt("pageSize");
-        if (i != 0) {
+        int lastpage = paramJSONObject.optInt("lastpage");
+
+        if (i != 0 && lastpage == 0) {
             int b = allCount % i;
             if (b == 0) {
                 setLastpage(allCount / i);
             } else {
                 setLastpage(getAllCount() / i + 1);
             }
+        } else {
+            setLastpage(lastpage);
         }
         setPageIndex(paramJSONObject.optInt("page"));
         JSONObject localJSONObject = paramJSONObject.optJSONObject("data");
@@ -91,40 +130,5 @@ public class BaseList implements Serializable {
             return parse(paramJSONObject, (Base) paramClass.newInstance());
         }
         throw new Exception("传入模型不匹配");
-    }
-
-    public void setAllCount(int paramInt) {
-
-        this.allCount = paramInt;
-    }
-
-    public void setBaseData(Base paramBase) {
-
-        this.baseData = paramBase;
-    }
-
-    public void setId(String paramString) {
-
-        this.id = paramString;
-    }
-
-    public void setLastpage(int paramInt) {
-
-        this.lastpage = paramInt;
-    }
-
-    public void setList(List<Base> paramList) {
-
-        this.list = paramList;
-    }
-
-    public void setPageIndex(int paramInt) {
-
-        this.pageIndex = paramInt;
-    }
-
-    public void setPic(String paramString) {
-
-        this.pic = paramString;
     }
 }

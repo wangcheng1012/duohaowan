@@ -23,6 +23,7 @@ public class AsyncCall
     private OnAsyncBackListener onBackListener;
     private boolean showLoading;
     private boolean showToast;
+    private int pageIndex;
 
     public AsyncCall(AsyncRequestModle paramAsyncRequestModle) {
         this.showToast = true;
@@ -40,8 +41,11 @@ public class AsyncCall
 
             BaseList localObject = AsyncRequestWebClient.getInstall().RequestConnected(this.asyncRequestModle);
 
-            return localObject;
-
+            if (!isCancelled()) {
+                return localObject;
+            } else {
+                return new RequestException("取消");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return e;
@@ -51,11 +55,12 @@ public class AsyncCall
 
     public boolean isComplate() {
 
-        if (this.asyncRequestModle.getHttpPost().getJSONObjectParemeter().optInt("page") >= this.lastpage) {
+        if (pageIndex >= this.lastpage) {
             return true;
         }
         return false;
     }
+
 
     public void onCancelled() {
         super.onCancelled();
@@ -104,6 +109,8 @@ public class AsyncCall
                 List localList = localBaseList.getList();
                 Base localBase = localBaseList.getBaseData();
                 this.lastpage = localBaseList.getLastpage();
+                pageIndex = localBaseList.getPageIndex();
+
 
                 if ((localList != null) || (localBase != null)) {
                     this.onBackListener.OnAsyncBack(localList, localBase, this.asyncRequestModle.getType());
@@ -157,6 +164,10 @@ public class AsyncCall
         this.showToast = paramBoolean;
     }
 
+    public int getPageIndex() {
+        return pageIndex;
+    }
+
     public static abstract interface OnAsyncBackListener {
         public abstract void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt);
 
@@ -167,3 +178,4 @@ public class AsyncCall
         public abstract AsyncCall Request();
     }
 }
+

@@ -3,11 +3,9 @@ package com.hd.wlj.duohaowan.ui.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +16,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
-import com.hd.wlj.duohaowan.ui.detailswork.WorkDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.detailswork.WorkDetailsActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListActivity;
 import com.hd.wlj.duohaowan.ui.home.contract.HomeContract;
 import com.hd.wlj.duohaowan.ui.home.model.HomeModelImpl;
@@ -170,6 +167,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         CommonAdapter<Base> commonAdapter = new CommonAdapter<Base>(getContext(), R.layout.item_home_recyclerview, mData) {
             @Override
             protected void convert(ViewHolder holder, Base o, int position) {
+                holder.getConvertView().setTag(R.id.tag_first, o);
 
                 JSONObject resultJsonObject = o.getResultJsonObject();
                 ImageView view = holder.getView(R.id.item_home_recyclerView_image);
@@ -228,7 +226,17 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                GoToHelp.go(getActivity(), WorkDetailsActivity.class);
+                Object tag = view.getTag(R.id.tag_first);
+
+                if (tag != null) {
+                    Base b = (Base) tag;
+
+                    Bundle bundle = new Bundle();
+
+                    bundle.putString("json", b.getResultStr());
+                    GoToHelp.go(getActivity(), WorkDetailsActivity.class, bundle);
+                }
+
             }
 
             @Override
@@ -334,7 +342,34 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private class ClassifyOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            GoToHelp.go(getActivity(), ClassifyListActivity.class);
+
+            Bundle bundle = new Bundle();
+            switch (v.getId()) {
+
+                case R.id.home_artist:
+                    bundle.putString("title", "艺术家列表");
+                    bundle.putInt("classify", R.id.home_artist);
+                    break;
+                case R.id.home_artgallery:
+                    bundle.putString("title", "艺术馆列表");
+                    bundle.putInt("classify", R.id.home_artgallery);
+                    break;
+                case R.id.home_workofart:
+                    bundle.putString("title", "艺术品列表");
+                    bundle.putInt("classify", R.id.home_workofart);
+                    break;
+                case R.id.home_artview:
+                    bundle.putString("title", "艺术观列表");
+                    bundle.putInt("classify", R.id.home_artview);
+                    break;
+            }
+
+            GoToHelp.go(getActivity(), ClassifyListActivity.class, bundle);
+
+            part_home_head.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
+            part_home_head.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
+            part_home_head.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
+            part_home_head.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
         }
     }
 }

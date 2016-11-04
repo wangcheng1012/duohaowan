@@ -155,9 +155,10 @@ public class MathUtil {
 	 * obj1 / obj2
 	 * @param obj1
 	 * @param obj2
+	 * @param  limt 小数位数
 	 * @return 相除保留4位 4舍5入
 	 */
-	public static BigDecimal divide(Object obj1,Object obj2){
+	public static BigDecimal divide(Object obj1, Object obj2, int limt) {
 		if(obj1 == null){
 			obj1 = "0";
 		}
@@ -177,7 +178,7 @@ public class MathUtil {
 		}else{
 			bd2 = new BigDecimal(obj2.toString());
 		}
-		return bd1.divide(bd2,8,RoundingMode.HALF_EVEN);
+		return bd1.divide(bd2, limt, RoundingMode.HALF_EVEN);
 	}
 
 	/**

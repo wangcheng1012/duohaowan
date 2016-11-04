@@ -15,5 +15,6 @@ public class Urls extends BaseURL {
     public static final String resetPassword = HOST+ "front/resetPassword.do";
 
     public static final String list_pub = HOST+ "front/list_pub.do";//首页banner图片
+    public static final String get_pub = HOST + "front/get_pub.do";//首页banner图片
 
 }

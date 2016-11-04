@@ -1,11 +1,13 @@
 package com.zhy.adapter.recyclerview.wrapper;
 
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.utils.WrapperUtils;
 
@@ -18,12 +20,15 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int ITEM_TYPE_LOAD_MORE = Integer.MAX_VALUE - 2;
 
     private RecyclerView.Adapter mInnerAdapter;
+    private RecyclerView recycerview;
     private View mLoadMoreView;
     private int mLoadMoreLayoutId;
+    private OnLoadMoreListener mOnLoadMoreListener;
 
-    public LoadMoreWrapper(RecyclerView.Adapter adapter)
+    public LoadMoreWrapper(RecyclerView.Adapter adapter, RecyclerView recycerview)
     {
         mInnerAdapter = adapter;
+        this.recycerview = recycerview;
     }
 
     private boolean hasLoadMore()
@@ -31,10 +36,41 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mLoadMoreView != null || mLoadMoreLayoutId != 0;
     }
 
-
     private boolean isShowLoadMore(int position)
     {
         return hasLoadMore() && (position >= mInnerAdapter.getItemCount());
+    }
+
+    private int getFirstVisiblePosition() {
+
+        int position;
+        if (recycerview.getLayoutManager() instanceof LinearLayoutManager) {
+            position = ((LinearLayoutManager) recycerview.getLayoutManager()).findFirstVisibleItemPosition();
+        } else if (recycerview.getLayoutManager() instanceof GridLayoutManager) {
+            position = ((GridLayoutManager) recycerview.getLayoutManager()).findFirstVisibleItemPosition();
+        } else if (recycerview.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recycerview.getLayoutManager();
+            int[] lastPositions = layoutManager.findFirstVisibleItemPositions(new int[layoutManager.getSpanCount()]);
+            position = getMinPositions(lastPositions);
+        } else {
+            position = 0;
+        }
+        return position;
+    }
+
+    /**
+     * 获得当前展示最小的position
+     *
+     * @param positions
+     * @return
+     */
+    private int getMinPositions(int[] positions) {
+        int size = positions.length;
+        int minPosition = Integer.MAX_VALUE;
+        for (int i = 0; i < size; i++) {
+            minPosition = Math.min(minPosition, positions[i]);
+        }
+        return minPosition;
     }
 
     @Override
@@ -70,7 +106,9 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         if (isShowLoadMore(position))
         {
-            if (mOnLoadMoreListener != null)
+            int scrollY = recycerview.getScrollY();
+            //这里 只屏蔽了 没滚动
+            if (mOnLoadMoreListener != null && scrollY > 0)
             {
                 mOnLoadMoreListener.onLoadMoreRequested();
             }
@@ -100,7 +138,6 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
     }
 
-
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder)
     {
@@ -116,8 +153,7 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
 
-        if (lp != null
-                && lp instanceof StaggeredGridLayoutManager.LayoutParams)
+        if (lp != null && lp instanceof StaggeredGridLayoutManager.LayoutParams)
         {
             StaggeredGridLayoutManager.LayoutParams p = (StaggeredGridLayoutManager.LayoutParams) lp;
 
@@ -130,14 +166,6 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         return mInnerAdapter.getItemCount() + (hasLoadMore() ? 1 : 0);
     }
-
-
-    public interface OnLoadMoreListener
-    {
-        void onLoadMoreRequested();
-    }
-
-    private OnLoadMoreListener mOnLoadMoreListener;
 
     public LoadMoreWrapper setOnLoadMoreListener(OnLoadMoreListener loadMoreListener)
     {
@@ -158,5 +186,9 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         mLoadMoreLayoutId = layoutId;
         return this;
+    }
+
+    public interface OnLoadMoreListener {
+        void onLoadMoreRequested();
     }
 }

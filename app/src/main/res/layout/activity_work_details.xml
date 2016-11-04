@@ -1,30 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+<?xml version="1.0" encoding="utf-8"?><!--<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:background="@color/white">-->
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<!--<android.support.design.widget.AppBarLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content">-->
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+<!--<android.support.design.widget.CollapsingToolbarLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
 
-            <LinearLayout
-                android:id="@+id/activity_work_details"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/white"
-                android:orientation="vertical"
-                app:layout_collapseMode="pin">
+    android:orientation="vertical">
+    <!--app:layout_collapseMode="pin"-->
 
                 <ImageView
+                    android:id="@+id/work_details_img"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/project_bg" />
@@ -40,9 +30,8 @@
 
                     <ImageView
                         android:id="@+id/work_detail_head"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_launcher" />
+                        android:layout_width="50dp"
+                        android:layout_height="50dp" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -56,15 +45,16 @@
                             style="@style/text_base"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="小哥"
+                            android:text="作者名称"
                             android:textSize="20sp" />
 
                         <TextView
+                            android:id="@+id/work_details_zhiwei"
                             style="@style/text_base"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/work_details_name"
-                            android:text="be  北京文艺青年"
+                            android:text="职位"
                             android:textColor="@color/black2" />
 
 
@@ -73,14 +63,16 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/work_details_workname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:text="《望窗秋水》"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <LinearLayout
+                    android:id="@+id/work_details_taglayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp">
@@ -98,20 +90,20 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/work_details_chicun"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="175x109cm/2016" />
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/work_details_pice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:text="¥5000.00"
+                        android:text="¥0.00"
                         android:textColor="@color/red" />
 
                 </RelativeLayout>
@@ -128,6 +120,7 @@
                     android:paddingStart="10dp">
 
                     <TextView
+                        android:id="@+id/work_details_viewcount"
                         style="@style/work_details_handle_textview"
                         android:drawableLeft="@drawable/icon_liulan"
                         android:text="20131" />
@@ -138,9 +131,10 @@
                         android:layout_weight="1" />
 
                     <TextView
+                        android:id="@+id/work_details_time"
                         style="@style/work_details_handle_textview"
                         android:drawableLeft="@drawable/icon_time"
-                        android:text="10-19" />
+                        android:text="00-00" />
 
                     <View
                         android:layout_width="0dp"
@@ -148,6 +142,7 @@
                         android:layout_weight="1" />
 
                     <TextView
+                        android:id="@+id/work_details_zan"
                         style="@style/work_details_handle_textview"
                         android:drawableLeft="@drawable/icon_zan"
                         android:text="赞" />
@@ -158,6 +153,7 @@
                         android:layout_weight="1" />
 
                     <TextView
+                        android:id="@+id/work_details_guanzhu"
                         style="@style/work_details_handle_textview"
                         android:drawableLeft="@drawable/icon_guanzhu"
                         android:text="关注" />
@@ -168,6 +164,7 @@
                         android:layout_weight="1" />
 
                     <TextView
+                        android:id="@+id/work_details_song"
                         style="@style/work_details_handle_textview"
                         android:drawableLeft="@drawable/icon_song"
                         android:text="送" />
@@ -196,39 +193,17 @@
                         android:layout_weight="1">
 
                         <LinearLayout
+                            android:id="@+id/work_details_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
                         </LinearLayout>
 
                     </HorizontalScrollView>
 
                     <ImageView
+                        android:id="@+id/work_details_more"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -252,11 +227,12 @@
                     android:background="@color/_e2e2e2" />
 
                 <TextView
+                    android:id="@+id/work_details_intro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:padding="10dp"
-                    android:text="诗风阿发生法律是否快乐时；发哦加分哦忘记我饿飞机我潘基文皮肤就无法破我就饿哦分配忘记" />
+                    android:text="无" />
 
                 <View
                     android:layout_width="match_parent"
@@ -264,10 +240,11 @@
                     android:background="@color/_e2e2e2" />
 
                 <TextView
+                    android:id="@+id/work_details_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="评论（2）" />
+                    android:text="评论" />
 
                 <View
                     android:layout_width="match_parent"
@@ -278,12 +255,8 @@
             </LinearLayout>
 
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+    <!--</android.support.design.widget.CollapsingToolbarLayout>-->
 
-    </android.support.design.widget.AppBarLayout>
+    <!--</android.support.design.widget.AppBarLayout>-->
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-</android.support.design.widget.CoordinatorLayout>
+    <!--<android.support.v7.widget.RecyclerView--><!--android:id="@+id/work_details_recyclerView"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--app:layout_behavior="@string/appbar_scrolling_view_behavior" />--><!--</android.support.design.widget.CoordinatorLayout>-->
