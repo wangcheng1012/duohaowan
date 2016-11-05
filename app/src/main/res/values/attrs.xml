@@ -15,4 +15,11 @@
         <attr name="iconfont2_color" format="color"/>
 
     </declare-styleable>
+    <string-array name="seachSpenner">
+
+        <item>艺术品</item>
+        <item>艺术家</item>
+
+    </string-array>
+
 </resources>

@@ -20,6 +20,16 @@ public class HomePresenterImpl implements HomeContract.Presenter<HomeContract.Vi
 
     private final HomeModelImpl homeModel;
     private HomeContract.View view;
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+
+            if (view != null) {//有可能要销毁
+                view.showNews((Base) msg.obj);
+            }
+
+        }
+    };
 
     public HomePresenterImpl(Activity activity){
           homeModel = new HomeModelImpl(activity);
@@ -43,7 +53,9 @@ public class HomePresenterImpl implements HomeContract.Presenter<HomeContract.Vi
         homeModel.loadBannerData(new AsyncCall.OnAsyncBackListener() {
             @Override
             public void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt) {
-                view.showBanner(paramList);
+                if (view != null) {
+                    view.showBanner(paramList);
+                }
             }
 
             @Override
@@ -104,6 +116,11 @@ public class HomePresenterImpl implements HomeContract.Presenter<HomeContract.Vi
         });
     }
 
+    /**
+     * 定时切换新闻
+     *
+     * @param paramList
+     */
     private void tinner(final List<Base> paramList) {
         new Thread(new Runnable() {
             @Override
@@ -133,16 +150,5 @@ public class HomePresenterImpl implements HomeContract.Presenter<HomeContract.Vi
             }
         }).start();
     }
-
-    private Handler handler = new Handler(Looper.getMainLooper()){
-        @Override
-        public void handleMessage(Message msg) {
-
-            if(view != null) {//有可能要销毁
-                view.showNews((Base) msg.obj);
-            }
-
-        }
-    };
 
 }

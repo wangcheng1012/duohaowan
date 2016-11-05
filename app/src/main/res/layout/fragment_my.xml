@@ -1,13 +1,173 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.hd.wlj.duohaowan.ui.my.MyFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/_ededed"
+        android:orientation="vertical"
+        android:paddingBottom="20dp">
 
-</FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_head_bg" />
+
+            <LinearLayout
+                android:id="@+id/my_loginLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="40dp">
+
+                <ImageView
+                    android:id="@+id/my_headimage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@mipmap/ic_launcher" />
+
+                <TextView
+                    android:id="@+id/my_loginLayout_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="立即登录"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_white" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/my_dy"
+                style="@style/text_base"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="0" />
+
+            <TextView
+                style="@style/text_base"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/my_dy"
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:text="动态" />
+
+            <TextView
+                android:id="@+id/my_guanzhu"
+                style="@style/text_base"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="0" />
+
+            <TextView
+                style="@style/text_base"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/my_guanzhu"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                android:text="关注" />
+
+
+            <TextView
+                android:id="@+id/my_fensi"
+                style="@style/text_base"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:text="0" />
+
+            <TextView
+                style="@style/text_base"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/my_fensi"
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:text="粉丝" />
+
+
+        </RelativeLayout>
+
+        <com.hd.wlj.duohaowan.view.ImgInpImg
+            android:id="@+id/my_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            app:edittext_background_isnull="true"></com.hd.wlj.duohaowan.view.ImgInpImg>
+
+        <com.hd.wlj.duohaowan.view.ImgInpImg
+            android:id="@+id/my_work"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            app:edittext_background_isnull="true"></com.hd.wlj.duohaowan.view.ImgInpImg>
+
+        <com.hd.wlj.duohaowan.view.ImgInpImg
+            android:id="@+id/my_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            app:edittext_background_isnull="true"></com.hd.wlj.duohaowan.view.ImgInpImg>
+
+        <com.hd.wlj.duohaowan.view.ImgInpImg
+            android:id="@+id/my_jiaoyijilu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            app:edittext_background_isnull="true"></com.hd.wlj.duohaowan.view.ImgInpImg>
+
+        <com.hd.wlj.duohaowan.view.ImgInpImg
+            android:id="@+id/my_suggest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            app:edittext_background_isnull="true"></com.hd.wlj.duohaowan.view.ImgInpImg>
+
+
+    </LinearLayout>
+
+</ScrollView>

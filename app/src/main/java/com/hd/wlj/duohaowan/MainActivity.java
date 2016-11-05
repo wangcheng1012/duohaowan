@@ -222,32 +222,30 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
      * 点击了“更多”按钮
      */
     private void clickMoreBtn() {
-        GoToHelp.go(this, LoginActivity.class);
 
+        // 实例化Fragment页面
+        if (fragmentMy == null) {
+            fragmentMy = new MyFragment();
+        }
+        // 得到Fragment事务管理器
+        FragmentTransaction fragmentTransaction = this
+                .getSupportFragmentManager().beginTransaction();
+        // 替换当前的页面
+        fragmentTransaction.replace(R.id.frame_content, fragmentMy);
+        // 事务管理提交
+        fragmentTransaction.commit();
 
-//        // 实例化Fragment页面
-//        if(fragmentMy  == null) {
-//            fragmentMy = new MyFragment();
-//        }
-//        // 得到Fragment事务管理器
-//        FragmentTransaction fragmentTransaction = this
-//                .getSupportFragmentManager().beginTransaction();
-//        // 替换当前的页面
-//        fragmentTransaction.replace(R.id.frame_content, fragmentMy);
-//        // 事务管理提交
-//        fragmentTransaction.commit();
-//
-//        homeFl.setSelected(false);
-//        atIv.setSelected(false);
-//
-//        authFl.setSelected(false);
-//        authIv.setSelected(false);
-//
-//        spaceFl.setSelected(false);
-//        spaceIv.setSelected(false);
-//
-//        moreFl.setSelected(true);
-//        moreIv.setSelected(true);
+        homeFl.setSelected(false);
+        atIv.setSelected(false);
+
+        authFl.setSelected(false);
+        authIv.setSelected(false);
+
+        spaceFl.setSelected(false);
+        spaceIv.setSelected(false);
+
+        moreFl.setSelected(true);
+        moreIv.setSelected(true);
     }
 
     /**

@@ -1,30 +1,45 @@
 package com.hd.wlj.duohaowan.ui.seach;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.hd.wlj.duohaowan.R;
-import com.wlj.base.ui.BaseFragment;
-import com.wlj.base.util.statusbar.StatusBarUtil;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
- * Created by wlj on 2016/10/27.
+ *  @author wlj
  */
+public class SeachFragment extends Fragment {
 
-public class SeachFragment  extends Fragment {
+    @BindView(R.id.seach_spinner)
+    Spinner seachSpinner;
 
-    @Nullable
+    @BindView(R.id.seach_text)
+    EditText seachText;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_seach, container, false);
-
-//        StatusBarUtil.setTransparentForImageViewInFragment(getActivity(),null);
+        ButterKnife.bind(this, view);
         return view;
     }
 
+    @OnClick({R.id.seach_tv})
+    public void onClick(View view) {
+        switch (view.getId()) {
 
+            case R.id.seach_tv:
+
+                break;
+        }
+    }
 }

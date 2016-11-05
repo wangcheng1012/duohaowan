@@ -7,11 +7,153 @@
     android:orientation="vertical"
     tools:context="com.hd.wlj.duohaowan.ui.home.HomeFragment">
 
-    <FrameLayout
-        android:id="@+id/home_banner"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/icon_back_white" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/seach_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/spinner_bg"
+                android:entries="@array/seachSpenner" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/tab_seach_nor" />
+
+            <EditText
+                android:id="@+id/seach_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="请输入关键字"
+                android:paddingEnd="3dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:paddingStart="3dp" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/seach_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="搜索"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <TextView
+        style="@style/text_base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:padding="10dp"
+        android:text="热门标签" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:padding="5dp"
+            android:text="油画"
+            android:textColor="@color/black1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:padding="5dp"
+            android:text="书画家"
+            android:textColor="@color/black1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:padding="5dp"
+            android:text="国画家"
+            android:textColor="@color/black1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:padding="5dp"
+            android:text="书法家"
+            android:textColor="@color/black1" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/_e2e2e2" />
+
+    </FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/seach_recyclerciew"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+    </android.support.v7.widget.RecyclerView>
 
 
 </LinearLayout>

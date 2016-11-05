@@ -9,12 +9,15 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
 import com.orhanobut.logger.Logger;
+import com.wlj.base.util.DpAndPx;
 import com.wlj.base.widget.IconfontTextview;
 
 /**
@@ -127,5 +130,16 @@ public class ImgInpImg extends FrameLayout {
 
     public EditText getEditTextView() {
         return editTextView;
+    }
+
+    /**
+     * EditTextView 与 左边的距离
+     *
+     * @param f
+     */
+    public void setEditTextViewMaginLeft(int f) {
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) editTextView.getLayoutParams();
+        layoutParams.leftMargin = DpAndPx.dpToPx(getContext(), f);
+        editTextView.setLayoutParams(layoutParams);
     }
 }
