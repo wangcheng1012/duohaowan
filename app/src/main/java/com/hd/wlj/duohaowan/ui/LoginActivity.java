@@ -115,7 +115,7 @@ public class LoginActivity extends BaseFragmentActivity {
 
     private void login() {
 
-        String phone = loginAccount.getText();
+        final String phone = loginAccount.getText();
         String psw = loginPsw.getText();
 
 //        phone = "15310315193";
@@ -135,7 +135,9 @@ public class LoginActivity extends BaseFragmentActivity {
 
                 AppConfig appConfig = AppConfig.getAppConfig();
                 appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
-                GoToHelp.go(LoginActivity.this, MainActivity.class);
+                appConfig.set(AppConfig.CONF_NAME, phone);
+
+//                GoToHelp.go(LoginActivity.this, MainActivity.class);
                 finish();
             }
 

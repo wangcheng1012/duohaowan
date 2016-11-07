@@ -172,7 +172,8 @@ public class ForgetPSWActivity extends BaseFragmentActivity {
 
         return false;
     }
-    private void modify(String phone, String verify, String psw) {
+
+    private void modify(final String phone, String verify, String psw) {
 
         User user = new User(this);
         user.setPhone(phone);
@@ -188,7 +189,8 @@ public class ForgetPSWActivity extends BaseFragmentActivity {
 
                 AppConfig appConfig = AppConfig.getAppConfig();
                 appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
-                GoToHelp.go(ForgetPSWActivity.this, MainActivity.class);
+                appConfig.set(AppConfig.CONF_NAME, phone);
+//                GoToHelp.go(ForgetPSWActivity.this, MainActivity.class);
                 finish();
                 UIHelper.toastMessage(getApplicationContext(), "登陆成功");
             }

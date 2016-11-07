@@ -39,39 +39,39 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         api = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, false);
         api.registerApp(Constants.WX_APP_ID);
 //        regBtn = (Button) findViewById(R.id.reg_btn);
-//        regBtn.setOnClickListener(new View.OnClickListener() {
+//        regBtn.setOnClickListener(new SWRVView.OnClickListener() {
 //
 //            @Override
-//            public void onClick(View v) {
+//            public void onClick(SWRVView v) {
 //                // 将该app注册到微信
 //                api.registerApp(Constants.APP_ID);
 //            }
 //        });
 //
 //        gotoBtn = (Button) findViewById(R.id.goto_send_btn);
-//        gotoBtn.setOnClickListener(new View.OnClickListener() {
+//        gotoBtn.setOnClickListener(new SWRVView.OnClickListener() {
 //
 //            @Override
-//            public void onClick(View v) {
+//            public void onClick(SWRVView v) {
 //                startActivity(new Intent(WXEntryActivity.this, SendToWXActivity.class));
 //                finish();
 //            }
 //        });
 //
 //        launchBtn = (Button) findViewById(R.id.launch_wx_btn);
-//        launchBtn.setOnClickListener(new View.OnClickListener() {
+//        launchBtn.setOnClickListener(new SWRVView.OnClickListener() {
 //
 //            @Override
-//            public void onClick(View v) {
+//            public void onClick(SWRVView v) {
 //                Toast.makeText(WXEntryActivity.this, "launch result = " + api.openWXApp(), Toast.LENGTH_LONG).show();
 //            }
 //        });
 //
 //        checkBtn = (Button) findViewById(R.id.check_timeline_supported_btn);
-//        checkBtn.setOnClickListener(new View.OnClickListener() {
+//        checkBtn.setOnClickListener(new SWRVView.OnClickListener() {
 //
 //            @Override
-//            public void onClick(View v) {
+//            public void onClick(SWRVView v) {
 //                int wxSdkVersion = api.getWXAppSupportAPI();
 //                if (wxSdkVersion >= TIMELINE_SUPPORTED_VERSION) {
 //                    Toast.makeText(WXEntryActivity.this, "wxSdkVersion = " + Integer.toHexString(wxSdkVersion) + "\ntimeline supported", Toast.LENGTH_LONG).show();

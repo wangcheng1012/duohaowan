@@ -8,6 +8,9 @@ import android.view.View;
 
 import com.hd.wlj.duohaowan.R;
 
+/**
+ * Toolbar的Alpha 渐变
+ */
 public class ToolbarAlphaBehavior extends CoordinatorLayout.Behavior<Toolbar> {
     private static final String TAG = "ToolbarAlphaBehavior";
     private int offset = 0;

@@ -4,20 +4,23 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+/**
+ * 和KamHorizontalScrollView 配合使用，达到水平一屏显示多张、无限循环滚动
+ */
 public class KamLinearLayout extends LinearLayout {
     kamLayoutChangeListener listener = null;
-
-    public void addKamLayoutChangeListener(kamLayoutChangeListener listener) {
-        this.listener = listener;
-    }
-
 
     public KamLinearLayout(Context context) {
         super(context);
     }
 
+
     public KamLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public void addKamLayoutChangeListener(kamLayoutChangeListener listener) {
+        this.listener = listener;
     }
 
     @Override

@@ -7,9 +7,12 @@ import android.os.AsyncTask;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.Base;
 import com.wlj.base.bean.BaseList;
+import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.AppContext;
+import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.RequestException;
 import com.wlj.base.util.UIHelper;
+import com.wlj.base.web.MsgContext;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -64,12 +67,12 @@ public class AsyncCall
 
     public void onCancelled() {
         super.onCancelled();
-        Logger.e("onCancelled" );
+        Logger.e("onCancelled");
     }
 
     public void onCancelled(Object paramObject) {
         super.onCancelled(paramObject);
-        Logger.e("onCancelled ~~~"+ paramObject );
+        Logger.e("onCancelled ~~~" + paramObject);
     }
 
     public void onPostExecute(Object paramObject) {
@@ -82,19 +85,22 @@ public class AsyncCall
             Exception localException = (Exception) paramObject;
             str = localException.getMessage();
 
+            if ((this.autoToLoginPage) && (str != null) && str.equals(MsgContext.request_loginError + "")) {
+                //登录
+                GoToHelp.go(this.activity, AppConfig.getAppConfig().getLoginClass());
+                AppContext.getAppContext().loginOut();
+            } else
             if (this.showToast) {
                 //显示异常
                 if ((localException instanceof SocketTimeoutException)) {
                     UIHelper.toastMessage(AppContext.getAppContext(), " 链接超时");
-                }else {
+                } else {
                     UIHelper.toastMessage(AppContext.getAppContext(), str);
                 }
+
             } else {
                 //把异常返回前段
-                if ((this.autoToLoginPage) && (str != null) && ((str.contains("登录")) || (str.contains("登陆")))) {
-//          new GOTOHelp(this.activity).Go(AppConfig.getInstall().getLoginClass());
-                    AppContext.getAppContext().loginOut();
-                }
+
                 if (this.onBackListener != null) {
                     this.onBackListener.fail(localException);
                 }
@@ -169,7 +175,7 @@ public class AsyncCall
     }
 
     public static abstract interface OnAsyncBackListener {
-        public abstract void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt);
+        public abstract void OnAsyncBack(List<Base> paramList, Base paramBase, int type);
 
         public abstract void fail(Exception paramException);
     }

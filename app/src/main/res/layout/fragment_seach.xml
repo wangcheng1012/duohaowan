@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/_e2e2e2"
+    android:clickable="true"
     android:orientation="vertical"
     tools:context="com.hd.wlj.duohaowan.ui.home.HomeFragment">
 
@@ -147,13 +148,13 @@
 
     </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <FrameLayout
         android:id="@+id/seach_recyclerciew"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white">
 
-    </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
 
 
 </LinearLayout>

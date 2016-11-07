@@ -3,7 +3,6 @@ package com.hd.wlj.duohaowan.ui.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,15 +15,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
-import com.hd.wlj.duohaowan.ui.home.classify.detailswork.WorkDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.work.WorkDetailsActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListActivity;
-import com.hd.wlj.duohaowan.ui.home.contract.HomeContract;
-import com.hd.wlj.duohaowan.ui.home.model.HomeModelImpl;
-import com.hd.wlj.duohaowan.ui.home.presenter.HomePresenterImpl;
 import com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView;
 import com.wlj.base.bean.Base;
+import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
@@ -44,15 +45,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class HomeFragment extends Fragment implements HomeContract.View {
+
+public class HomeFragment extends BaseFragment implements HomeView {
 
     @BindView(R.id.home_recyclerView)
     RecyclerView homeRecyclerView;
@@ -90,13 +84,20 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         if (getArguments() != null) {
         }
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    protected int getlayout() {
+        return R.layout.fragment_home;
+    }
+
+    @Override
+    protected void initView() {
         ButterKnife.bind(this, view);
         init();
-        return view;
     }
 
     private void init() {
@@ -170,11 +171,27 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 holder.getConvertView().setTag(R.id.tag_first, o);
 
                 JSONObject resultJsonObject = o.getResultJsonObject();
-                ImageView view = holder.getView(R.id.item_home_recyclerView_image);
+                final ImageView view = holder.getView(R.id.item_home_recyclerView_image);
                 holder.setImageResource(R.id.item_home_recyclerView_image, R.drawable.project_bg);
-                // Glide.with(HomeFragment.this).load(Urls.HOST + resultJsonObject.optString("pic")).crossFade().placeholder(R.drawable.project_bg).into(view);
-                LoadImage.getinstall().addTask(Urls.HOST + resultJsonObject.optString("pic"), view);
-                LoadImage.getinstall().doTask();
+                Glide.with(HomeFragment.this)
+                        .load(Urls.HOST + resultJsonObject.optString("pic"))
+                        .placeholder(R.drawable.project_bg)
+                        .into(new SimpleTarget<GlideDrawable>() {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+
+                                int intrinsicWidth = resource.getIntrinsicWidth();
+                                int height = view.getWidth() * resource.getIntrinsicHeight() / intrinsicWidth;
+
+                                view.setMinimumWidth(intrinsicWidth);
+                                view.setMinimumHeight(height);
+
+                                view.setImageDrawable(resource);
+                            }
+                        });
+
+
+//               LoadImage.getinstall().addTask(Urls.HOST + resultJsonObject.optString("pic"), view).doTask();
 
                 //
                 final HomeModelImpl homemodelimpl = (HomeModelImpl) o;
@@ -232,8 +249,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                     Base b = (Base) tag;
 
                     Bundle bundle = new Bundle();
-
-                    bundle.putString("json", b.getResultStr());
+                    JSONObject jo = b.getResultJsonObject();
+                    bundle.putString("id", jo.optString("pub_id"));
                     GoToHelp.go(getActivity(), WorkDetailsActivity.class, bundle);
                 }
 

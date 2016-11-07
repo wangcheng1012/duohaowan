@@ -19,18 +19,17 @@ import android.widget.ImageView;
 
 public class LoadImage {
 
+	private static LoadImage loadImage;
 	private ExecutorService executorService; // 固定五个线程来
-
 //	private ImageMemoryCache memoryCache;// 内存缓存
 //	private BitmapCache bitmapCache;
 	private ImageLrucache imageLrucache;
-
 	private ImageFileCache fileCache;// 文件缓存
-
 	private Map<String, ImageView> taskMap;// 存放任务
+	private LoadComplete loadcomplete;
+	private int taskSize;
+	private List<String> futureList;
 	
-	private static LoadImage loadImage;
-
 	/**
 	 * 在getview时先addtask 当滚动停止的时候调用doTask
 	 */
@@ -41,7 +40,7 @@ public class LoadImage {
 //		memoryCache = new ImageMemoryCache();
 //		bitmapCache = BitmapCache.getInstance();
 		imageLrucache = ImageLrucache.getInstance();
-		
+
 		fileCache = new ImageFileCache();
 
 		taskMap = new HashMap<String, ImageView>();
@@ -49,7 +48,7 @@ public class LoadImage {
 	}
 
 	public static LoadImage getinstall() {
-		
+
 		if(loadImage == null){
 			loadImage = new LoadImage();
 		}
@@ -57,16 +56,16 @@ public class LoadImage {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 * @param img
 	 *            imageview的tag是需要下载的url
 	 */
-	public void addTask(String url, ImageView img) {
+	public LoadImage addTask(String url, ImageView img) {
 		futureList.clear();
 		loadcomplete = null;
 		if (url == null)
-			return;
+			return this;
 		img.setTag(url);
 		Bitmap bitmap = imageLrucache.getBitmapFromMemCache(url);
 
@@ -80,12 +79,8 @@ public class LoadImage {
 			}
 
 		}
-
+		return this;
 	}
-	
-	private LoadComplete loadcomplete;
-	private int taskSize;
-	private List<String>   futureList;
 	
 	/**
 	 *  统计用的
@@ -164,7 +159,7 @@ public class LoadImage {
 					imageLrucache.addBitmapToMemoryCache(url, result);
 
 					fileCache.saveBmpToSd(result, url);
-//					result = fileCache.getImage(url);
+					result = fileCache.getImage(url);
 				}
 
 			} else {
@@ -175,6 +170,12 @@ public class LoadImage {
 		}
 
 		return result;
+
+	}
+
+	public interface LoadComplete {
+
+		void onComplete();
 
 	}
 
@@ -207,12 +208,11 @@ public class LoadImage {
 
 					img.setImageBitmap(bitmap);
 					img.setVisibility(View.VISIBLE);
-//					bitmap.recycle();
 					futureList.add("");
 					if(loadcomplete!= null && futureList.size() == taskSize){
 						loadcomplete.onComplete();
 					}
-					
+
 				}
 
 			}
@@ -249,17 +249,11 @@ public class LoadImage {
 				handler.sendMessage(msg);
 
 			}
-			
+
 			return url;
 
 		}
 
-	}
-
-	public interface LoadComplete{
-		
-		void onComplete();
-		
 	}
 	
 }

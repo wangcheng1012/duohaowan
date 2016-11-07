@@ -39,8 +39,6 @@ public class CyptoUtils {
 	 * @param key
 	 *            加密私钥，长度不能够小于8位
 	 * @return 加密后的字节数组，一般结合Base64编码使用
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws Exception
 	 */
 	public static String encode(String key, String data) {
 		if (data == null)
@@ -273,7 +271,9 @@ public class CyptoUtils {
 	 * @throws Exception
 	 */
 	public static String decryptBASE64(String key) {
-		
+		if (StringUtils.isEmpty(key)) {
+			return "";
+		}
 		try {
 			byte[] k = Base64.decode(key.getBytes("UTF-8"), Base64.DEFAULT);
 			return new String(k,"UTF-8");
@@ -291,7 +291,9 @@ public class CyptoUtils {
 	 * @throws Exception
 	 */
 	public static String encryptBASE64(String key) {
-
+		if (StringUtils.isEmpty(key)) {
+			return "";
+		}
 		try { 
 			return new String(Base64.encode(key.getBytes("UTF-8"), Base64.DEFAULT),"UTF-8");
 		} catch (UnsupportedEncodingException e) {

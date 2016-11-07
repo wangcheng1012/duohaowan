@@ -44,12 +44,14 @@ public class AppContext extends Application {
 	
 	public static final int PAGE_SIZE = 20;//默认分页大小
 	private static final int CACHE_TIME = 60*60000;//缓存失效时间
-	
-	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
-	
-	private String saveImagePath;//保存图片路径
 	private static AppContext appContext;
-	
+	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
+	private String saveImagePath;//保存图片路径
+
+	public static AppContext getAppContext() {
+		return appContext;
+	}
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -62,11 +64,8 @@ public class AppContext extends Application {
 	/**
 	 * 初始化
 	 */
-	private void init(){
+	protected void init() {
 
-	}
-	public static AppContext getAppContext() {
-		return appContext;
 	}
 	
 	public boolean islogin(){
@@ -82,8 +81,8 @@ public class AppContext extends Application {
 
 	public void loginOut() {
 		setProperty(AppConfig.CONF_KEY,"");
+		setProperty(AppConfig.CONF_NAME, "");
 	}
-
 
 	/**
 	 * 判断是否有网络

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     tools:context="com.hd.wlj.duohaowan.ui.my.MyFragment">
 
     <LinearLayout
@@ -12,30 +13,45 @@
         android:orientation="vertical"
         android:paddingBottom="20dp">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/head_preimg"
+                android:layout_alignEnd="@+id/head_preimg"
+                android:layout_alignLeft="@+id/head_preimg"
+                android:layout_alignRight="@+id/head_preimg"
+                android:layout_alignStart="@+id/head_preimg"
+                android:layout_alignTop="@+id/head_preimg"
                 android:adjustViewBounds="true"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/head_preimg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
                 android:src="@drawable/icon_head_bg" />
 
             <LinearLayout
+
                 android:id="@+id/my_loginLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_centerInParent="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="40dp">
 
                 <ImageView
                     android:id="@+id/my_headimage"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:adjustViewBounds="true" />
 
                 <TextView
                     android:id="@+id/my_loginLayout_text"
@@ -55,8 +71,7 @@
 
             </LinearLayout>
 
-        </FrameLayout>
-
+        </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -121,6 +136,7 @@
 
 
         </RelativeLayout>
+
 
         <com.hd.wlj.duohaowan.view.ImgInpImg
             android:id="@+id/my_card"

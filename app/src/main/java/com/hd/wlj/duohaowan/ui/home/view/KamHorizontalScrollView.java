@@ -13,8 +13,10 @@ import com.wlj.base.util.MathUtil;
 
 import java.math.BigDecimal;
 
-
-/*如果不需要支持Android2.3，可以将代码中所有KamLinearLayout替换为ViewGroup*/
+/**
+ * 如果不需要支持Android2.3，可以将代码中所有KamLinearLayout替换为ViewGroup .
+ * 水平一屏显示多张、无限循环滚动
+ */
 public class KamHorizontalScrollView extends HorizontalScrollView {
 
     private CreatItem mCreatItem;
@@ -150,7 +152,7 @@ public class KamHorizontalScrollView extends HorizontalScrollView {
       //注意，如果不需要支持Android2.3，可以将上面的listener替换成下方listener
       OnLayoutChangeListener listener = new OnLayoutChangeListener() {
     @Override
-    public void onLayoutChange(View arg0, int arg1, int arg2, int arg3,
+    public void onLayoutChange(SWRVView arg0, int arg1, int arg2, int arg3,
                                int arg4, int arg5, int arg6, int arg7, int arg8) {
         Logger.i(tag, "onLayoutChanged Called!");
         scrollToPage(1);
@@ -175,8 +177,10 @@ public class KamHorizontalScrollView extends HorizontalScrollView {
     }
 
     private View getView(int index) {
-
         int childCount = childGroup.getChildCount()/2;
+        if (childCount == 0) {
+            return null;
+        }
         int i = (index % childCount + childCount) % childCount;
         return mCreatItem.getView(i);
     }

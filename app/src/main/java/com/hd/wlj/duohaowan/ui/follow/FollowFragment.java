@@ -8,23 +8,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hd.wlj.duohaowan.R;
+import com.wlj.base.ui.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FollowFragment extends Fragment {
+public class FollowFragment extends BaseFragment {
 
 
     public FollowFragment() {
-        // Required empty public constructor
     }
 
+    @Override
+    protected int getlayout() {
+        return R.layout.fragment_follow;
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_follow, container, false);
+    protected void initView() {
+
     }
 
 }

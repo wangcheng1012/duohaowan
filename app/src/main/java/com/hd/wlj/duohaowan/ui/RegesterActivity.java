@@ -174,7 +174,7 @@ public class RegesterActivity extends BaseFragmentActivity {
         return false;
     }
 
-    private void regester(String phone, String verify, String psw) {
+    private void regester(final String phone, String verify, String psw) {
 
         User user = new User(this);
         user.setPhone(phone);
@@ -190,7 +190,8 @@ public class RegesterActivity extends BaseFragmentActivity {
 
                 AppConfig appConfig = AppConfig.getAppConfig();
                 appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
-                GoToHelp.go(RegesterActivity.this, MainActivity.class);
+                appConfig.set(AppConfig.CONF_NAME, phone);
+//                GoToHelp.go(RegesterActivity.this, MainActivity.class);
                 finish();
 
                 UIHelper.toastMessage(getApplicationContext(), "登陆成功");

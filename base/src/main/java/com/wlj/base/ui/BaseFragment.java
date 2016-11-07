@@ -59,10 +59,10 @@ public abstract class BaseFragment extends Fragment {
 					.getDefaultDisplay().getWidth());
 			initView();
 		} else {
-			FrameLayout viewParent = (FrameLayout) view.getParent();
+			ViewGroup viewParent = (ViewGroup) view.getParent();
 			if(viewParent != null){
 				viewParent.removeAllViews();
-				viewParent = new FrameLayout(mcontext);
+//				viewParent = new FrameLayout(mcontext);
 				viewParent.addView(view);
 				return viewParent;
 			}

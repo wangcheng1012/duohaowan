@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -17,27 +19,25 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
-import com.hd.wlj.duohaowan.ui.LoginActivity;
 import com.hd.wlj.duohaowan.ui.follow.FollowFragment;
 import com.hd.wlj.duohaowan.ui.home.HomeFragment;
 import com.hd.wlj.duohaowan.ui.my.MyFragment;
 import com.hd.wlj.duohaowan.ui.seach.SeachFragment;
+import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
-import com.wlj.base.util.GoToHelp;
-import com.wlj.base.util.statusbar.StatusBarUtil;
 
 public class MainActivity extends BaseFragmentActivity implements OnClickListener,HomeFragment.OnFragmentInteractionListener
 {
     // 定义Fragment页面
     private HomeFragment fragmentHome;
     private SeachFragment fragmentSearch;
-    private FollowFragment fragmentSpace;
+    private FollowFragment fragmentFollow;
     private MyFragment fragmentMy;
     // 定义布局对象
-    private FrameLayout homeFl, authFl, spaceFl, moreFl;
+    private FrameLayout homeFl, seachFl, followFl, myFl;
 
     // 定义图片组件对象
-    private ImageView atIv, authIv, spaceIv, moreIv;
+    private ImageView homeIv, seachIv, followIv, myIv;
 
     // 定义按钮图片组件
     private ImageView toggleImageView, plusImageView;
@@ -46,6 +46,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     private PopupWindow popWindow;
     // 获取手机屏幕分辨率的类
     private DisplayMetrics dm;
+    private Fragment curFragment;
+    private View preSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +58,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
         initData();
 
-        //初始化默认为选中点击了“动态”按钮
-        clickAtBtn();
+        homeFl.performClick();
     }
 
     @Override
@@ -72,15 +73,15 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     private void initView() {
         // 实例化布局对象
         homeFl = (FrameLayout) findViewById(R.id.layout_home);
-        authFl = (FrameLayout) findViewById(R.id.layout_seach);
-        spaceFl = (FrameLayout) findViewById(R.id.layout_follow);
-        moreFl = (FrameLayout) findViewById(R.id.layout_my);
+        seachFl = (FrameLayout) findViewById(R.id.layout_seach);
+        followFl = (FrameLayout) findViewById(R.id.layout_follow);
+        myFl = (FrameLayout) findViewById(R.id.layout_my);
 
         // 实例化图片组件对象
-        atIv = (ImageView) findViewById(R.id.image_home);
-        authIv = (ImageView) findViewById(R.id.image_seach);
-        spaceIv = (ImageView) findViewById(R.id.image_follow);
-        moreIv = (ImageView) findViewById(R.id.image_my);
+        homeIv = (ImageView) findViewById(R.id.image_home);
+        seachIv = (ImageView) findViewById(R.id.image_seach);
+        followIv = (ImageView) findViewById(R.id.image_follow);
+        myIv = (ImageView) findViewById(R.id.image_my);
 
         // 实例化按钮图片组件
         toggleImageView = (ImageView) findViewById(R.id.toggle_btn);
@@ -94,9 +95,9 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     private void initData() {
         // 给布局对象设置监听
         homeFl.setOnClickListener(this);
-        authFl.setOnClickListener(this);
-        spaceFl.setOnClickListener(this);
-        moreFl.setOnClickListener(this);
+        seachFl.setOnClickListener(this);
+        followFl.setOnClickListener(this);
+        myFl.setOnClickListener(this);
 
         // 给按钮图片设置监听
         toggleImageView.setOnClickListener(this);
@@ -110,142 +111,80 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         switch (v.getId()) {
             // 点击s首页按钮
             case R.id.layout_home:
-                clickAtBtn();
+                fragmentTransation(HomeFragment.class);
+                tabBarClick(homeIv);
                 break;
             // 点击seach关按钮
             case R.id.layout_seach:
-                clickAuthBtn();
+                fragmentTransation(SeachFragment.class);
+                tabBarClick(seachIv);
                 break;
             // 点击follow按钮
             case R.id.layout_follow:
-                clickFollowBtn();
+                fragmentTransation(FollowFragment.class);
+                tabBarClick(followIv);
                 break;
             // 点击my按钮
             case R.id.layout_my:
-                clickMoreBtn();
+                fragmentTransation(MyFragment.class);
+                tabBarClick(myIv);
+
                 break;
             // 点击中间按钮
             case R.id.toggle_btn:
-//                clickToggleBtn();
+                clickToggleBtn();
                 break;
         }
     }
 
     /**
-     * 点击了“动态”按钮
+     * 触发顺序:
+     detach()->onPause()->onStop()->onDestroyView()
+     attach()->onCreateView()->onActivityCreated()->onStart()->onResume()
+     使用hide()方法只是隐藏了fragment的view并没有将view从viewtree中删除,随后可用show()方法将view设置为显示
+     而使用detach()会将view从viewtree中删除,和remove()不同,此时fragment的状态依然保持着,在使用 attach()时会再次调用onCreateView()来重绘视图,注意使用detach()后fragment.isAdded()方法将返回 false,在使用attach()还原fragment后isAdded()会依然返回false(需要再次确认)
+     执行detach()和replace()后要还原视图的话, 可以在相应的fragment中保持相应的view,并在onCreateView()方法中通过view的parent的removeView()方法将view和parent的关联删除后返回
+     *
+     * @param fragment
      */
-    private void clickAtBtn() {
-        // 实例化Fragment页面
-        if(fragmentHome == null) {
-            fragmentHome = new HomeFragment();
-        }
+    private void fragmentTransation(Class<?> fragment) {
+
+        String simpleName = fragment.getSimpleName();
+
         // 得到Fragment事务管理器
-        FragmentTransaction fragmentTransaction = this
-                .getSupportFragmentManager().beginTransaction();
-        // 替换当前的页面
-        fragmentTransaction.replace(R.id.frame_content, fragmentHome);
-        // 事务管理提交
-        fragmentTransaction.commit();
-        // 改变选中状态
-        homeFl.setSelected(true);
-        atIv.setSelected(true);
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        authFl.setSelected(false);
-        authIv.setSelected(false);
-
-        spaceFl.setSelected(false);
-        spaceIv.setSelected(false);
-
-        moreFl.setSelected(false);
-        moreIv.setSelected(false);
+        Fragment fragmentByTag = fragmentManager.findFragmentByTag(simpleName);
+        if (fragmentByTag != null) {
+//            Logger.e("fragmentByTag  "+simpleName);
+            if (curFragment != null) {
+                if (curFragment == fragmentByTag) {
+                    return;
+                }
+                transaction.detach(curFragment);
+            }
+            transaction.attach(fragmentByTag);
+            curFragment = fragmentByTag;
+        } else {
+            try {
+                curFragment = (Fragment) fragment.newInstance();
+                transaction.add(R.id.frame_content, curFragment, simpleName);
+                // 替换当前的页面
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        transaction.replace(R.id.frame_content, curFragment,simpleName);
+        int i = transaction.commitAllowingStateLoss();
     }
 
-    /**
-     * 点击了“与我相关”按钮
-     */
-    private void clickAuthBtn() {
-        // 实例化Fragment页面
-        if(fragmentSearch == null) {
-            fragmentSearch = new SeachFragment();
+    private void tabBarClick(View view) {
+        if (preSelected != null) {
+            preSelected.setSelected(false);
         }
-        // 得到Fragment事务管理器
-        FragmentTransaction fragmentTransaction = this
-                .getSupportFragmentManager().beginTransaction();
-        // 替换当前的页面
-        fragmentTransaction.replace(R.id.frame_content, fragmentSearch);
-        // 事务管理提交
-        fragmentTransaction.commit();
-
-        homeFl.setSelected(false);
-        atIv.setSelected(false);
-
-        authFl.setSelected(true);
-        authIv.setSelected(true);
-
-        spaceFl.setSelected(false);
-        spaceIv.setSelected(false);
-
-        moreFl.setSelected(false);
-        moreIv.setSelected(false);
-    }
-
-    /**
-     * 点击了“我的空间”按钮
-     */
-    private void clickFollowBtn() {
-        // 实例化Fragment页面
-        if(fragmentSpace == null) {
-            fragmentSpace = new FollowFragment();
-        }
-        // 得到Fragment事务管理器
-        FragmentTransaction fragmentTransaction = this
-                .getSupportFragmentManager().beginTransaction();
-        // 替换当前的页面
-        fragmentTransaction.replace(R.id.frame_content, fragmentSpace);
-        // 事务管理提交
-        fragmentTransaction.commit();
-
-        homeFl.setSelected(false);
-        atIv.setSelected(false);
-
-        authFl.setSelected(false);
-        authIv.setSelected(false);
-
-        spaceFl.setSelected(true);
-        spaceIv.setSelected(true);
-
-        moreFl.setSelected(false);
-        moreIv.setSelected(false);
-    }
-
-    /**
-     * 点击了“更多”按钮
-     */
-    private void clickMoreBtn() {
-
-        // 实例化Fragment页面
-        if (fragmentMy == null) {
-            fragmentMy = new MyFragment();
-        }
-        // 得到Fragment事务管理器
-        FragmentTransaction fragmentTransaction = this
-                .getSupportFragmentManager().beginTransaction();
-        // 替换当前的页面
-        fragmentTransaction.replace(R.id.frame_content, fragmentMy);
-        // 事务管理提交
-        fragmentTransaction.commit();
-
-        homeFl.setSelected(false);
-        atIv.setSelected(false);
-
-        authFl.setSelected(false);
-        authIv.setSelected(false);
-
-        spaceFl.setSelected(false);
-        spaceIv.setSelected(false);
-
-        moreFl.setSelected(true);
-        moreIv.setSelected(true);
+        view.setSelected(true);
+        preSelected = view;
     }
 
     /**
@@ -275,7 +214,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
             dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
             // 创建一个PopuWidow对象
-            popWindow = new PopupWindow(view, dm.widthPixels, LinearLayout.LayoutParams.WRAP_CONTENT);
+            popWindow = new PopupWindow(view, dm.widthPixels, LinearLayout.LayoutParams.MATCH_PARENT);
         }
         // 使其聚集 ，要想监听菜单里控件的事件就必须要调用此方法
         popWindow.setFocusable(true);

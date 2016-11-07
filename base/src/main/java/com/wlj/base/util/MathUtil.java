@@ -159,10 +159,10 @@ public class MathUtil {
 	 * @return 相除保留4位 4舍5入
 	 */
 	public static BigDecimal divide(Object obj1, Object obj2, int limt) {
-		if(obj1 == null){
+		if (StringUtils.isEmpty(obj1 + "")) {
 			obj1 = "0";
 		}
-		if(obj2 == null){
+		if (StringUtils.isEmpty(obj2 + "")) {
 			obj2 = "0";
 		}
 		

@@ -26,22 +26,72 @@ public class ImageFileCache {
 	/** 过期时间3天 **/
 
 	private static final long mTimeDiff = 3 * 24 * 60 * 60 * 1000;
+	/***
+	 * 缓存空间大小
+	 ****/
+
+	private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
+	private static final int CACHE_SIZE = 10;
+	;
+	/**
+	 * 计算sdcard上的剩余空间
+	 *
+	 * @return
+	 */
+
+	private int MB = 1024 * 1024;
 
 	public ImageFileCache()
 	{
 		// 清理文件缓存
 		removeCache(getDirectory());
 	}
-	/**
-	 * 
+
+	/****
+	 * 取SD卡路径不带/
+	 ****/
+	public static String getSDPath() {
+
+		File sdDir = null;
+
+		boolean sdCardExist = Environment.getExternalStorageState().equals(
+
+				Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+
+		if (sdCardExist) {
+
+			sdDir = Environment.getExternalStorageDirectory();// 获取跟目录
+
+		}
+
+		if (sdDir != null)
+
+		{
+
+			return sdDir.toString();
+
+		} else
+
+		{
+
+			return "";
+
+		}
+
+	}
+
+/**
+	 *
 	 * @param url
 	 * @return
 	 */
 	public String getPath(String url){
-		
+
 		 String path = getDirectory() + "/" + convertUrlToFileName(url);
 		return path;
-	};
+	}
+
+	// 清理缓存
 
 	public  Bitmap getImage(final String url) {
 
@@ -68,10 +118,6 @@ public class ImageFileCache {
 		return null;
 
 	}
-
-	/*** 缓存空间大小 ****/
-
-	private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
 
 	public void saveBmpToSd(Bitmap bm, String url) {
 
@@ -110,7 +156,7 @@ public class ImageFileCache {
 
 			OutputStream outStream = new FileOutputStream(file);
 
-			bm.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+			bm.compress(Bitmap.CompressFormat.PNG, 100, outStream);
 
 			outStream.flush();
 
@@ -128,20 +174,16 @@ public class ImageFileCache {
 
 	}
 
-	private static final int CACHE_SIZE = 10;
-
-	// 清理缓存
-
 	/**
-	 * 
+	 *
 	 * 计算存储目录下的文件大小，
-	 * 
+	 *
 	 * 当文件总大小大于规定的CACHE_SIZE或者sdcard剩余空间小于FREE_SD_SPACE_NEEDED_TO_CACHE的规定
-	 * 
+	 *
 	 * 那么删除40%最近没有被使用的文件
-	 * 
+	 *
 	 * @param dirPath
-	 * 
+	 *
 	 *
 	 */
 
@@ -205,15 +247,16 @@ public class ImageFileCache {
 
 		return true;
 	}
+	
 	public String removeAllCache(){
 		File file = new File(getDirectory());
 		File[] files = file.listFiles();
 		if(files == null || files.length < 1){
 			return "不需要清理";
 		}
-		
+
 		long dirSize = 0;
-		
+
 		for (int i = 0; i < files.length; i++) {
 			dirSize += files[i].length();
 			boolean isdel =  files[i].delete();
@@ -224,7 +267,7 @@ public class ImageFileCache {
 	}
 	
 	public String getCacheSise(){
-		
+
 		File file = new File(getDirectory());
 		File[] files = file.listFiles();
 		long dirSize = 0;
@@ -235,9 +278,9 @@ public class ImageFileCache {
 		}
 		DecimalFormat df = new DecimalFormat("0.000");
 		return df.format(dirSize/1048576.00)+"M";
-		
+
 	}
-	
+
 	public boolean removeBitmap(String name) {
 		if (name != null && !"".equals(name)) {
 			String path = getPath(name);
@@ -250,40 +293,13 @@ public class ImageFileCache {
 		}
 		return false;
 	}
-	
 
 	/**
-	 * 
-	 * 根据文件的最后修改时间进行排序*
-	 */
-	private class FileLastModifSort implements Comparator<File> {
-
-		public int compare(File arg0, File arg1) {
-
-			if (arg0.lastModified() > arg1.lastModified()) {
-
-				return 1;
-
-			} else if (arg0.lastModified() == arg1.lastModified()) {
-
-				return 0;
-
-			} else {
-
-				return -1;
-
-			}
-
-		}
-
-	}
-
-	/**
-	 * 
+	 *
 	 * 删除过期文件
-	 * 
+	 *
 	 * @param dirPath
-	 * 
+	 *
 	 * @param filename
 	 */
 
@@ -302,11 +318,11 @@ public class ImageFileCache {
 	}
 
 	/**
-	 * 
+	 *
 	 * 修改文件的最后修改时间
-	 * 
+	 *
 	 * 这里需要考虑,是否将使用的图片日期改为当前日期
-	 * 
+	 *
 	 * @param path
 	 */
 
@@ -319,15 +335,6 @@ public class ImageFileCache {
 		file.setLastModified(newModifiedTime);
 
 	}
-
-	/**
-	 * 
-	 * 计算sdcard上的剩余空间
-	 * 
-	 * @return
-	 */
-
-	private int MB = 1024 * 1024;
 
 	private int freeSpaceOnSd() {
 
@@ -369,32 +376,26 @@ public class ImageFileCache {
 
 	}
 
-	/**** 取SD卡路径不带/ ****/
-	public static String getSDPath() {
+	/**
+	 * 根据文件的最后修改时间进行排序*
+	 */
+	private class FileLastModifSort implements Comparator<File> {
 
-		File sdDir = null;
+		public int compare(File arg0, File arg1) {
 
-		boolean sdCardExist = Environment.getExternalStorageState().equals(
+			if (arg0.lastModified() > arg1.lastModified()) {
 
-		Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+				return 1;
 
-		if (sdCardExist) {
+			} else if (arg0.lastModified() == arg1.lastModified()) {
 
-			sdDir = Environment.getExternalStorageDirectory();// 获取跟目录
+				return 0;
 
-		}
+			} else {
 
-		if (sdDir != null)
+				return -1;
 
-		{
-
-			return sdDir.toString();
-
-		} else
-
-		{
-
-			return "";
+			}
 
 		}
 

@@ -65,10 +65,10 @@ public class MyFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         Glide.with(this)
-                .load(R.mipmap.ic_launcher)
+                .load(R.drawable.project_bg)
                 .placeholder(R.drawable.project_bg)
                 .bitmapTransform(new CropCircleTransformation(getContext()))
-                .crossFade(1000)
+//                .crossFade(1000)
                 .into(myHeadimage);
 
         initImgInpImg(myCard, R.drawable.my_card, "我的名片");

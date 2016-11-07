@@ -103,7 +103,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("书画");
 
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
                 }
 
                 break;
@@ -115,7 +115,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("画廊");
                 tabBarList.add("书法");
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
                 }
                 break;
             case R.id.home_workofart:
@@ -126,7 +126,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("国画");
                 tabBarList.add("书法");
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
                 }
                 break;
             case R.id.home_artview:
@@ -138,7 +138,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 //不全用ClassifyListFragment
 
 //                for (String tmpBarStr : tabBarList) {
-//                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+//                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
 //                }
 
                 break;

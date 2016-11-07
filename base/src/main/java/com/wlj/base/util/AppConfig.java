@@ -22,26 +22,23 @@ import com.wlj.base.util.img.ImageFileCache;
  */
 public class AppConfig {
 
-	private final static String APP_CONFIG = "config";
-
 	public final static String CONF_APP_UNIQUEID = "APP_UNIQUEID";
 	public final static String CONF_COOKIE = "cookie";
 	public final static String CONF_ACCESSTOKEN = "accessToken";
 	public final static String CONF_ACCESSSECRET = "accessSecret";
 	public final static String CONF_EXPIRESIN = "expiresIn";
 	public final static String CONF_LOAD_IMAGE = "perf_loadimage";
-
 	public final static String SAVE_IMAGE_PATH = "save_image_path";
-
-	private static Context mContext;
-	private static AppConfig appConfig;
-
 	public final static String CONF_FIRSTSTART = "perf_firststart";
 	public final static String CONF_TYPT = "type";
 	public final static String CONF_NAME = "name";
 	public final static String CONF_KEY = "key";
 	public final static String CONF_PHONE = "phone";
-	
+	private final static String APP_CONFIG = "config";
+	private static Context mContext;
+	private static AppConfig appConfig;
+	private Class<?> loginClass;
+
 	public static AppConfig getAppConfig( ) {
 
 		if (appConfig == null) {
@@ -50,18 +47,6 @@ public class AppConfig {
 		}
 
 		return appConfig;
-	}
-
-	public String getImagePath(){
-
-		//设置保存图片的路径
-		String saveImagePath = get(AppConfig.SAVE_IMAGE_PATH);
-
-		if(StringUtils.isEmpty(saveImagePath)){
-			saveImagePath = ImageFileCache.getSDPath()+ File.separator + mContext.getString(R.string.app_name)+ File.separator;
-			set(AppConfig.SAVE_IMAGE_PATH, saveImagePath);
-		}
-		return saveImagePath;
 	}
 
 	/**
@@ -77,33 +62,45 @@ public class AppConfig {
 	public static boolean isLoadImage(Context context) {
 		return getSharedPreferences(context).getBoolean(CONF_LOAD_IMAGE, true);
 	}
+
+	public String getImagePath() {
+
+		//设置保存图片的路径
+		String saveImagePath = get(AppConfig.SAVE_IMAGE_PATH);
+
+		if (StringUtils.isEmpty(saveImagePath)) {
+			saveImagePath = ImageFileCache.getSDPath() + File.separator + mContext.getString(R.string.app_name) + File.separator;
+			set(AppConfig.SAVE_IMAGE_PATH, saveImagePath);
+		}
+		return saveImagePath;
+	}
 	
 	public String getCookie() {
 		return get(CONF_COOKIE);
-	}
-
-	public void setAccessToken(String accessToken) {
-		set(CONF_ACCESSTOKEN, accessToken);
 	}
 
 	public String getAccessToken() {
 		return get(CONF_ACCESSTOKEN);
 	}
 
-	public void setAccessSecret(String accessSecret) {
-		set(CONF_ACCESSSECRET, accessSecret);
+	public void setAccessToken(String accessToken) {
+		set(CONF_ACCESSTOKEN, accessToken);
 	}
 
 	public String getAccessSecret() {
 		return get(CONF_ACCESSSECRET);
 	}
 
-	public void setExpiresIn(long expiresIn) {
-		set(CONF_EXPIRESIN, String.valueOf(expiresIn));
+	public void setAccessSecret(String accessSecret) {
+		set(CONF_ACCESSSECRET, accessSecret);
 	}
 
 	public long getExpiresIn() {
 		return StringUtils.toLong(get(CONF_EXPIRESIN));
+	}
+
+	public void setExpiresIn(long expiresIn) {
+		set(CONF_EXPIRESIN, String.valueOf(expiresIn));
 	}
 
 	public String get(String key) {
@@ -173,5 +170,13 @@ public class AppConfig {
 		for (String k : key)
 			props.remove(k);
 		setProps(props);
+	}
+
+	public Class<?> getLoginClass() {
+		return loginClass;
+	}
+
+	public void setLoginClass(Class<?> loginClass) {
+		this.loginClass = loginClass;
 	}
 }

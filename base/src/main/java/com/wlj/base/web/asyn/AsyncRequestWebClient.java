@@ -18,6 +18,13 @@ public class AsyncRequestWebClient {
     public AsyncRequestWebClient() {
     }
 
+    public static AsyncRequestWebClient getInstall() {
+
+        if (requestWebClient == null) {
+            requestWebClient = new AsyncRequestWebClient();
+        }
+        return requestWebClient;
+    }
 
     private BaseList callWeb(AsyncRequestModle paramAsyncRequestModle)
             throws Exception {
@@ -43,7 +50,6 @@ public class AsyncRequestWebClient {
 
         String str2 = url.substring(url.lastIndexOf("/"), url.length());
 
-        String parem = localHttpPost.getJSONObjectParemeter().toString();
 //        Logger.w("参数" + str2 +"： "+ parem);
 
         if (paramAsyncRequestModle.isJiami()) {
@@ -58,20 +64,13 @@ public class AsyncRequestWebClient {
 //            localHttpPost.addParemeter("login_rand", cur);
 //            localHttpPost.addParemeter("login_mac", mac);
         }
+        String parem = localHttpPost.getJSONObjectParemeter().toString();
 
         String str8 = localHttpPost.getResult();
-        Logger.w(str2 +"："+ parem + " \n " +str8);
+        Logger.d(str2 + "：" + parem + " \n " + str8);
 
         return new JSONObject(str8);
 
-    }
-
-    public static AsyncRequestWebClient getInstall() {
-
-        if (requestWebClient == null) {
-            requestWebClient = new AsyncRequestWebClient();
-        }
-        return requestWebClient;
     }
 
     private BaseList parse(JSONObject paramJSONObject, AsyncRequestModle paramAsyncRequestModle)
@@ -80,6 +79,11 @@ public class AsyncRequestWebClient {
         if (i == 0) {
             i = paramJSONObject.optInt("state");
         }
+
+        if (MsgContext.request_loginError == i) {
+            //登陆
+            throw new RequestException(MsgContext.request_loginError + "");
+        } else
         if ((MsgContext.request_success == i) || (MsgContext.request_success2 == i)) {
             BaseAsyncModle localBaseAsyncModle = paramAsyncRequestModle.getParserBase();
             if (localBaseAsyncModle == null) {
@@ -89,15 +93,17 @@ public class AsyncRequestWebClient {
             BaseList localBaseList = new BaseList();
             localBaseList.setBaseData(localBaseAsyncModle);
             return localBaseList;
-        }
+        } else
         if ((MsgContext.request_false2 == i) || (MsgContext.request_false == i) || (MsgContext.request_system_error2 == i)
                 || (MsgContext.request_system_error == i)) {
+
             String str = paramJSONObject.optString("message");
             if ("".equals(str)) {
                 str = paramJSONObject.optString("description");
             }
             throw new RequestException(str);
         }
+
         throw new RequestException("未知异常");
     }
 

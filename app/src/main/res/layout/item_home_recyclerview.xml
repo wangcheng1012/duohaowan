@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/project_bg"
         android:text="TextView" />
 
     <View
@@ -36,7 +35,6 @@
         />
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/home_fat_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,7 +48,8 @@
         android:paddingBottom="5dp"
         android:paddingLeft="25dp"
         android:paddingRight="5dp"
-        android:paddingTop="5dp">
+        android:paddingTop="5dp"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/item_home_rv_name"
