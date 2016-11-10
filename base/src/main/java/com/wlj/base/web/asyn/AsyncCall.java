@@ -89,8 +89,7 @@ public class AsyncCall
                 //登录
                 GoToHelp.go(this.activity, AppConfig.getAppConfig().getLoginClass());
                 AppContext.getAppContext().loginOut();
-            } else
-            if (this.showToast) {
+            } else if (this.showToast) {
                 //显示异常
                 if ((localException instanceof SocketTimeoutException)) {
                     UIHelper.toastMessage(AppContext.getAppContext(), " 链接超时");
@@ -174,14 +173,14 @@ public class AsyncCall
         return pageIndex;
     }
 
-    public static abstract interface OnAsyncBackListener {
-        public abstract void OnAsyncBack(List<Base> paramList, Base paramBase, int type);
+    public interface OnAsyncBackListener {
+        void OnAsyncBack(List<Base> list, Base base, int requestType);
 
-        public abstract void fail(Exception paramException);
+        void fail(Exception paramException);
     }
 
-    public static abstract interface callWeb {
-        public abstract AsyncCall Request();
+    public interface callWeb {
+        AsyncCall Request();
     }
 }
 

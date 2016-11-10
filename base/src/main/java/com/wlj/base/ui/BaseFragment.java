@@ -39,7 +39,7 @@ public abstract class BaseFragment extends Fragment {
 //		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 		
 		mcontext = getActivity().getApplicationContext();
-		Log.w("dd", "onCreate");
+		Log.w("dd", "onCreate " + getClass().getSimpleName());
 	}
 
 	/**
@@ -48,7 +48,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Log.w("dd", "onCreateView");
+		Log.w("dd", "onCreateView " + getClass().getSimpleName());
 		if (null == view) {
 			view = inflater.inflate(getlayout(), null);
 			view.setMinimumHeight(((WindowManager) getActivity()

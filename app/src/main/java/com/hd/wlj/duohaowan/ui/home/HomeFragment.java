@@ -108,7 +108,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
         initRecyclerView();
 
-        //Presenter
+        //SWRVPresenterAdapter
         homePresenter = new HomePresenterImpl(getActivity());
         homePresenter.attachView(this);
 

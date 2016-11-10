@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ImgInpImg">
-        
-        <attr name="iconfont1_text" format="string"/>
-        <attr name="iconfont1_color" format="color"/>
 
-        <attr name="edittext_hit" format="string"/>
-        <attr name="edittext_text" format="string"/>
-        <attr name="edittext_textcolor" format="color"/>
-        <attr name="edittext_background" format="reference"/>
-        <attr name="edittext_background_isnull" format="boolean"/>
+        <attr name="iconfont1_text" format="string" />
+        <attr name="iconfont1_color" format="color" />
 
-        <attr name="iconfont2_text" format="string"/>
-        <attr name="iconfont2_color" format="color"/>
+        <attr name="edittext_hit" format="string" />
+        <attr name="edittext_text" format="string" />
+        <attr name="edittext_textcolor" format="color" />
+        <attr name="edittext_background" format="reference" />
+        <attr name="edittext_background_isnull" format="boolean" />
+
+        <attr name="iconfont2_text" format="string" />
+        <attr name="iconfont2_color" format="color" />
 
     </declare-styleable>
     <string-array name="seachSpenner">
@@ -21,5 +21,9 @@
         <item>艺术家</item>
 
     </string-array>
+
+    <declare-styleable name="ViewPagerIndicator">
+        <attr name="item_count" format="integer"></attr>
+    </declare-styleable>
 
 </resources>
