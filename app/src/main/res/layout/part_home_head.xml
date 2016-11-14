@@ -8,8 +8,7 @@
     <FrameLayout
         android:id="@+id/home_autoScrollViewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </FrameLayout>
+        android:layout_height="wrap_content"></FrameLayout>
 
     <TextView
         android:id="@+id/home_header_new"
@@ -34,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/white"
+        android:background="@drawable/home_classify_bg"
         android:orientation="horizontal"
         android:paddingBottom="15dp"
         android:paddingEnd="5dp"
@@ -100,7 +99,8 @@
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
 
 
         <View
@@ -112,11 +112,26 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/circle"
             android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:src="@drawable/icon_hot"
+            android:padding="3dp"
+            android:textColor="@color/black1" />
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="热门"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/circle"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
             android:textColor="@color/black1" />
 
         <View
@@ -153,7 +168,8 @@
         android:layout_marginBottom="10dp"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
 
 
         <View
@@ -163,13 +179,29 @@
             android:background="@color/black2" />
 
         <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/circle"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:textColor="@color/black1" />
+
+        <TextView
             style="@style/text_base"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
+            android:text="最新"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/circle"
             android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:src="@drawable/icon_newest" />
+            android:padding="3dp"
+            android:textColor="@color/black1" />
 
         <View
             android:layout_width="0dp"

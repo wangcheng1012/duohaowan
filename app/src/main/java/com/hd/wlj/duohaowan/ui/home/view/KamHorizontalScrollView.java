@@ -182,6 +182,7 @@ public class KamHorizontalScrollView extends HorizontalScrollView {
             return null;
         }
         int i = (index % childCount + childCount) % childCount;
+
         return mCreatItem.getView(i);
     }
 

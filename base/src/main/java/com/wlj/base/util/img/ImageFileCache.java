@@ -19,386 +19,380 @@ import android.os.StatFs;
 
 public class ImageFileCache {
 
-	private static final String CACHDIR = "imgCach";
+    public static final String CACHDIR = "imgCach";
 
-	private static final String WHOLESALE_CONV = ".cach";
+    public static final String WHOLESALE_CONV = ".cach";
 
-	/** 过期时间3天 **/
+    /**
+     * 过期时间3天
+     **/
 
-	private static final long mTimeDiff = 3 * 24 * 60 * 60 * 1000;
-	/***
-	 * 缓存空间大小
-	 ****/
+    private static final long mTimeDiff = 3 * 24 * 60 * 60 * 1000;
+    /***
+     * 缓存空间大小
+     ****/
+    private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
+    private static final int CACHE_SIZE = 10;
+    ;
+    /**
+     * 计算sdcard上的剩余空间
+     *
+     * @return
+     */
 
-	private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
-	private static final int CACHE_SIZE = 10;
-	;
-	/**
-	 * 计算sdcard上的剩余空间
-	 *
-	 * @return
-	 */
+    private int MB = 1024 * 1024;
 
-	private int MB = 1024 * 1024;
+    public ImageFileCache() {
+        // 清理文件缓存
+        removeCache(getDirectory());
+    }
 
-	public ImageFileCache()
-	{
-		// 清理文件缓存
-		removeCache(getDirectory());
-	}
+    /****
+     * 取SD卡路径不带/
+     ****/
+    public static String getSDPath() {
 
-	/****
-	 * 取SD卡路径不带/
-	 ****/
-	public static String getSDPath() {
+        File sdDir = null;
 
-		File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
 
-		boolean sdCardExist = Environment.getExternalStorageState().equals(
+        if (sdCardExist) {
 
-				Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+            sdDir = Environment.getExternalStorageDirectory();// 获取跟目录
+        }
 
-		if (sdCardExist) {
+        if (sdDir != null) {
 
-			sdDir = Environment.getExternalStorageDirectory();// 获取跟目录
+            return sdDir.toString();
 
-		}
+        } else
 
-		if (sdDir != null)
+        {
 
-		{
+            return "";
 
-			return sdDir.toString();
+        }
 
-		} else
+    }
 
-		{
+    /**
+     * @param url
+     * @return
+     */
+    public String getPath(String url) {
 
-			return "";
+        String path = getDirectory() + "/" + convertUrlToFileName(url);
+        return path;
+    }
 
-		}
+    // 清理缓存
+    public Bitmap getImage(final String url) {
 
-	}
+        final String path = getDirectory() + "/" + convertUrlToFileName(url);
 
-/**
-	 *
-	 * @param url
-	 * @return
-	 */
-	public String getPath(String url){
+        File file = new File(path);
 
-		 String path = getDirectory() + "/" + convertUrlToFileName(url);
-		return path;
-	}
+        if (file.exists()) {
 
-	// 清理缓存
+            Bitmap bmp = BitmapFactory.decodeFile(path);
 
-	public  Bitmap getImage(final String url) {
+            if (bmp == null) {
 
-		final String path = getDirectory() + "/" + convertUrlToFileName(url);
+                file.delete();
+            } else {
 
-		File file = new File(path);
+                updateFileTime(path);
 
-		if (file.exists()) {
+                return bmp;
+            }
 
-			Bitmap bmp = BitmapFactory.decodeFile(path);
+        }
 
-			if (bmp == null){
+        return null;
 
-				file.delete();
-			} else {
+    }
 
-				updateFileTime(path);
+    public void saveBmpToSd(Bitmap bm, String url) {
 
-				return bmp;
-			}
+        if (bm == null) {
 
-		}
+            // 需要保存的是一个空值
 
-		return null;
+            return;
 
-	}
+        }
 
-	public void saveBmpToSd(Bitmap bm, String url) {
+        // 判断sdcard上的空间
 
-		if (bm == null) {
+        if (FREE_SD_SPACE_NEEDED_TO_CACHE > freeSpaceOnSd()) {
 
-			// 需要保存的是一个空值
+            // SD空间不足
 
-			return;
+            return;
 
-		}
+        }
 
-		// 判断sdcard上的空间
+        String filename = convertUrlToFileName(url);
 
-		if (FREE_SD_SPACE_NEEDED_TO_CACHE > freeSpaceOnSd()) {
+        String dir = getDirectory();
+        File filedir = new File(dir);
 
-			// SD空间不足
+        if (!filedir.exists()) {
+            filedir.mkdirs();
+        }
 
-			return;
+        File file = new File(dir + "/" + filename);
 
-		}
+        try {
 
-		String filename = convertUrlToFileName(url);
+            file.createNewFile();
 
-		String dir = getDirectory();
-		File filedir = new File(dir);
+            OutputStream outStream = new FileOutputStream(file);
 
-		if (!filedir.exists()) {
-			filedir.mkdirs();
-		}
+            bm.compress(Bitmap.CompressFormat.PNG, 100, outStream);
 
-		File file = new File(dir + "/" + filename);
+            outStream.flush();
 
-		try {
+            outStream.close();
 
-			file.createNewFile();
+        } catch (FileNotFoundException e) {
 
-			OutputStream outStream = new FileOutputStream(file);
+            Log.w("ImageFileCache", "FileNotFoundException");
 
-			bm.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+        } catch (IOException e) {
 
-			outStream.flush();
+            Log.w("ImageFileCache", "IOException");
 
-			outStream.close();
+        }
 
-		} catch (FileNotFoundException e) {
+    }
 
-			Log.w("ImageFileCache", "FileNotFoundException");
+    /**
+     * 计算存储目录下的文件大小，
+     * <p>
+     * 当文件总大小大于规定的CACHE_SIZE或者sdcard剩余空间小于FREE_SD_SPACE_NEEDED_TO_CACHE的规定
+     * <p>
+     * 那么删除40%最近没有被使用的文件
+     *
+     * @param dirPath
+     */
 
-		} catch (IOException e) {
+    private boolean removeCache(String dirPath) {
 
-			Log.w("ImageFileCache", "IOException");
+        File dir = new File(dirPath);
 
-		}
+        File[] files = dir.listFiles();
 
-	}
+        if (files == null) {
 
-	/**
-	 *
-	 * 计算存储目录下的文件大小，
-	 *
-	 * 当文件总大小大于规定的CACHE_SIZE或者sdcard剩余空间小于FREE_SD_SPACE_NEEDED_TO_CACHE的规定
-	 *
-	 * 那么删除40%最近没有被使用的文件
-	 *
-	 * @param dirPath
-	 *
-	 *
-	 */
+            return true;
 
-	private boolean removeCache(String dirPath) {
+        }
 
-		File dir = new File(dirPath);
+        if (!Environment.getExternalStorageState().equals(
 
-		File[] files = dir.listFiles();
+                Environment.MEDIA_MOUNTED)) {
 
-		if (files == null) {
+            return false;
 
-			return true;
+        }
 
-		}
+        int dirSize = 0;
 
-		if (!Environment.getExternalStorageState().equals(
+        for (int i = 0; i < files.length; i++) {
 
-		Environment.MEDIA_MOUNTED)) {
+            if (files[i].getName().contains(WHOLESALE_CONV)) {
 
-			return false;
+                dirSize += files[i].length();
 
-		}
+            } else {
+                //不需要存的,删掉
+                files[i].delete();
+            }
 
-		int dirSize = 0;
+        }
 
-		for (int i = 0; i < files.length; i++) {
+        if (dirSize > CACHE_SIZE * MB || FREE_SD_SPACE_NEEDED_TO_CACHE > freeSpaceOnSd()) {
 
-			if (files[i].getName().contains(WHOLESALE_CONV)) {
+            int removeFactor = (int) ((0.4 * files.length) + 1);
 
-				dirSize += files[i].length();
+            Arrays.sort(files, new FileLastModifSort());
 
-			}
+            Log.i("ImageFileCache", "清理缓存文件");
 
-		}
+            for (int i = 0; i < removeFactor; i++) {
 
-		if (dirSize > CACHE_SIZE * MB || FREE_SD_SPACE_NEEDED_TO_CACHE > freeSpaceOnSd()) {
+                if (files[i].getName().contains(WHOLESALE_CONV)) {
 
-			int removeFactor = (int) ((0.4 * files.length) + 1);
+                    files[i].delete();
 
-			Arrays.sort(files, new FileLastModifSort());
+                }
 
-			Log.i("ImageFileCache", "清理缓存文件");
+            }
 
-			for (int i = 0; i < removeFactor; i++) {
+        }
 
-				if (files[i].getName().contains(WHOLESALE_CONV)) {
+        if (freeSpaceOnSd() <= CACHE_SIZE) {
 
-					files[i].delete();
+            return false;
 
-				}
+        }
 
-			}
+        return true;
+    }
 
-		}
+    public String removeAllCache() {
+        File file = new File(getDirectory());
+        File[] files = file.listFiles();
+        if (files == null || files.length < 1) {
+            return "不需要清理";
+        }
 
-		if (freeSpaceOnSd() <= CACHE_SIZE) {
+        long dirSize = 0;
 
-			return false;
+        for (int i = 0; i < files.length; i++) {
+            dirSize += files[i].length();
+            boolean isdel = files[i].delete();
+            Log.e("ImageFileCache", isdel + "");
+        }
+        DecimalFormat df = new DecimalFormat("0.000");
+        return "成功清理" + df.format(dirSize / 1048576.00) + "M";
+    }
 
-		}
+    public String getCacheSise() {
 
-		return true;
-	}
-	
-	public String removeAllCache(){
-		File file = new File(getDirectory());
-		File[] files = file.listFiles();
-		if(files == null || files.length < 1){
-			return "不需要清理";
-		}
+        File file = new File(getDirectory());
+        File[] files = file.listFiles();
+        long dirSize = 0;
+        if (files == null)
+            return 0 + "M";
+        for (int i = 0; i < files.length; i++) {
+            dirSize += files[i].length();
+        }
+        DecimalFormat df = new DecimalFormat("0.000");
+        return df.format(dirSize / 1048576.00) + "M";
 
-		long dirSize = 0;
+    }
 
-		for (int i = 0; i < files.length; i++) {
-			dirSize += files[i].length();
-			boolean isdel =  files[i].delete();
-			Log.e("ImageFileCache", isdel+"");
-		}
-		DecimalFormat df = new DecimalFormat("0.000");
-		return "成功清理"+df.format(dirSize/1048576.00)+"M";
-	}
-	
-	public String getCacheSise(){
+    public boolean removeBitmap(String name) {
+        if (name != null && !"".equals(name)) {
+            String path = getPath(name);
+            File file = new File(path);
+            if (file.exists()) {
+                file.delete();
 
-		File file = new File(getDirectory());
-		File[] files = file.listFiles();
-		long dirSize = 0;
-		if(files == null )
-			return 0+"M";
-		for (int i = 0; i < files.length; i++) {
-			dirSize += files[i].length();
-		}
-		DecimalFormat df = new DecimalFormat("0.000");
-		return df.format(dirSize/1048576.00)+"M";
+                return true;
+            }
+        }
+        return false;
+    }
 
-	}
+    /**
+     * 删除过期文件
+     *
+     * @param dirPath
+     * @param filename
+     */
 
-	public boolean removeBitmap(String name) {
-		if (name != null && !"".equals(name)) {
-			String path = getPath(name);
-			File file = new File(path);
-			if (file.exists()) {
-				file.delete();
+    public void removeExpiredCache(String dirPath, String filename) {
 
-				return true;
-			}
-		}
-		return false;
-	}
+        File file = new File(dirPath, filename);
 
-	/**
-	 *
-	 * 删除过期文件
-	 *
-	 * @param dirPath
-	 *
-	 * @param filename
-	 */
+        if (System.currentTimeMillis() - file.lastModified() > mTimeDiff) {
 
-	public void removeExpiredCache(String dirPath, String filename) {
+            Log.i("ImageFileCache", "Clear some expiredcache files ");
 
-		File file = new File(dirPath, filename);
+            file.delete();
 
-		if (System.currentTimeMillis() - file.lastModified() > mTimeDiff) {
+        }
 
-			Log.i("ImageFileCache", "Clear some expiredcache files ");
+    }
 
-			file.delete();
+    /**
+     * 修改文件的最后修改时间
+     * <p>
+     * 这里需要考虑,是否将使用的图片日期改为当前日期
+     *
+     * @param path
+     */
 
-		}
+    public void updateFileTime(String path) {
 
-	}
+        File file = new File(path);
 
-	/**
-	 *
-	 * 修改文件的最后修改时间
-	 *
-	 * 这里需要考虑,是否将使用的图片日期改为当前日期
-	 *
-	 * @param path
-	 */
+        long newModifiedTime = System.currentTimeMillis();
 
-	public void updateFileTime(String path) {
+        file.setLastModified(newModifiedTime);
 
-		File file = new File(path);
+    }
 
-		long newModifiedTime = System.currentTimeMillis();
+    private int freeSpaceOnSd() {
 
-		file.setLastModified(newModifiedTime);
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory()
+                .getPath());
 
-	}
+        double sdFreeMB = ((double) stat.getAvailableBlocks() * (double) stat
+                .getBlockSize()) / MB;
 
-	private int freeSpaceOnSd() {
+        return (int) sdFreeMB;
 
-		StatFs stat = new StatFs(Environment.getExternalStorageDirectory()
-				.getPath());
+    }
 
-		double sdFreeMB = ((double) stat.getAvailableBlocks() * (double) stat
-				.getBlockSize()) / MB;
+    /**
+     * 将url转成文件名
+     **/
 
-		return (int) sdFreeMB;
+    private String convertUrlToFileName(String url) {
 
-	}
+        String[] strs = url.split("/");
 
-	/** 将url转成文件名 **/
+        return strs[strs.length - 1] + WHOLESALE_CONV;
 
-	private String convertUrlToFileName(String url) {
+    }
 
-		String[] strs = url.split("/");
+    /**
+     * 获得缓存目录
+     **/
 
-		return strs[strs.length - 1] + WHOLESALE_CONV;
+    private String getDirectory() {
 
-	}
+        String dir = AppConfig.getAppConfig().getImagePath() + CACHDIR;
 
-	/** 获得缓存目录 **/
+        String substr = dir.substring(0, 4);
 
-	private String getDirectory() {
+        if (substr.equals("/mnt")) {
 
-		String dir = AppConfig.getAppConfig().getImagePath() + CACHDIR;
+            dir = dir.replace("/mnt", "");
 
-		String substr = dir.substring(0, 4);
+        }
 
-		if (substr.equals("/mnt")) {
+        return dir;
 
-			dir = dir.replace("/mnt", "");
+    }
 
-		}
+    /**
+     * 根据文件的最后修改时间进行排序*
+     */
+    private class FileLastModifSort implements Comparator<File> {
 
-		return dir;
+        public int compare(File arg0, File arg1) {
 
-	}
+            if (arg0.lastModified() > arg1.lastModified()) {
 
-	/**
-	 * 根据文件的最后修改时间进行排序*
-	 */
-	private class FileLastModifSort implements Comparator<File> {
+                return 1;
 
-		public int compare(File arg0, File arg1) {
+            } else if (arg0.lastModified() == arg1.lastModified()) {
 
-			if (arg0.lastModified() > arg1.lastModified()) {
+                return 0;
 
-				return 1;
+            } else {
 
-			} else if (arg0.lastModified() == arg1.lastModified()) {
+                return -1;
 
-				return 0;
+            }
 
-			} else {
+        }
 
-				return -1;
-
-			}
-
-		}
-
-	}
+    }
 
 }

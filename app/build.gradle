@@ -66,4 +66,5 @@ dependencies {
     compile 'com.jph.takephoto:takephoto_library:4.0.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

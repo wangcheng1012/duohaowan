@@ -10,7 +10,7 @@
     android:paddingRight="10dp"
     android:paddingStart="10dp"
     android:weightSum="1"
-    tools:context="com.hd.wlj.duohaowan.ui.publish.AdjustImageFragment">
+    tools:context="com.hd.wlj.duohaowan.ui.publish.border.BorderFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,17 +26,20 @@
             android:text="加卡纸：" />
 
         <RadioGroup
+            android:id="@+id/card_radioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <RadioButton
-
+                android:id="@+id/card_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="是" />
 
             <RadioButton
+
+                android:id="@+id/card_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
@@ -47,16 +50,15 @@
 
     </LinearLayout>
 
-    <TextView
-        style="@style/text_base"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="卡纸宽：54 (cm)" />
+    <!--<TextView-->
+    <!--style="@style/text_base"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:text="卡纸宽：54 (cm)" />-->
 
     <SeekBar
-
-        android:id="@+id/seekBar"
+        android:id="@+id/card_seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp" />
@@ -75,6 +77,12 @@
         android:background="@color/_ededed"
         android:padding="10dp">
 
+        <LinearLayout
+            android:id="@+id/card_horizontalScrollView_ll"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
 
     </HorizontalScrollView>
 

@@ -3,10 +3,13 @@ package com.hd.wlj.duohaowan.view;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 
 public class WrapContentHeightViewPager extends ViewPager {
+    private boolean isCanScroll;
+
     public WrapContentHeightViewPager(Context context) {
         super(context);
     }
@@ -29,4 +32,34 @@ public class WrapContentHeightViewPager extends ViewPager {
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
+
+    public void setScanScroll(boolean isCanScroll) {
+        this.isCanScroll = isCanScroll;
+    }
+
+//    @Override
+//    public void scrollTo(int x, int y) {
+//        if (isCanScroll) {
+//            super.scrollTo(x, y);
+//        }
+//    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent arg0) {
+        if (isCanScroll) {
+            return super.onTouchEvent(arg0);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent arg0) {
+        if (isCanScroll) {
+            return super.onInterceptTouchEvent(arg0);
+        } else {
+            return false;
+        }
+    }
+
 }

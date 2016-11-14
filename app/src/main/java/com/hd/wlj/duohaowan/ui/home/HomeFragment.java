@@ -190,9 +190,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
                             }
                         });
 
-
 //               LoadImage.getinstall().addTask(Urls.HOST + resultJsonObject.optString("pic"), view).doTask();
-
                 //
                 final HomeModelImpl homemodelimpl = (HomeModelImpl) o;
                 final ImageButton fat_in = holder.getView(R.id.home_fat_in);
@@ -234,6 +232,12 @@ public class HomeFragment extends BaseFragment implements HomeView {
                         homemodelimpl.setTag(HomeModelImpl.Tag.in);
                     }
                 });
+
+                //
+                holder.setText(R.id.item_home_viewcount, resultJsonObject.optInt("viewcount", 0) + "");
+                holder.setText(R.id.item_home_zan, resultJsonObject.optInt("nice_count", 0) + "");
+//                holder.setText(R.id.item_home_guanzhu,resultJsonObject.optString("shoucang_count"));
+                holder.setText(R.id.item_home_song, resultJsonObject.optInt("", 0) + "");
 
             }
         };

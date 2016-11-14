@@ -2,43 +2,92 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:orientation="vertical">
 
 
     <ImageView
         android:id="@+id/item_home_recyclerView_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:adjustViewBounds="true"
-        android:text="TextView" />
+        android:src="@drawable/project_bg" />
+
+    <RelativeLayout
+        android:id="@+id/item_home_recyclerView_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_home_recyclerView_image"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/_ededed"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/item_home_viewcount"
+            style="@style/item_home_handle_textview"
+            android:drawableLeft="@drawable/icon_liulan"
+            android:text="201" />
+
+
+        <TextView
+            android:id="@+id/item_home_zan"
+            style="@style/item_home_handle_textview"
+            android:layout_centerInParent="true"
+            android:drawableLeft="@drawable/icon_zan"
+            android:text="21" />
+
+        <TextView
+            android:id="@+id/item_home_guanzhu"
+            style="@style/item_home_handle_textview"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/item_home_song"
+            android:layout_toRightOf="@+id/item_home_zan"
+            android:gravity="center"
+            android:text="关注" />
+
+
+        <TextView
+            android:id="@+id/item_home_song"
+            style="@style/item_home_handle_textview"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:drawableLeft="@drawable/icon_song"
+            android:text="12" />
+
+    </RelativeLayout>
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/item_home_recyclerView_image"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/item_home_recyclerView_bg"
+
         android:background="@color/black2" />
+
 
     <ImageButton
         android:id="@+id/home_fat_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view"
+        android:layout_above="@+id/item_home_recyclerView_bg"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="15dp"
-        android:background="@drawable/icon_home_fat_in"
-        />
+        android:background="@drawable/icon_home_fat_in" />
 
     <LinearLayout
         android:id="@+id/home_fat_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view"
+        android:layout_above="@+id/item_home_recyclerView_bg"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="15dp"
@@ -57,8 +106,7 @@
             android:layout_height="wrap_content"
             android:text="w《破壁》 浊者 "
             android:textColor="@color/white"
-            android:textSize="10sp"
-            />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/item_home_rv_year"
@@ -66,8 +114,7 @@
             android:layout_height="wrap_content"
             android:text="124x52cm 2016"
             android:textColor="@color/white"
-            android:textSize="10sp"
-            />
+            android:textSize="10sp" />
 
     </LinearLayout>
 

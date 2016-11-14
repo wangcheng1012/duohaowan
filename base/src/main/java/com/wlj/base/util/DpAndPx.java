@@ -26,4 +26,5 @@ public class DpAndPx {
 		return (int)(pxValue / scale + 0.5f);
 
 	}
+
 }

@@ -25,6 +25,7 @@ import android.view.WindowManager;
 
 public class BaseFragmentActivity extends AppCompatActivity {
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

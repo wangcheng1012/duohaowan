@@ -44,9 +44,15 @@
         <activity
             android:name=".ui.home.classify.work.WorkDetailsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.home.classify.ClassifyListActivity" />
-        <activity android:name=".ui.home.classify.arist.AristDetailsActivity" />
-        <activity android:name=".ui.publish.ImageAdjustmentActivity"></activity>
+        <activity
+            android:name=".ui.home.classify.ClassifyListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.classify.arist.AristDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.publish.ImageAdjustmentActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

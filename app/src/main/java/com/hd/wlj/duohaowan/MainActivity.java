@@ -1,5 +1,6 @@
 package com.hd.wlj.duohaowan;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -47,6 +48,9 @@ import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.lling.photopicker.PhotoPickerActivity;
 import com.lling.photopicker.utils.OtherUtils;
+import com.mylhyl.acp.Acp;
+import com.mylhyl.acp.AcpListener;
+import com.mylhyl.acp.AcpOptions;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.AppConfig;
@@ -58,6 +62,7 @@ import com.wlj.base.util.img.ImageFileCache;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -172,23 +177,53 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
             // 点击中间按钮
             case R.id.toggle_btn:
                 clickToggleBtn();
+
                 break;
 
             case R.id.publish_choosework:
-                //选择 图片
-                Intent intent = new Intent(MainActivity.this, PhotoPickerActivity.class);
-                intent.putExtra(PhotoPickerActivity.EXTRA_SHOW_CAMERA, true);
-                intent.putExtra(PhotoPickerActivity.EXTRA_SELECT_MODE, PhotoPickerActivity.MODE_SINGLE);
-                intent.putExtra(PhotoPickerActivity.EXTRA_MAX_MUN, PhotoPickerActivity.DEFAULT_NUM);
-                startActivityForResult(intent, IMAGE);
+
+                Acp.getInstance(this).request(new AcpOptions.Builder().setPermissions(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        , Manifest.permission.READ_EXTERNAL_STORAGE
+                        , Manifest.permission.READ_PHONE_STATE
+                ).build(), new AcpListener() {
+                    @Override
+                    public void onGranted() {
+
+                        //选择 图片
+                        Intent intent = new Intent(MainActivity.this, PhotoPickerActivity.class);
+                        intent.putExtra(PhotoPickerActivity.EXTRA_SHOW_CAMERA, true);
+                        intent.putExtra(PhotoPickerActivity.EXTRA_SELECT_MODE, PhotoPickerActivity.MODE_SINGLE);
+                        intent.putExtra(PhotoPickerActivity.EXTRA_MAX_MUN, PhotoPickerActivity.DEFAULT_NUM);
+                        startActivityForResult(intent, IMAGE);
+
+                        popWindow.dismiss();
+                    }
+
+                    @Override
+                    public void onDenied(List<String> permissions) {
+                        UIHelper.toastMessage(MainActivity.this, permissions.toString() + "权限拒绝");
+                    }
+                });
+
 
                 break;
             case R.id.publish_choosescene:
+
+                Bundle bundle = new Bundle();
+                bundle.putInt("from", ImageAdjustmentActivity.from_main_choosesece);
+                GoToHelp.go(this, ImageAdjustmentActivity.class, bundle);
+
+                popWindow.dismiss();
                 break;
-            case R.id.publish_fabu:
-                break;
-            case R.id.publish_bianji:
-                break;
+//            case R.id.publish_fabu:
+//
+////                popWindow.dismiss();
+//                break;
+//            case R.id.publish_bianji:
+//
+////                popWindow.dismiss();
+//                break;
 
 
         }
@@ -248,7 +283,12 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
      * 点击了中间按钮
      */
     private void clickToggleBtn() {
-        showPopupWindow(toggleImageView);
+        if (popWindow != null && popWindow.isShowing()) {
+
+            popWindow.dismiss();
+        } else {
+            showPopupWindow(toggleImageView);
+        }
         // 改变按钮显示的图片为按下时的状态
         plusImageView.setSelected(true);
     }
@@ -275,9 +315,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
             view.findViewById(R.id.publish_choosework).setOnClickListener(MainActivity.this);
             view.findViewById(R.id.publish_choosescene).setOnClickListener(MainActivity.this);
-            view.findViewById(R.id.publish_fabu).setOnClickListener(MainActivity.this);
-            view.findViewById(R.id.publish_bianji).setOnClickListener(MainActivity.this);
-
+//            view.findViewById(R.id.publish_fabu).setOnClickListener(MainActivity.this);
+//            view.findViewById(R.id.publish_bianji).setOnClickListener(MainActivity.this);
         }
 
         // 设置允许在外点击消失
@@ -341,18 +380,20 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         if (requestCode == IMAGE) {
             if (resultCode == RESULT_OK) {
                 ArrayList<String> result = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT);
-                ArrayList<String> urlstr = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT_URLSTR);
+                ArrayList<String> uristr = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT_URLSTR);
 
-                UIHelper.toastMessage(this, urlstr.get(0) + "");
+//                UIHelper.toastMessage(this, uristr.get(0) + "");
 
                 CropOptions cropOptions = new CropOptions.Builder()
 //                        .setAspectX(1).setAspectY(1)
                         .setWithOwnCrop(false).create();
                 try {
-                    Uri uri = Uri.parse(urlstr.get(0));
-                    String imagePath = AppConfig.getAppConfig().getImagePath();
+//                    Uri uri = Uri.parse("file://"+result.get(0));// 这样也可以，开始傻了，还加了uristr
+                    Uri uri = Uri.parse(uristr.get(0));
 
-                    File file = new File(imagePath + System.currentTimeMillis() + ".jpg");
+                    String imagePath = AppConfig.getAppConfig().getImagePath() + ImageFileCache.CACHDIR + File.separator;
+//
+                    File file = new File(imagePath + String.valueOf(System.currentTimeMillis()).substring(3) + "crop" + ".jpg");
                     if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
                     Uri imageUri = Uri.fromFile(file);
 
@@ -381,6 +422,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
         Bundle bundle = new Bundle();
         bundle.putString("path", result.getImage().getPath());
+        bundle.putInt("from", ImageAdjustmentActivity.from_main_choosework);
         GoToHelp.go(this, ImageAdjustmentActivity.class, bundle);
     }
 
