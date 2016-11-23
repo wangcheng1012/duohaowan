@@ -56,4 +56,6 @@ public class DetailsModelImpl extends BaseAsyncModle {
     public Base parse(JSONObject jsonObject) throws JSONException {
         return new DetailsModelImpl(jsonObject);
     }
+
+
 }

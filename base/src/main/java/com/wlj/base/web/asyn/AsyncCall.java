@@ -37,6 +37,20 @@ public class AsyncCall
         this.activity = paramAsyncRequestModle.getActivity();
     }
 
+    public void onPreExecute() {
+        if ((!showLoading) || (this.activity == null)) {
+            return;
+        }
+
+        UIHelper.showProgressbar(this.activity, new DialogInterface.OnCancelListener() {
+
+            public void onCancel(DialogInterface paramAnonymousDialogInterface) {
+
+                AsyncCall.this.cancel(true);
+            }
+        });
+
+    }
 
     public Object doInBackground(Void... paramVarArgs) {
 
@@ -130,20 +144,7 @@ public class AsyncCall
         UIHelper.closeProgressbar();
     }
 
-    public void onPreExecute() {
-        if ((!showLoading) || (this.activity == null)) {
-            return;
-        }
 
-        UIHelper.showProgressbar(this.activity, new DialogInterface.OnCancelListener() {
-
-            public void onCancel(DialogInterface paramAnonymousDialogInterface) {
-
-                AsyncCall.this.cancel(true);
-            }
-        });
-
-    }
 
     public void onProgressUpdate(Integer... paramVarArgs) {
         super.onProgressUpdate(paramVarArgs);

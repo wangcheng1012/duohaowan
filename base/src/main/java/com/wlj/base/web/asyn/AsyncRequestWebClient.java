@@ -50,8 +50,6 @@ public class AsyncRequestWebClient {
 
         String str2 = url.substring(url.lastIndexOf("/"), url.length());
 
-//        Logger.w("参数" + str2 +"： "+ parem);
-
         if (paramAsyncRequestModle.isJiami()) {
             Encrpt.encrypt(paramAsyncRequestModle, localHttpPost);
         } else {
@@ -67,8 +65,8 @@ public class AsyncRequestWebClient {
         String parem = localHttpPost.getJSONObjectParemeter().toString();
 
         String str8 = localHttpPost.getResult();
-        Logger.d(str2 + "：" + parem + " \n " + str8);
-
+        Logger.d(str2 + "：" + parem  );
+        Logger.json(str8);
         return new JSONObject(str8);
 
     }

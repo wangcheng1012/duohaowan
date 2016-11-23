@@ -29,12 +29,9 @@
     <string name="seach">搜索</string>
     <string name="follow">关注</string>
     <string name="my">我的</string>
-    <string name="sfdf">sfdf连卡佛你卡萨诺疯狂少年附属卡阿里开发科斯洛夫；
-        司芬克斯到付款历史；能否快速的；能否来罚款三闾大夫快乐的拉开飞机苏里科夫紧身裤；
-        飞机卡洛斯飞机卡洛斯分撒来罚款就撒开飞机快乐身份卡开始飞机开始啦解放啦手机翻看了撒；疯狂飞机</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_work">WorkActivity</string>
 
 
 </resources>

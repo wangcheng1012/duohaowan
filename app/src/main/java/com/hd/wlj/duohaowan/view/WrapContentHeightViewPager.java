@@ -62,4 +62,13 @@ public class WrapContentHeightViewPager extends ViewPager {
         }
     }
 
+//    @Override
+//    public void onPageScrollStateChanged(int scrollState) {
+//        // A small hack to remove the HW layer that the viewpager add to each page when scrolling.
+//        if (scrollState != ViewPager.SCROLL_STATE_IDLE) {
+//            final int childCount = viewpager.getChildCount();
+//            for (int i = 0; i < childCount; i++)
+//                viewpager.getChildAt(i).setLayerType(View.LAYER_TYPE_NONE, null);
+//        }
+//    }
 }

@@ -1,4 +1,4 @@
-package com.hd.wlj.duohaowan.ui.home.classify;
+package com.hd.wlj.duohaowan.ui.home.classify.gallery;
 
 import android.app.Activity;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
  * Created by wlj on 2016/11/03
  */
 
-public class SWRVModel extends BaseAsyncModle {
+public class GalleryModel extends BaseAsyncModle {
 
     public final static int request_type_seach = 1;
 
@@ -29,14 +29,14 @@ public class SWRVModel extends BaseAsyncModle {
     private String seachType;
     private String seachName;
 
-    public SWRVModel() {
+    public GalleryModel() {
     }
 
-    public SWRVModel(Activity paramActivity) {
+    public GalleryModel(Activity paramActivity) {
         super(paramActivity);
     }
 
-    public SWRVModel(JSONObject jo) {
+    public GalleryModel(JSONObject jo) {
         super(jo);
     }
 
@@ -52,14 +52,14 @@ public class SWRVModel extends BaseAsyncModle {
 
                 /**
                  *  secondPubConlumnId			581407b20e9f110d8cbbdb94	//搜索作家
-                 * tag_string							标签名称	书法家/画家
+                 * tag_string							标签名称	国画,油画,书法
                  * tag_type						标签 1/推荐	2/热门	3(热门+推荐)
                  */
                 switch (tabBarStr) {
-                    case "推荐":
-                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
-                        httpPost.addParemeter("tag_type", "1");
-                        break;
+//                    case "推荐":
+//                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
+//                        httpPost.addParemeter("tag_type", "1");
+//                        break;
                     case "热门":
                         httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
                         httpPost.addParemeter("tag_type", "2");
@@ -67,18 +67,31 @@ public class SWRVModel extends BaseAsyncModle {
                     case "最新":
                         httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
                         break;
-                    case "书法家":
+                    default:
+                        //国画,油画,书法
                         httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
-                        httpPost.addParemeter("tag_string", "书法家");
+                        httpPost.addParemeter("tag_string", tabBarStr);
                         break;
-                    case "书画":
-                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
-                        httpPost.addParemeter("tag_string", "画家");
-                        break;
+
                 }
                 break;
             case R.id.home_artgallery:
                 //艺术馆
+                switch (tabBarStr) {
+
+                    case "热门":
+                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
+                        httpPost.addParemeter("tag_type", "2");
+                        break;
+                    case "最新":
+                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
+                        break;
+                    default:
+                        //画廊,艺术馆
+                        httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
+                        httpPost.addParemeter("tag_string", tabBarStr);
+                        break;
+                }
 
                 break;
 
@@ -86,23 +99,15 @@ public class SWRVModel extends BaseAsyncModle {
                 //标签 1/推荐	2/热门	3(热门+推荐)
                 //艺术品
                 switch (tabBarStr) {
-                    case "推荐":
-                        httpPost.addParemeter("secondPubConlumnId", "5812ef5478e0802052dd7a2f");
-                        httpPost.addParemeter("tag_type", "1");
-                        break;
-                    case "热门":
-                        httpPost.addParemeter("secondPubConlumnId", "5812ef5478e0802052dd7a2f");
-                        httpPost.addParemeter("tag_type", "2");
-                        break;
                     case "最新":
                         httpPost.addParemeter("secondPubConlumnId", "5812ef5478e0802052dd7a2f");
                         break;
-                    case "国画":
-                        httpPost.addParemeter("thirdPubConlumnId", "5812ef8078e0802052dd7a31");
+                    default:
+                        httpPost.addParemeter("secondPubConlumnId", "5812ef5478e0802052dd7a2f");
+                        httpPost.addParemeter("tag_string", tabBarStr);
                         break;
-                    case "书法":
-                        httpPost.addParemeter("thirdPubConlumnId", "5812ef7878e0802052dd7a30");
-                        break;
+
+
                 }
 
                 break;
@@ -136,7 +141,7 @@ public class SWRVModel extends BaseAsyncModle {
 
     @Override
     public Base parse(JSONObject jsonObject) throws JSONException {
-        return new SWRVModel(jsonObject);
+        return new GalleryModel(jsonObject);
     }
 
     public void setTabBarStr(String tabBarStr) {

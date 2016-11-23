@@ -15,7 +15,7 @@
     <RelativeLayout
         android:id="@+id/classify_artist_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="190dp"
         android:layout_gravity="center"
         android:background="@color/_E1E1E5"
         android:padding="10dp">
@@ -25,9 +25,9 @@
             android:layout_width="112dp"
             android:layout_height="150dp"
             android:layout_margin="10dp"
+            android:background="@color/_ededed"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/project_bg" />
+            android:scaleType="centerCrop"  />
 
         <TextView
             android:id="@+id/classify_artist_name"
@@ -52,8 +52,8 @@
             android:layout_above="@+id/lllayout"
             android:layout_alignLeft="@+id/classify_artist_name"
             android:layout_below="@+id/classify_artist_name"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:text="暂无简介"
             android:textSize="12sp" />

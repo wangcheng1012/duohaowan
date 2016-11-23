@@ -6,9 +6,12 @@
 
 
     <color name="red">#be1421</color>
+    <color name="red1">#c80f0d</color>
 
     <color name="_7f7f7">#f7f7f7</color>
     <color name="_e2e2e2">#e2e2e2</color>
     <color name="_ededed">#ededed</color>
+    <color name="lv_06c005">#06c005</color>
+
 
 </resources>

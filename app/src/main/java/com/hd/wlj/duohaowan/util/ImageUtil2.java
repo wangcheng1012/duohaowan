@@ -1,6 +1,7 @@
 package com.hd.wlj.duohaowan.util;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -9,6 +10,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
 import android.widget.ImageView;
+
+import com.orhanobut.logger.Logger;
+import com.wlj.base.util.img.BitmapUtil;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by wlj on 2016/11/11.
@@ -111,6 +117,7 @@ public class ImageUtil2 {
      *
      * @param backGroudImage      图片背景 原图
      * @param bufferedImage_input 合成进入的图
+     * @param save                true 线backGroudImage
      * @return 合成后的 BufferedImage	被合成的图像会自动居中
      */
     public static Bitmap imageSynthesis(Bitmap backGroudImage, Bitmap bufferedImage_input, Rect findRectangle, boolean save) {
@@ -137,6 +144,7 @@ public class ImageUtil2 {
         }
 
         if (save) {
+            //先画背景
             canvas.drawBitmap(backGroudImage, new Matrix(), null);
             canvas.drawBitmap(scaledInstance, x_zuopin, y_zuopin, null);
         } else {
@@ -144,39 +152,50 @@ public class ImageUtil2 {
             canvas.drawBitmap(scaledInstance, x_zuopin, y_zuopin, null);
             canvas.drawBitmap(backGroudImage, new Matrix(), null);
         }
+        scaledInstance.recycle();
 
         if (save) {
             RealRect = new Rect(x_zuopin, y_zuopin, x_zuopin + width_zuopin_scale, y_zuopin + height_zuopin_scale);
         }
-        return bitmap;
+
+        int mW = 300;
+        int mh = bitmap.getHeight() * mW / bitmap.getWidth();
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, mW, mh, false);
+        bitmap.recycle();
+
+        return scaledBitmap;
     }
 
 
     /**
      * @param backGroudImage 画框
      * @param card1Rect      返回card1Rect的
-     * @param space          两条线的间距宽 0-10
+     * @param space          两条线的间距宽 0-1
      * @param color          颜色
      * @param lineinner      内线宽
      * @param lineoutside    外线宽
      * @return
      */
-    public static Bitmap mergeCard1(Bitmap backGroudImage, Rect card1Rect, int space, int color, float lineinner, float lineoutside) {
-        int w = 2;
+    public static Bitmap mergeCard1(Bitmap backGroudImage, Rect card1Rect, float space, int color, float lineinner, float lineoutside) {
+        int w = 1;
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
 
         canvas.drawBitmap(backGroudImage, new Matrix(), null);
+
+        space = space * 30;
+
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);//空心矩形框
 //        paint.setStyle(Paint.Style.FILL);//实心矩形框
         paint.setAntiAlias(true);
         paint.setColor(color);
-        paint.setStrokeWidth(lineinner);
+        paint.setStrokeWidth(lineinner + w);
+        w = (int) (lineinner / 2);
         canvas.drawRect(RealRect.left - w, RealRect.top - w, RealRect.right + w, RealRect.bottom + w, paint);
         paint.setColor(color);
         w += space;
-//        paint.setAlpha((int)(127 - 12.5*space  + 50 ));
         paint.setStrokeWidth(lineoutside);
         card1Rect.set(RealRect.left - w, RealRect.top - w, RealRect.right + w, RealRect.bottom + w);
         canvas.drawRect(card1Rect, paint);
@@ -187,13 +206,26 @@ public class ImageUtil2 {
      * cacard2线位置
      *
      * @param backGroudImage
-     * @param space          0-10
+     * @param borderRect           相框的  外区域
+     * @param card2_inner_end_rect 内区域
+     * @param scale                0-1
      * @return
      */
-    public static Bitmap mergeCard2_line(Bitmap backGroudImage, Rect borderRect, Rect card2Rect, int space, int card1Color) {
+    public static Bitmap mergeCard2_line(Bitmap backGroudImage, Rect borderRect, Rect card2_inner_end_rect, Rect card2Rect, float scale, int card1Color) {
 
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
+
+        //差
+        int width_chae = borderRect.width();
+        int height_chae = borderRect.height();
+        // 最小差
+        int cha_e = width_chae;
+        if (height_chae < width_chae) {
+            cha_e = height_chae;
+        }
+        Logger.i(scale + "");
+        int space = (int) ((cha_e + 1) / 2 * scale);
 
         canvas.drawBitmap(backGroudImage, new Matrix(), null);
         Paint paint = new Paint();
@@ -212,22 +244,37 @@ public class ImageUtil2 {
      * cacard2区域填充
      *
      * @param backGroudImage
-     * @param color
-     * @return
+     * @param borderRect           相框的  外区域
+     * @param card2_inner_end_rect 内区域
+     * @param scale                0-1
+     * @param color                @return
      */
-    public static Bitmap mergeCard2(Bitmap backGroudImage, Rect borderRect, int card2Space, int color) {
+    public static Bitmap mergeCard2(Bitmap backGroudImage, Rect borderRect, Rect card2_inner_end_rect, float scale, int color) {
 
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
+
+        //差
+        int width_chae = borderRect.width();
+        int height_chae = borderRect.height();
+
+        // 最小差
+        int cha_e = width_chae;
+        if (height_chae < width_chae) {
+            cha_e = height_chae;
+        }
+//        Logger.i(scale +"");
+        scale = (cha_e + 1) / 2 * scale;
+
 
         canvas.drawBitmap(backGroudImage, new Matrix(), null);
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);//空心矩形框
 //        paint.setStyle(Paint.Style.FILL);//实心矩形框
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(card2Space);
+        paint.setStrokeWidth(scale);
         paint.setColor(color);
-        int space = card2Space / 2;
+        int space = (int) (scale / 2);
         canvas.drawRect(borderRect.left + space, borderRect.top + space, borderRect.right - space, borderRect.bottom - space, paint);
 
         return bitmap;

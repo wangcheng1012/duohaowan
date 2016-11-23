@@ -16,6 +16,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -91,6 +92,18 @@
         android:paddingTop="5dp">
 
         <TextView
+            android:id="@+id/seach_tag1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_hui_white_5corners"
+            android:padding="5dp"
+            android:text="国画"
+            android:textColor="@color/black1" />
+
+        <TextView
+            android:id="@+id/seach_tag2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -101,33 +114,25 @@
             android:textColor="@color/black1" />
 
         <TextView
+            android:id="@+id/seach_tag3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/shape_hui_white_5corners"
             android:padding="5dp"
-            android:text="书画家"
+            android:text="书法"
             android:textColor="@color/black1" />
 
         <TextView
+            android:id="@+id/seach_tag4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/shape_hui_white_5corners"
             android:padding="5dp"
-            android:text="国画家"
-            android:textColor="@color/black1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/shape_hui_white_5corners"
-            android:padding="5dp"
-            android:text="书法家"
+            android:text="工艺美术"
             android:textColor="@color/black1" />
 
     </LinearLayout>

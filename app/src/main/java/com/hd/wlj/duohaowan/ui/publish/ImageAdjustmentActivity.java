@@ -1,26 +1,36 @@
 package com.hd.wlj.duohaowan.ui.publish;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.publish.border.BorderFragment;
 import com.hd.wlj.duohaowan.ui.publish.card.CardFragment;
 import com.hd.wlj.duohaowan.ui.publish.complate.ComplateFragment;
+import com.hd.wlj.duohaowan.ui.publish.sence.SenceFragment;
 import com.hd.wlj.duohaowan.util.ImageUtil2;
+import com.hd.wlj.duohaowan.view.RectClickImageView;
 import com.hd.wlj.duohaowan.view.WrapContentHeightViewPager;
 import com.lling.photopicker.utils.ImageLoader;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +61,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
     public final static int from_sece_work = 4;
     public static ArrayList<MergeBitmap> mergeBitmaps = new ArrayList<>();
     @BindView(R.id.adjustment_image)
-    ImageView image;
+    RectClickImageView mRectClickImageView;
     @BindView(R.id.adjustment_viewpager)
     WrapContentHeightViewPager mViewpager;
     @BindView(R.id.adjustment_tabLayout)
@@ -67,22 +77,22 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_adjustment);
         ButterKnife.bind(this);
-
+//        返回按钮
         Glide.with(this).load(R.drawable.icon_back_white).bitmapTransform(new CropCircleTransformation(this)).into(actionButton);
 
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+
+                onBackPressed();
             }
         });
 
+//
         initView();
 
         mTabLayout.setupWithViewPager(mViewpager);
-
         mViewpager.setScanScroll(false);
-
     }
 
     /**
@@ -100,11 +110,13 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
             mergeBitmaps.clear();
             mergeBitmaps.add(mergeBitmap);
             path = intent.getStringExtra("path");
-            ImageLoader.getInstance(this).getBitmap(path, 500, 500, new ImageLoader.BackBitmap() {
+            mergeBitmap.setWorkPath(path);
+
+            ImageLoader.getInstance(this).getBitmap(path, 500, 350, new ImageLoader.BackBitmap() {
 
                 @Override
                 public void back(Bitmap mBitmap) {
-                    image.setImageBitmap(mBitmap);
+                    mRectClickImageView.setImageBitmap(mBitmap);
                     mergeBitmap.setWorkBitmap(mBitmap);
                 }
             });
@@ -117,7 +129,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
 
             if (mergeBitmap != null) {
                 //设置 上面图片显示
-                image.setImageBitmap(mergeBitmap.getEndBitmap());
+                mRectClickImageView.setImageBitmap(mergeBitmap.getEndBitmap());
             } else {
                 //
             }
@@ -125,14 +137,32 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
 
         } else if (from == from_main_choosesece) {
             // 主界面 选择场景
-            mergeBitmap = new MergeBitmap();
-            mergeBitmaps.add(mergeBitmap);
+            mergeBitmaps.clear();
+//            mergeBitmap = new MergeBitmap();
+//            mergeBitmaps.add(mergeBitmap);
 
             seceFragmentAdapter();
         } else {
             // 场景界面 选择作品
+            Rect rect = (Rect)intent.getParcelableExtra("rect");
+            for (MergeBitmap bitmap : mergeBitmaps) {
+                Rect id = bitmap.getId();
+                if(id.equals(rect)){
+                    mergeBitmap = bitmap;
+                }
+            }
+            path = intent.getStringExtra("path");
+            mergeBitmap.setWorkPath(path);
+            ImageLoader.getInstance(this).getBitmap(path, 500, 350, new ImageLoader.BackBitmap() {
 
-//            workFragmentAdapter();
+                @Override
+                public void back(Bitmap mBitmap) {
+                    mRectClickImageView.setImageBitmap(mBitmap);
+                    mergeBitmap.setWorkBitmap(mBitmap);
+                }
+            });
+
+            workFragmentAdapter();
         }
 
     }
@@ -182,7 +212,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
      */
     private void seceFragmentAdapter() {
         final List<Fragment> fragments = new ArrayList<Fragment>();
-        fragments.add(new BorderFragment());
+        fragments.add(new SenceFragment());
 
         mViewpager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -224,15 +254,6 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
             return;
         }
 
-        Rect rect_canzhao = mergeBitmap.getBorkRect_old();
-
-        // 画框的原始Rect没设置
-        if (rect_canzhao == null) {
-            return;
-        }
-
-        Rect resizeRect;
-
         switch (type) {
             case background:
 
@@ -240,26 +261,45 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
 
                 mergeBitmap.setBackgroundBitmap(bitmap);
 
+                Bitmap mBitmap = mergeBitmap.buildBackgroundBitmap();
+                if(mBitmap != null) {
+                    mRectClickImageView.setImageBitmap(mBitmap);
+                }
                 break;
             case border:
+
+                Rect rect_canzhao = mergeBitmap.getBorkRect_old();
+
+                // 画框的原始Rect没设置
+                if (rect_canzhao == null) {
+                    return;
+                }
+
                 mergeBitmap.setBorderId(pub_id);
-                resizeRect = ImageUtil2.resizeRectangle(rect_canzhao, scale);
+                Rect resizeRect = ImageUtil2.resizeRectangle(rect_canzhao, scale);
                 mergeBitmap.setBorderBitmap(bitmap);
                 mergeBitmap.setWorkRect(resizeRect);
+                // 去掉 选中的卡纸效果
+                mergeBitmap.setCard1space(0);
+                mergeBitmap.setCard2space(0);
+
+                Bitmap mBitmap2 = mergeBitmap.buildFinalBitmap();
+                mRectClickImageView.setImageBitmap(mBitmap2);
+
                 break;
 
         }
 
-        Bitmap mBitmap = mergeBitmap.buildFinalBitmap();
-        image.setImageBitmap(mBitmap);
+
     }
 
     /**
+     * space
      * @param space
      * @param type
      */
     @Override
-    public void mergeCard(int space, MergeBitmap.MergeType type) {
+    public void mergeCard(float space, MergeBitmap.MergeType type) {
 
         Rect rect_canzhao = mergeBitmap.getBorkRect_old();
 
@@ -282,12 +322,12 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
         }
 
         Bitmap mBitmap = mergeBitmap.buildFinalBitmap();
-        image.setImageBitmap(mBitmap);
+        mRectClickImageView.setImageBitmap(mBitmap);
 
     }
 
     /**
-     * 卡纸颜色填充和边框线宽
+     * 卡纸颜色填充和边框线宽、id
      *
      * @param color
      * @param innerSize
@@ -316,7 +356,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
         mergeBitmap.setLineoutside(innerOutside);
 
         Bitmap mBitmap = mergeBitmap.buildFinalBitmap();
-        image.setImageBitmap(mBitmap);
+        mRectClickImageView.setImageBitmap(mBitmap);
     }
 
     /**
@@ -327,17 +367,39 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
     @Override
     public void setOriginalRect(Rect rect) {
 
-        if (from == from_main_choosework) {
+        if (from == from_main_choosework || from == from_sece_work) {
             mergeBitmap.setBorkRect_old(rect);
         } else {
             mergeBitmap.setBackgroundRect(rect);
         }
-
-
     }//end
 
     public MergeBitmap getMergeBitmap() {
         return mergeBitmap;
     }
 
+
+    @Override
+    public void onBackPressed() {
+        //冲场景返回 画框 卡兹界面
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment  f :fragments){
+            if(f instanceof SenceFragment){
+                int from = getIntent().getIntExtra("from",-1);
+                if(from == from_border_sece){
+                    mergeBitmap.setBackgroundBitmap(null);
+                    break;
+                }
+            }
+
+        }
+
+        super.onBackPressed();
+    }
+
+    public RectClickImageView getmRectClickImageView() {
+        return mRectClickImageView;
+    }
+
 }
+

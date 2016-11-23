@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface BorderView {
     void showBorder(List<Base> list);
+
+    void showBorderBili(List<Base> list);
 }

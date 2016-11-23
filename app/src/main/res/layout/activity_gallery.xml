@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.hd.wlj.duohaowan.ui.home.classify.gallery.GalleryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/follow_bg">
+
+            <ImageView
+                android:id="@+id/gallary_headimage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="20dp"
+                android:background="@drawable/shape_oval" />
+
+            <TextView
+                android:id="@+id/gallary_jubanfang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/gallary_name"
+                android:layout_alignBottom="@+id/gallary_name"
+                android:layout_marginLeft="9dp"
+                android:layout_marginStart="9dp"
+                android:layout_toEndOf="@+id/gallary_name"
+                android:layout_toRightOf="@+id/gallary_name"
+                android:background="@drawable/shape_back_corners5"
+                android:padding="5dp"
+                android:text="无"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/gallary_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/gallary_headimage"
+                android:layout_toEndOf="@+id/gallary_headimage"
+                android:layout_toRightOf="@+id/gallary_headimage"
+                android:text="暂无名称"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_alignRight="@+id/gallary_follow"
+                android:layout_below="@+id/gallary_jubanfang"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/gallary_headimage"
+                android:layout_toRightOf="@+id/gallary_headimage"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/gallary_fensi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view2"
+                android:layout_marginTop="12dp"
+                android:layout_toEndOf="@+id/gallary_headimage"
+                android:layout_toRightOf="@+id/gallary_headimage"
+                android:gravity="center"
+                android:text="0\n粉丝"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/gallary_work"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/gallary_fensi"
+                android:layout_marginLeft="13dp"
+                android:layout_marginStart="13dp"
+                android:layout_toEndOf="@+id/gallary_fensi"
+                android:layout_toRightOf="@+id/gallary_fensi"
+                android:gravity="center"
+                android:text="0\n作品"
+                android:textColor="@color/white" />
+
+            <ImageButton
+                android:id="@+id/gallary_follow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/gallary_fensi"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/gallary_headimage"
+                android:layout_toRightOf="@+id/gallary_headimage"
+                android:background="@drawable/btn_follow"
+                android:elevation="5dp" />
+
+            <ImageView
+                android:id="@+id/gallery_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:src="@drawable/icon_back_white" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/gallary_news"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:drawableLeft="@drawable/icon_laba"
+            android:drawablePadding="10dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:text="ww"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/_e2e2e2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="15dp"
+            android:text="简介"
+            android:textColor="@color/black1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/_e2e2e2" />
+
+        <TextView
+            android:id="@+id/gallary_intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="3"
+            android:padding="10dp"
+            android:text="暂无简介"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/_e2e2e2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="15dp"
+            android:text="最新活动"
+            android:textColor="@color/black1" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/_e2e2e2" />
+
+        <ImageView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/gallary_news_imageView"
+            android:layout_margin="10dp" />
+
+
+    </LinearLayout>
+</ScrollView>

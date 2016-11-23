@@ -5,10 +5,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:paddingBottom="10dp"
-    android:paddingEnd="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingStart="10dp"
+
     tools:context="com.hd.wlj.duohaowan.ui.publish.border.BorderFragment">
 
     <TextView
@@ -16,6 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:paddingEnd="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingStart="10dp"
         android:text="在皮尺上左右滑动可以调整作品尺寸"
         android:textColor="@color/black2" />
 
@@ -32,38 +33,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:max="100"
-
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         />
 
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/_ededed"
-        android:padding="10dp">
-
-        <LinearLayout
-            android:id="@+id/adjust_Scroll_LinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-        </LinearLayout>
-
-    </HorizontalScrollView>
-
-    <Button
-        android:id="@+id/sence_save"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@color/black"
-        android:text="发布"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:visibility="gone" />
+        android:layout_marginTop="10dp"
+        android:background="@color/_ededed"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/adjust_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="8dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/_ededed"
+        android:id="@+id/adjust_recyclerView_bili"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

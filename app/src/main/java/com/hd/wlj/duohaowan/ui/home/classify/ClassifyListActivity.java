@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
+import com.hd.wlj.duohaowan.ui.my.MyFragment;
 
 import java.util.ArrayList;
 
@@ -96,37 +97,37 @@ public class ClassifyListActivity extends AppCompatActivity {
             case R.id.home_artist:
 //                艺术家
 //              tabBarList.clear();
-                tabBarList.add("推荐");
                 tabBarList.add("热门");
                 tabBarList.add("最新");
-                tabBarList.add("书法家");
-                tabBarList.add("书画");
+                tabBarList.add("国画");
+                tabBarList.add("油画");
+                tabBarList.add("书法");
 
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }
 
                 break;
             case R.id.home_artgallery:
                 //艺术馆
-                tabBarList.add("推荐");
+//                tabBarList.add("推荐");
                 tabBarList.add("热门");
                 tabBarList.add("最新");
                 tabBarList.add("画廊");
-                tabBarList.add("书法");
+                tabBarList.add("艺术馆");
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }
                 break;
             case R.id.home_workofart:
 //                艺术品
-                tabBarList.add("推荐");
-                tabBarList.add("热门");
                 tabBarList.add("最新");
                 tabBarList.add("国画");
+                tabBarList.add("油画");
                 tabBarList.add("书法");
+                tabBarList.add("工艺品");
                 for (String tmpBarStr : tabBarList) {
-                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
+                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }
                 break;
             case R.id.home_artview:
@@ -136,10 +137,13 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("问学篇");
 
                 //不全用ClassifyListFragment
-
-//                for (String tmpBarStr : tabBarList) {
-//                    fragments.add(SWRVFragment.newInstance(tmpBarStr, classify));
-//                }
+                for (String tmpBarStr : tabBarList) {
+                    if("问学篇".equals(tmpBarStr)) {
+                        fragments.add(new Fragment());
+                    }else{
+                        fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+                    }
+                }
 
                 break;
         }

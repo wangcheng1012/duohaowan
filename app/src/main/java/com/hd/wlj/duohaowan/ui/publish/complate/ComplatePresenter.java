@@ -3,6 +3,7 @@ package com.hd.wlj.duohaowan.ui.publish.complate;
 import android.app.Activity;
 
 import com.hd.wlj.duohaowan.ui.mvp.BasePresenter;
+import com.hd.wlj.duohaowan.ui.publish.publishModel;
 import com.wlj.base.bean.Base;
 import com.wlj.base.web.asyn.AsyncCall;
 
@@ -15,12 +16,12 @@ import java.util.List;
 public class ComplatePresenter extends BasePresenter<ComplateView> {
 
 
-    private final ComplateModel borderModel;
+    private final publishModel borderModel;
     private Activity activity;
 
     public ComplatePresenter(Activity activity) {
         this.activity = activity;
-        borderModel = new ComplateModel();
+        borderModel = new publishModel();
     }
 
     public void loadCardData() {

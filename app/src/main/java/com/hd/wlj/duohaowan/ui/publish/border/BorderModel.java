@@ -1,7 +1,6 @@
 package com.hd.wlj.duohaowan.ui.publish.border;
 
 import android.app.Activity;
-import android.media.Image;
 
 import com.hd.wlj.duohaowan.Urls;
 import com.wlj.base.bean.Base;
@@ -19,10 +18,17 @@ import java.io.IOException;
  */
 public class BorderModel extends BaseAsyncModle {
 
-    public final static String Border = "58214a83d6c45965757937da";
-    public final static String baakground = "58214a7dd6c45965757937d9";
+    private final static String Border_Classify = "58293eadef722c116fe22066";
+    public final static String Border_bili = "58214abdd6c45965757937e5";
+    private final static String baakground = "58214a7dd6c45965757937d9";
+    public final static int type_border_bili = 22;
+    public final static int type_sence = 21;
 
-    private String rootPubConlumnId;
+    private String paintingFrameConlumn_id;
+    private String pubConlumnId;
+    private String width;
+    private String height;
+
 
     public BorderModel() {
         super();
@@ -38,11 +44,38 @@ public class BorderModel extends BaseAsyncModle {
 
     @Override
     public void addRequestParemeter(AsyncRequestModle asRequestModle) throws IOException {
-        //边框
+        //边框类别
         HttpPost httpPost = new HttpPost(Urls.list_pub);
-        httpPost.addParemeter("rootPubConlumnId", rootPubConlumnId);
+        httpPost.addParemeter("pubConlumnId", Border_Classify);
         asRequestModle.setHttpPost(httpPost);
         asRequestModle.setJiami(false);
+    }
+
+    @Override
+    public void addRequestParemeter(AsyncRequestModle asRequestModle, int type) throws IOException {
+        if (type == type_border_bili) {
+            //边框 有哪些比例的
+            HttpPost httpPost = new HttpPost(Urls.list_pub);
+            httpPost.addParemeter("pubConlumnId", Border_bili);
+            httpPost.addParemeter("width", width);
+            httpPost.addParemeter("height", height);
+
+            httpPost.addParemeter("paintingFrameConlumn_id", paintingFrameConlumn_id);
+            asRequestModle.setHttpPost(httpPost);
+            asRequestModle.setJiami(false);
+            asRequestModle.setShowLoading(true);
+        }else if(type_sence == type){
+
+            //场景
+            HttpPost httpPost = new HttpPost(Urls.list_pub);
+            httpPost.addParemeter("rootPubConlumnId", baakground);
+            httpPost.addParemeter("width", width);
+            httpPost.addParemeter("height", height);
+            asRequestModle.setHttpPost(httpPost);
+            asRequestModle.setJiami(false);
+
+        }
+
     }
 
     @Override
@@ -50,7 +83,19 @@ public class BorderModel extends BaseAsyncModle {
         return new BorderModel(jsonObject);
     }
 
-    public void setRootPubConlumnId(String rootPubConlumnId) {
-        this.rootPubConlumnId = rootPubConlumnId;
+    public void setPaintingFrameConlumn_id(String paintingFrameConlumn_id) {
+        this.paintingFrameConlumn_id = paintingFrameConlumn_id;
+    }
+
+    public void setPubConlumnId(String pubConlumnId) {
+        this.pubConlumnId = pubConlumnId;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
     }
 }

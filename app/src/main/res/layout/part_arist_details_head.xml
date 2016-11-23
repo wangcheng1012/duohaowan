@@ -20,8 +20,8 @@
             android:layout_alignStart="@+id/head_preimg"
             android:layout_alignTop="@+id/head_preimg"
             android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/project_bg" />
+            android:background="@color/_e2e2e2"
+            android:scaleType="fitXY"  />
 
         <ImageView
             android:id="@+id/head_preimg"
@@ -70,6 +70,7 @@
 
 
         <ImageView
+            android:id="@+id/p_arist_head_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="15dp"
@@ -168,6 +169,7 @@
         android:background="@color/_e2e2e2" />
 
     <TextView
+        android:id="@+id/my_intro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minLines="3"

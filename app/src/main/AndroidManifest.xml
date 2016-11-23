@@ -53,6 +53,31 @@
         <activity
             android:name=".ui.publish.ImageAdjustmentActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.my.card.CardActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.my.work.WorkActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.my.comment.CommentActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.my.suggest.SuggestActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.my.card.bg.ChooseBackgroundActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.classify.gallery.GalleryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.classify.artview.ArtViewHistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.classify.artview.ArtViewRealityActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.publish.sencemore.SenceMoreActivity"></activity>
     </application>
 
 </manifest>

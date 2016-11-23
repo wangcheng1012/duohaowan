@@ -1,14 +1,15 @@
-package com.hd.wlj.duohaowan.ui.publish.complate;
+package com.hd.wlj.duohaowan.ui.publish;
 
 import android.app.Activity;
 import android.graphics.Rect;
 
 import com.hd.wlj.duohaowan.Urls;
-import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
+import com.hd.wlj.duohaowan.util.HexM;
 import com.wlj.base.bean.Base;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.web.HttpPost;
+import com.wlj.base.web.asyn.AsyncCall;
 import com.wlj.base.web.asyn.AsyncRequestModle;
 import com.wlj.base.web.asyn.BaseAsyncModle;
 
@@ -16,30 +17,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * 完成
+ *
  */
-public class ComplateModel extends BaseAsyncModle {
+public class publishModel extends BaseAsyncModle {
 
     private String name;
     private String years;
     private String price;
-    private String backgroundId;
+    private boolean havebachground;
 
     private ArrayList<MergeBitmap> merger;
 
-    public ComplateModel() {
+
+    public publishModel() {
         super();
     }
 
-    public ComplateModel(Activity paramActivity) {
+    public publishModel(Activity paramActivity) {
         super(paramActivity);
     }
 
-    public ComplateModel(JSONObject jo) {
+    public publishModel(JSONObject jo) {
         super(jo);
     }
 
@@ -57,7 +62,7 @@ public class ComplateModel extends BaseAsyncModle {
         JSONArray artworksCompoment = new JSONArray();
         for (MergeBitmap tmp : merger) {
 
-            httpPost.addParemeter("backgroundWall_id", tmp.getBackgroundId());//背景编号
+            httpPost.addParemeter("backgroundWall_id", havebachground ? tmp.getBackgroundId() : "");//背景编号
 
             JSONObject jsonObject = getArtWorkJsonObject(tmp);
             if (jsonObject != null) {
@@ -68,11 +73,9 @@ public class ComplateModel extends BaseAsyncModle {
         httpPost.addParemeter("artworksCompoment", artworksCompoment);
 
         asRequestModle.setHttpPost(httpPost);
-        asRequestModle.setShowLoading(true);
-//        asRequestModle.setJiami(false);
-
-
+//        asRequestModle.setShowLoading(true);
     }
+
 
     /**
      * 组装作平数据jsonobject
@@ -82,16 +85,13 @@ public class ComplateModel extends BaseAsyncModle {
      */
     private JSONObject getArtWorkJsonObject(MergeBitmap merger) {
 
-        String bitmapByte = merger.getworkBitmapByte();
-        if (bitmapByte == null) return null;//作品为空
-
         Rect workRect = merger.getWorkRect();
         Rect card1Rect = merger.getCard1Rect();
         Rect card2Rect = merger.getCard2Rect();
         //
         try {
             return new JSONObject()
-                    .put("artworks_pic", "<file>" + bitmapByte + "</file>")
+                    .put("artworks_pic", merger.getWorkPath())
                     .put("kazhi_1_id", merger.getCard1Id())//卡纸的编号
                     .put("kazhi_2_id", merger.getCard2Id())//卡纸的编号
                     .put("paintingFrame_id", merger.getBorderId()) //画框编号
@@ -117,9 +117,10 @@ public class ComplateModel extends BaseAsyncModle {
         return null;
     }
 
+
     @Override
     public Base parse(JSONObject jsonObject) throws JSONException {
-        return new ComplateModel(jsonObject);
+        return new publishModel(jsonObject);
     }
 
     public void setName(String name) {
@@ -134,8 +135,8 @@ public class ComplateModel extends BaseAsyncModle {
         this.price = price;
     }
 
-    public void getBackgroundId(String backgroundId) {
-
+    public void setHavebachground(boolean havebachground) {
+        this.havebachground = havebachground;
     }
 
     public void setMerger(ArrayList<MergeBitmap> merger) {

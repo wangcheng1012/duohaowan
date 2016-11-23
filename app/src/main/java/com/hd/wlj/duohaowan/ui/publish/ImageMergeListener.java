@@ -13,7 +13,7 @@ public interface ImageMergeListener {
      */
     void merge(String pub_id, Bitmap bitmap, double scale, MergeBitmap.MergeType type);
 
-    void mergeCard(int space, MergeBitmap.MergeType type);
+    void mergeCard(float space, MergeBitmap.MergeType type);
 
     void setOriginalRect(Rect rect);
 
@@ -24,4 +24,5 @@ public interface ImageMergeListener {
      * @param card1
      */
     void cardFitColorAndSize(String pub_id, int color, float innerSize, float innerOutside, MergeBitmap.MergeType card1);
+
 }

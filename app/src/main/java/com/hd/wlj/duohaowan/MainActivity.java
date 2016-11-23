@@ -1,41 +1,31 @@
 package com.hd.wlj.duohaowan;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
-import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.ui.follow.FollowFragment;
 import com.hd.wlj.duohaowan.ui.home.HomeFragment;
 import com.hd.wlj.duohaowan.ui.my.MyFragment;
 import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
 import com.hd.wlj.duohaowan.ui.seach.SeachFragment;
+import com.hd.wlj.duohaowan.util.TakePhotoCrop;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoImpl;
 import com.jph.takephoto.model.CropOptions;
@@ -47,7 +37,6 @@ import com.jph.takephoto.permission.InvokeListener;
 import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.lling.photopicker.PhotoPickerActivity;
-import com.lling.photopicker.utils.OtherUtils;
 import com.mylhyl.acp.Acp;
 import com.mylhyl.acp.AcpListener;
 import com.mylhyl.acp.AcpOptions;
@@ -55,25 +44,17 @@ import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.GoToHelp;
-import com.wlj.base.util.Log;
 import com.wlj.base.util.UIHelper;
 import com.wlj.base.util.img.ImageFileCache;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class MainActivity extends BaseFragmentActivity implements OnClickListener, HomeFragment.OnFragmentInteractionListener
-        , TakePhoto.TakeResultListener, InvokeListener
-{
+public class MainActivity extends BaseFragmentActivity implements OnClickListener, HomeFragment.OnFragmentInteractionListener, TakePhotoCrop.CropBack {
 
-    //调用系统相册-选择图片
-    private static final int IMAGE = 166;
     // 定义布局对象
     private FrameLayout homeFl, seachFl, followFl, myFl;
     // 定义图片组件对象
@@ -86,13 +67,13 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     private DisplayMetrics dm;
     private Fragment curFragment;
     private View preSelected;
-    private InvokeParam invokeParam;
-    private TakePhoto takePhoto;
-
+    private TakePhotoCrop takePhotoCrop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getTakePhoto().onCreate(savedInstanceState);
+        takePhotoCrop = new TakePhotoCrop(this,this);
+        takePhotoCrop .getTakePhoto().onCreate(savedInstanceState);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -181,32 +162,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
                 break;
 
             case R.id.publish_choosework:
-
-                Acp.getInstance(this).request(new AcpOptions.Builder().setPermissions(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        , Manifest.permission.READ_EXTERNAL_STORAGE
-                        , Manifest.permission.READ_PHONE_STATE
-                ).build(), new AcpListener() {
-                    @Override
-                    public void onGranted() {
-
-                        //选择 图片
-                        Intent intent = new Intent(MainActivity.this, PhotoPickerActivity.class);
-                        intent.putExtra(PhotoPickerActivity.EXTRA_SHOW_CAMERA, true);
-                        intent.putExtra(PhotoPickerActivity.EXTRA_SELECT_MODE, PhotoPickerActivity.MODE_SINGLE);
-                        intent.putExtra(PhotoPickerActivity.EXTRA_MAX_MUN, PhotoPickerActivity.DEFAULT_NUM);
-                        startActivityForResult(intent, IMAGE);
-
-                        popWindow.dismiss();
-                    }
-
-                    @Override
-                    public void onDenied(List<String> permissions) {
-                        UIHelper.toastMessage(MainActivity.this, permissions.toString() + "权限拒绝");
-                    }
-                });
-
-
+                takePhotoCrop.photoPicker();
                 break;
             case R.id.publish_choosescene:
 
@@ -242,6 +198,9 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     private void fragmentTransation(Class<?> fragment) {
 
         String simpleName = fragment.getSimpleName();
+        if (curFragment != null && simpleName.equals(curFragment.getClass().getSimpleName())) {
+            return;
+        }
 
         // 得到Fragment事务管理器
         FragmentManager fragmentManager = this.getSupportFragmentManager();
@@ -355,113 +314,43 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        getTakePhoto().onSaveInstanceState(outState);
+        takePhotoCrop .getTakePhoto().onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        getTakePhoto().onActivityResult(requestCode, resultCode, data);
+        takePhotoCrop .getTakePhoto().onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-//        //获取图片路径
-//        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-//
-//            Uri selectedImage = data.getData();
-//            String[] filePathColumns = {MediaStore.Images.Media.DATA};
-//            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
-//            c.moveToFirst();
-//            int columnIndex = c.getColumnIndex(filePathColumns[0]);
-//            String imagePath = c.getString(columnIndex);
-//            showImage(imagePath);
-//
-//            c.close();
-//        }
 
-        if (requestCode == IMAGE) {
+        if (requestCode == TakePhotoCrop.IMAGE) {
             if (resultCode == RESULT_OK) {
-                ArrayList<String> result = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT);
+//                ArrayList<String> result = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT);
                 ArrayList<String> uristr = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT_URLSTR);
 
-//                UIHelper.toastMessage(this, uristr.get(0) + "");
-
-                CropOptions cropOptions = new CropOptions.Builder()
-//                        .setAspectX(1).setAspectY(1)
-                        .setWithOwnCrop(false).create();
-                try {
-//                    Uri uri = Uri.parse("file://"+result.get(0));// 这样也可以，开始傻了，还加了uristr
-                    Uri uri = Uri.parse(uristr.get(0));
-
-                    String imagePath = AppConfig.getAppConfig().getImagePath() + ImageFileCache.CACHDIR + File.separator;
-//
-                    File file = new File(imagePath + String.valueOf(System.currentTimeMillis()).substring(3) + "crop" + ".jpg");
-                    if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-                    Uri imageUri = Uri.fromFile(file);
-
-                    takePhoto.onCrop(uri, imageUri, cropOptions);
-
-                } catch (TException e) {
-                    e.printStackTrace();
-                }
-
-//                if(result.size() >0 ){
-//
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("path",result.get(0));
-//                    GoToHelp.go(this,ImageAdjustmentActivity.class,bundle);
-//                }
-
-
+                takePhotoCrop.onCrop(Uri.parse(uristr.get(0)));
             }
         }
 
     }
 
     @Override
-    public void takeSuccess(TResult result) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //以下代码为处理Android6.0、7.0动态权限所需
+        takePhotoCrop.onRequestPermissionsResult_(requestCode, permissions, grantResults);
+    }
+
+
+
+    @Override
+    public void cropback(TResult result) {
+
         Logger.i("takeSuccess：" + result.getImage().getPath());
 
         Bundle bundle = new Bundle();
         bundle.putString("path", result.getImage().getPath());
-        bundle.putInt("from", ImageAdjustmentActivity.from_main_choosework);
-        GoToHelp.go(this, ImageAdjustmentActivity.class, bundle);
-    }
-
-    @Override
-    public void takeFail(TResult result, String msg) {
-        Logger.i("takeFail:" + msg);
-    }
-
-    @Override
-    public void takeCancel() {
-        Logger.i(getResources().getString(R.string.msg_operation_canceled));
-    }
-
-    @Override
-    public PermissionManager.TPermissionType invoke(InvokeParam invokeParam) {
-        PermissionManager.TPermissionType type = PermissionManager.checkPermission(TContextWrap.of(this), invokeParam.getMethod());
-        if (PermissionManager.TPermissionType.WAIT.equals(type)) {
-            this.invokeParam = invokeParam;
-        }
-        return type;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //以下代码为处理Android6.0、7.0动态权限所需
-        PermissionManager.TPermissionType type = PermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionManager.handlePermissionsResult(this, type, invokeParam, this);
-    }
-
-    /**
-     * 获取TakePhoto实例
-     *
-     * @return
-     */
-    public TakePhoto getTakePhoto() {
-        if (takePhoto == null) {
-            takePhoto = (TakePhoto) TakePhotoInvocationHandler.of(this).bind(new TakePhotoImpl(this, this));
-        }
-        return takePhoto;
+       bundle.putInt("from", ImageAdjustmentActivity.from_main_choosework);
+       GoToHelp.go(this, ImageAdjustmentActivity.class, bundle);
     }
 }

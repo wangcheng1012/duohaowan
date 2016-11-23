@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:background="@color/white"
+    android:layout_marginTop="1dp"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/artview_history_point"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/shape_oval" />
+
+    <TextView
+        android:id="@+id/artview_history_text"
+        style="@style/text_base"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.84"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <TextView
+        android:id="@+id/artview_history_time"
+        style="@style/text_base"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:text="2016/10/03" />
+
+</LinearLayout>

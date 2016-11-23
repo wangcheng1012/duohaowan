@@ -134,7 +134,7 @@ public class UIHelper {
     }
 
     public static void closeProgressbar() {
-        if(Progressbardlg != null) {
+        if(Progressbardlg != null && Progressbardlg.isShowing()) {
             Progressbardlg.dismiss();
             Progressbardlg = null;
         }

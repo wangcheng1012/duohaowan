@@ -4,7 +4,7 @@ import com.wlj.base.bean.Base;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 
-public interface SWRVView {
+public interface ClassifyListView {
 
     void workOfArtRecycerview(ViewHolder viewHolder, Base item, int position);
 
@@ -13,6 +13,9 @@ public interface SWRVView {
     void artGalleryRecycerview(ViewHolder viewHolder, Base item, int position);
 
 
+    void artviewHistoryRecycerview(ViewHolder viewHolder, Base item, int position);
+
+    void artviewRealityRecycerview(ViewHolder viewHolder, Base item, int position);
 }
 
 

@@ -10,4 +10,5 @@ public interface DetailsView {
 
     void showDetailsData(Base paramBase);
 
+    void showComment();
 }

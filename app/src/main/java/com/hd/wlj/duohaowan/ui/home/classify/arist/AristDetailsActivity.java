@@ -3,7 +3,6 @@ package com.hd.wlj.duohaowan.ui.home.classify.arist;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,30 +23,32 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.ui.home.classify.v2.SWRVContract;
 import com.hd.wlj.duohaowan.ui.home.classify.v2.SWRVFragment;
-import com.hd.wlj.duohaowan.ui.home.classify.work.DetailsModelImpl;
+import com.hd.wlj.duohaowan.ui.home.classify.work.WorkDetailsActivity;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
+import com.wlj.base.util.CyptoUtils;
 import com.wlj.base.util.DpAndPx;
+import com.wlj.base.util.GoToHelp;
 import com.wlj.base.web.asyn.BaseAsyncModle;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-public class AristDetailsActivity extends BaseFragmentActivity implements SWRVContract.SWRVPresenterAdapter {
-
+/**
+ * 艺术家详情页
+ */
+public class AristDetailsActivity extends BaseFragmentActivity implements SWRVContract.SWRVPresenterAdapter, AristDetailsView {
 
     private SWRVFragment fragment;
     private HeadViewHolder headerHolder;
+    private AristDetailsPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +59,15 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
+        presenter = new AristDetailsPresenter(this);
+        presenter.attachView(this);
+
         fragment = SWRVFragment.newInstance();
         fragment.setMyInterface(new SWRVFragment.SWRVInterface() {
             @Override
             public void onCreateViewExtract(RecyclerView recyclerview, SwipeRefreshLayout swipeRefreshLayout) {
                 addHead(recyclerview);
+
             }
 
             @Override
@@ -74,6 +79,9 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
         transaction.add(R.id.arist_details, fragment);
         transaction.commitAllowingStateLoss();
 
+        Intent intent = getIntent();
+        String id = intent.getStringExtra("id");
+        presenter.loadData(id);
     }
 
     @Override
@@ -114,8 +122,11 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
 
         fat_out.setVisibility(View.GONE);
         fat_in.setVisibility(View.GONE);
-
-
+        //
+        holder.setText(R.id.item_home_viewcount, resultJsonObject.optInt("viewcount", 0) + "");
+        holder.setText(R.id.item_home_zan, resultJsonObject.optInt("nice_count", 0) + "");
+//                holder.setText(R.id.item_home_guanzhu,resultJsonObject.optString("shoucang_count"));
+        holder.setText(R.id.item_home_song, resultJsonObject.optInt("", 0) + "");
     }
 
     @Override
@@ -125,16 +136,20 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
 
     @Override
     public void onItemClick(View view, RecyclerView.ViewHolder holder, int position, Object item) {
-
+        Bundle bundle = new Bundle();
+        Base base = (Base) item;
+        JSONObject jsonObject = base.getResultJsonObject();
+        bundle.putString("id", jsonObject.optString("pub_id"));
+        GoToHelp.go(AristDetailsActivity.this, WorkDetailsActivity.class, bundle);
     }
 
     @Override
     public BaseAsyncModle getBaseAsyncModle() {
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
+        String id = intent.getStringExtra("artist_id");
 
-        DetailsModelImpl detailsModel = new DetailsModelImpl();
-        detailsModel.setId(id);
+        AristDetailsModle detailsModel = new AristDetailsModle(this);
+        detailsModel.setArtist_id(id);
         return detailsModel;
     }
 
@@ -143,26 +158,15 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
         return -1;
     }
 
+    /**
+     * @param list
+     * @param base
+     * @param requestType
+     * @return
+     */
     @Override
     public List<Base> handleBackData(List<Base> list, Base base, int requestType) {
-
-        JSONObject jsonObject = base.getResultJsonObject();
-        JSONArray jsonArray = jsonObject.optJSONArray("");
-
-        List<Base> bases = new ArrayList<>();
-        if (jsonArray != null) {
-            for (int i = 0; i < jsonArray.length(); i++) {
-                bases.add(new Base(jsonArray.optJSONObject(i)) {
-                    @Override
-                    public Base parse(JSONObject jsonObject) throws JSONException {
-                        return null;
-                    }
-                });
-            }
-        }
-        initHeadData(base);
-
-        return bases;
+        return list;
     }
 
     @Override
@@ -179,17 +183,26 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
         return empty;
     }
 
+    //______________-----------head
+
     private void addHead(RecyclerView recyclerview) {
 
         View header = LayoutInflater.from(this).inflate(R.layout.part_arist_details_head, null);
-        RecyclerView.Adapter loadMoreWrapper = fragment.getLoadMoreWrapper();
+        RecyclerView.Adapter loadMoreWrapper = fragment.getAdapter();
 
         HeaderAndFooterWrapper headerAdapter = new HeaderAndFooterWrapper(loadMoreWrapper);
         headerAdapter.addHeaderView(header);
         recyclerview.setAdapter(headerAdapter);
         headerAdapter.notifyDataSetChanged();
+        fragment.setAdapter(headerAdapter);
 
         headerHolder = new HeadViewHolder(header);
+        headerHolder.back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initHeadData(Base base) {
@@ -200,9 +213,23 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
 //                    .error(R.drawable.project_bg)
                 .bitmapTransform(new CropCircleTransformation(this))
                 .into(headerHolder.headimage);
+        headerHolder.name.setText(jsonObject.optString("nickname", "昵称"));
+        headerHolder.other.setText(jsonObject.optString("touxian") + "  " + jsonObject.optString("shi"));
+        headerHolder.nice.setText(jsonObject.optString("dongtai_count"));
+        headerHolder.myGuanzhu.setText(jsonObject.optString("guanzhu_count"));
+        headerHolder.myFensi.setText(jsonObject.optString("shoucang_count"));
+        headerHolder.intro.setText(CyptoUtils.decryptBASE64(jsonObject.optString("intro")));
+    }
+
+    @Override
+    public void showData(Base base) {
+        initHeadData(base);
     }
 
     static class HeadViewHolder {
+
+        @BindView(R.id.p_arist_head_back)
+        ImageView back;
         @BindView(R.id.arist_details_head_backgroundimg)
         ImageView backgroundimg;
         @BindView(R.id.arist_details_headimage)
@@ -217,6 +244,8 @@ public class AristDetailsActivity extends BaseFragmentActivity implements SWRVCo
         TextView myGuanzhu;
         @BindView(R.id.my_fensi)
         TextView myFensi;
+        @BindView(R.id.my_intro)
+        TextView intro;
 
         HeadViewHolder(View view) {
             ButterKnife.bind(this, view);

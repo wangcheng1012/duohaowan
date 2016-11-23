@@ -18,5 +18,17 @@ public class Urls extends BaseURL {
     public static final String get_pub = HOST + "front/get_pub.do";//
     public static final String nice_pub = HOST + "face/user/nice_pub.do";//点赞
     public static final String publish_artworks = HOST + "face/user/publish_artworks.do";//发布作品
+    public static final String list_artworks = HOST + "face/user/list_artworks.do";//作品列表
+
+    public static final String getUserInfo = HOST + "face/user/getUserInfo.do";//查询当前登录用户的信息
+    public static final String updateSelf = HOST + "face/user/updateSelf.do";// 更新用户的信息
+    public static final String comment_list = HOST + "face/user/comment_list.do";// 更新用户的信息
+    public static final String leaveMessage = HOST + "face/user/leaveMessage.do";//  提交意见反馈
+    public static final String uploadChucks = HOST + "front/uploadChucks.do";//  提交意见反馈
+    public static final String shoucang_pub = HOST + "face/user/shoucang_pub.do";//  提交意见反馈
+    public static final String list_shoucang_pub = HOST + "face/user/list_shoucang_pub.do";//  提交意见反馈
+    public static final String comment_pub = HOST + "face/user/comment_pub.do";//  提交意见反馈
+    public static final String updateArtistCard = HOST + "face/user/updateArtistCard.do";//  提交意见反馈
+    public static final String delete_artworks = HOST + "face/user/delete_artworks.do";//  提交意见反馈
 
 }

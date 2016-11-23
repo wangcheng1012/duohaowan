@@ -30,7 +30,10 @@ public class SWRVContract {
 
         void onItemClick(android.view.View view, RecyclerView.ViewHolder holder, int position, Object item);
 
-
+        /**
+         *  现在的请求是放在modle里的
+         * @return
+         */
         BaseAsyncModle getBaseAsyncModle();
 
         /**

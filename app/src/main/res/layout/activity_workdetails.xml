@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/workdetails_include_title"
+        layout="@layout/title" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/workdetails_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/workdetails_bottom"
+        android:layout_below="@+id/workdetails_include_title">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:id="@+id/workdetails_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/workdetails_comment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="9dp"
+            android:layout_toLeftOf="@+id/workdetails_send"
+            android:background="@drawable/shape_hui_hui"
+            android:gravity="center_vertical"
+            android:hint="说点啥吧"
+            android:padding="5dp" />
+
+        <Button
+            android:id="@+id/workdetails_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="9dp"
+            android:background="@drawable/shape_hui1_white"
+            android:text="发送" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/_ededed" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,29 +1,37 @@
 package com.hd.wlj.duohaowan.ui.home.classify.work;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
-import com.orhanobut.logger.Logger;
+import com.hd.wlj.duohaowan.been.ShouCang;
+import com.hd.wlj.duohaowan.been.Zan;
+import com.hd.wlj.duohaowan.view.MyDialogFragment;
+import com.hd.wlj.duohaowan.view.RectClickImageView;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
+import com.wlj.base.web.asyn.AsyncCall;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
 import org.json.JSONArray;
@@ -32,7 +40,10 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,31 +52,47 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class WorkDetailsActivity extends BaseFragmentActivity implements DetailsView, View.OnClickListener {
 
+    @BindView(R.id.workdetails_recyclerview)
+    RecyclerView recyclerView;
+    @BindView(R.id.workdetails_comment)
+    EditText workdetailsComment;
+    @BindView(R.id.title_back)
+    ImageView titleBack;
+    @BindView(R.id.title_title)
+    TextView titleTitle;
 
-    private RecyclerView recyclerView;
     private DetailsPresenterImpl presenter;
     private ViewHolder holder;
     private List<String> mData;
-    private String jsonStr;
+    private JSONObject jsonData;
+    private HeaderAndFooterWrapper header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recyclerView = new RecyclerView(this);
 
-        setContentView(recyclerView);
+        setContentView(R.layout.activity_workdetails);
+        ButterKnife.bind(this);
 
         presenter = new DetailsPresenterImpl(this);
         presenter.attachView(this);
 
         Intent intent = getIntent();
-
+        initTitle();
         init();
 
         String id = intent.getStringExtra("id");
         presenter.loadDetailsData(id);
+    }
 
-
+    private void initTitle() {
+        titleBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        titleTitle.setText("详情");
     }
 
     private void init() {
@@ -75,24 +102,7 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         holder.setListenter(this);
 
         mData = new ArrayList<>();
-        //json 解析评论数据
-        if (!StringUtils.isEmpty(jsonStr)) {
-            try {
-
-                JSONObject json = new JSONObject(jsonStr);
-
-                JSONArray comments = json.optJSONArray("comment_list");
-                if (comments != null) {
-                    for (int i = 0; i < comments.length(); i++) {
-                        mData.add(comments.optJSONObject(i).toString());
-                    }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        //
+        // 评论列表数据
         CommonAdapter<String> commonAdapter = new CommonAdapter<String>(this, R.layout.item_work_recyclerview, mData) {
 
             @Override
@@ -103,12 +113,12 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
 
                     //头像
                     ImageView headimage = holder.getView(R.id.item_work_headimage);
-                    String pic = jo.optString("pic");
+                    String pic = jo.optString("user_logo");
 
                     Glide.with(WorkDetailsActivity.this)
                             .load(StringUtils.isEmpty(pic) ? R.drawable.project_bg : Urls.HOST + pic)
-                            .thumbnail(0.5f)
-                            .placeholder(R.drawable.project_bg)
+//                            .thumbnail(0.5f)
+                            .error(R.drawable.project_bg)
                             .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
                             .crossFade(1000)
                             .into(headimage);
@@ -138,7 +148,7 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             }
         };
 
-        HeaderAndFooterWrapper header = new HeaderAndFooterWrapper(commonAdapter);
+        header = new HeaderAndFooterWrapper(commonAdapter);
         header.addHeaderView(view);
 
         recyclerView.setAdapter(header);
@@ -157,34 +167,39 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         show(paramBase.getResultStr());
     }
 
+    @Override
+    public void showComment() {
+
+        workdetailsComment.setText("");
+        //
+        UIHelper.toastMessage(this, "评论成功");
+        //刷新数据
+        presenter.loadDetailsData(getIntent().getStringExtra("id"));
+
+    }
+
     private void show(String json) {
         try {
-            JSONObject jo = new JSONObject(json);
-            JSONObject artist = jo.optJSONObject("artist");
+            jsonData = new JSONObject(json);
+            JSONObject artist = jsonData.optJSONObject("artist");
 
-            String pic = jo.optString("pic");
-//          LoadImage.getinstall().addTask(Urls.HOST + pic, holder.img).doTask();
+            String pic = jsonData.optString("pic");
+            // 图片区域点击
+            imageRectOnClick(jsonData);
 
-            Glide.with(WorkDetailsActivity.this).load(R.drawable.project_bg).into(holder.img);
-
+            holder.img.setAutoHeight(true);
             Glide.with(WorkDetailsActivity.this)
                     .load(StringUtils.isEmpty(pic) ? R.drawable.project_bg : Urls.HOST + pic)
                     .placeholder(R.drawable.project_bg)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
 //                    .override(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL)
                     .into(new SimpleTarget<GlideDrawable>() {
                         @Override
                         public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-
-                            int intrinsicWidth = resource.getIntrinsicWidth();
-                            int height = holder.img.getWidth() * resource.getIntrinsicHeight() / intrinsicWidth;
-
-                            holder.img.setMinimumWidth(intrinsicWidth);
-                            holder.img.setMinimumHeight(height);
-
                             holder.img.setImageDrawable(resource);
                         }
                     });
-            
+            //艺术家
             if (artist != null) {
 
                 String touxian = artist.optString("touxian");
@@ -212,7 +227,7 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
                         .crossFade(1000)
                         .into(holder.workDetailHead);
             }
-            String name = jo.optString("name");
+            String name = jsonData.optString("name");
             if (!StringUtils.isEmpty(name)) {
                 holder.workname.setText("⟪ " + name + " ⟫");
             } else {
@@ -220,10 +235,21 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             }
 
             //标签
-//            taglayout.add
+            JSONArray user_see_jsonArray = jsonData.optJSONArray("user_see_jsonArray");
+            if (user_see_jsonArray != null) {
+                for (int i = 0; i < user_see_jsonArray.length(); i++) {
+                    JSONObject jsonObject = user_see_jsonArray.optJSONObject(i);
 
-            String cicun = jo.optString("cicun");
-            String showTime = jo.optString("showTime");
+                    String picname = jsonObject.optString("picname");
+                    ImageView imageView = new ImageView(this);
+
+                    Glide.with(this).load(Urls.HOST + picname).into(imageView);
+                    holder.workDetailsLayout.addView(imageView);
+                }
+            }
+            //~~
+            String cicun = jsonData.optString("cicun");
+            String showTime = jsonData.optString("showTime");
             String showTime1 = showTime;
             if (!StringUtils.isEmpty(showTime)) {
                 showTime = showTime.substring(0, 4);
@@ -238,32 +264,132 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
 
                 holder.chicun.setText(cicun + "/" + showTime);
             }
-            BigDecimal price_fen = MathUtil.divide(jo.optString("price_fen"), 100, 2);
+            BigDecimal price_fen = MathUtil.divide(jsonData.optString("price_fen"), 100, 2);
             holder.price.setText("¥" + price_fen.toString());
-            Logger.d("intValue:" + price_fen.intValue() + "doubleValue:" + price_fen.doubleValue());
+//            Logger.d("intValue:" + price_fen.intValue() + "doubleValue:" + price_fen.doubleValue());
 
-            holder.vewcount.setText(jo.optInt("viewcount", 0) + "");
+            holder.vewcount.setText(jsonData.optInt("viewcount", 0) + "");
 
-            String intro = jo.optString("intro");
+            String intro = jsonData.optString("intro");
             if (!StringUtils.isEmpty(intro)) {
                 byte[] decode = Base64.decode(intro, Base64.DEFAULT);
                 holder.intro.setText(new String(decode));
             }
-            holder.comment.setText("评论（" + mData.size() + "）");
+            //评论
+            JSONArray comment_list = jsonData.optJSONArray("comment_list");
+            if (comment_list != null) {
+                mData.clear();
+                holder.comment.setText("评论（" + comment_list.length() + "）");
 
+                for (int i = 0; i < comment_list.length(); i++) {
+                    mData.add(comment_list.optJSONObject(i) + "");
+                }
+                header.notifyDataSetChanged();
+            } else {
+                holder.comment.setText("评论（" + 0 + "）");
+            }
+
+
+//            holder.zan.setTag(jsonData.optInt("nice_count", 0));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
+    /**
+     * imageRectOnClick
+     *
+     * @param jo
+     * @return
+     */
+    private void imageRectOnClick(final JSONObject jo) {
+        JSONArray jsonArray = jo.optJSONArray("aartworksCompoment_jsonArray");
+        Map<Rect, String> rectList = null;
+        if (jsonArray != null) {
+            rectList = new HashMap();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                if (jsonObject == null) return;
+
+                String artworks_pic = jsonObject.optString("artworks_pic");
+                JSONObject artworks_position = jsonObject.optJSONObject("artworks_position");
+                if (artworks_position == null) return;
+
+                int x = artworks_position.optInt("x");
+                int y = artworks_position.optInt("y");
+                int width = artworks_position.optInt("width");
+                int height = artworks_position.optInt("height");
+
+                Rect rect = new Rect(x, y, x + width, y + height);
+                rectList.put(rect, artworks_pic);
+            }
+        }
+        if (rectList != null) {
+            Set<Rect> rects = rectList.keySet();
+            holder.img.setRectList(new ArrayList<>(rects));
+
+            final Map<Rect, String> finalRectList = rectList;
+            holder.img.setRectAreaOnClickListioner(new RectClickImageView.RectAreaOnClickListioner() {
+
+                @Override
+                public void onClick(Rect rect) {
+                    String s = finalRectList.get(rect);
+
+                    MyDialogFragment myDialogFragment = MyDialogFragment.newInstance(Urls.HOST + s);
+                    myDialogFragment.show(getFragmentManager(), getClass().getSimpleName());
+                }
+
+                @Override
+                public void onClickOutSide() {
+                    MyDialogFragment myDialogFragment = MyDialogFragment.newInstance(Urls.HOST + jo.optString("pic"));
+                    myDialogFragment.show(getFragmentManager(), getClass().getSimpleName());
+                }
+
+            });
+        }
+
+    }
+
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.work_details_zan:
-                UIHelper.toastMessage(this, "work_details_zan");
+//                UIHelper.toastMessage(this, "work_details_zan");
+
+                new Zan(this).nice(jsonData.optString("pub_id")).setZview(new Zan.zanView() {
+                    @Override
+                    public void niceSuccess(List<Base> paramList, Base paramBase, int type) {
+                        //点赞成功
+                        UIHelper.toastMessage(WorkDetailsActivity.this, "点赞成功");
+                        if (v != null) {
+                            TextView tv = (TextView) v;
+                            v.setEnabled(false);
+//                            int count = StringUtils.toInt(tv.getText());
+                            tv.setText("已赞");
+                        }
+                    }
+                });
                 break;
             case R.id.work_details_guanzhu:
+
+                ShouCang shouCang = new ShouCang(this);
+                shouCang.setId(jsonData.optString("pub_id"));
+                shouCang.Request().setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                    @Override
+                    public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                        UIHelper.toastMessage(WorkDetailsActivity.this, "关注成功");
+                        v.setEnabled(false);
+                        TextView tv = (TextView) v;
+                        tv.setText("已关注");
+                    }
+
+                    @Override
+                    public void fail(Exception paramException) {
+                        UIHelper.toastMessage(WorkDetailsActivity.this, "关注失败");
+                    }
+                });
+
 
                 break;
             case R.id.work_details_song:
@@ -274,6 +400,13 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
                 break;
         }
     }
+
+    @OnClick(R.id.workdetails_send)
+    public void onClick() {
+
+        presenter.comment(jsonData, workdetailsComment);
+    }
+
 
     static class ViewHolder {
 
@@ -310,7 +443,8 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         @BindView(R.id.work_details_comment)
         TextView comment;
         @BindView(R.id.work_details_img)
-        ImageView img;
+        RectClickImageView img;
+
         View.OnClickListener listenter;
 
         ViewHolder(View view) {

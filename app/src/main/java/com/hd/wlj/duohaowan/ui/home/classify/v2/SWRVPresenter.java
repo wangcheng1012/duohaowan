@@ -34,12 +34,12 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
     private RecyclerView recycerview;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Base> datas;
-    private LoadMoreWrapper loadMoreWrapper;
     private AsyncCall asyncCall;
     private TextView loadmoretext;
 
     private SWRVContract.SWRVPresenterAdapter presenterAdapter;
     private BaseAsyncModle modle;
+    private RecyclerView.Adapter adapter;
 
     public SWRVPresenter(Activity mActivity) {
         this.mActivity = mActivity;
@@ -112,7 +112,7 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
         View emptyView = presenterAdapter.getEmptyView();
         if (emptyView == null) {
             TextView empty = new TextView(mActivity);
-            empty.setText("数据为空\n点击刷新");
+            empty.setText("点击刷新");
             empty.setTextColor(Color.BLACK);
             empty.setGravity(Gravity.CENTER);
             empty.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
@@ -128,21 +128,23 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
         });
         //loadMoreWrapper
         loadmoretext = new TextView(mActivity);
-//        loadmoretext.setText("加载更多");
+//        loadmoretext.setText(" ");
         loadmoretext.setTextColor(Color.BLACK);
         loadmoretext.setGravity(Gravity.CENTER);
         loadmoretext.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
 
-        loadMoreWrapper = new LoadMoreWrapper(emptyWrapper, recycerview);
+        LoadMoreWrapper loadMoreWrapper = new LoadMoreWrapper(emptyWrapper, recycerview);
         loadMoreWrapper.setLoadMoreView(loadmoretext);
         loadMoreWrapper.setOnLoadMoreListener(new LoadMoreWrapper.OnLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
-                loadMore();
+                if (!asyncCall.isComplate()) {
+                    loadMore();
+                }
             }
         });
-
-        recycerview.setAdapter(loadMoreWrapper);
+        adapter = loadMoreWrapper;
+        recycerview.setAdapter(adapter);
     }//Recycerview  end
 
     private void loadMore() {
@@ -184,7 +186,7 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
                     throw new RuntimeException("list==null");
                 }
                 datas.addAll(list);
-                loadMoreWrapper.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
                 loadComplate();
 
 //                if(asyncCall.getPageIndex() == 1 && paramList.size() == 0){
@@ -192,10 +194,10 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
 //                    loadmoretext.setText("数据为空");
 //                }
 
-//                if (asyncCall.isComplate() && datas.size() != 0) {
-//                    //加载完
-//                    loadmoretext.setText("已是最底部了");
-//                }
+                if (asyncCall.isComplate() && datas.size() != 0) {
+                    //加载完
+                    loadmoretext.setText("已经到底了");
+                }
             }
 
             @Override
@@ -231,7 +233,11 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
         this.presenterAdapter = presenterAdapter;
     }
 
-    public LoadMoreWrapper getLoadMoreWrapper() {
-        return loadMoreWrapper;
+    public RecyclerView.Adapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(RecyclerView.Adapter adapter) {
+        this.adapter = adapter;
     }
 }

@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.home.classify.arist.AristDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewHistoryActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewRealityActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.gallery.GalleryActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.work.WorkDetailsActivity;
 import com.hd.wlj.duohaowan.ui.mvp.BasePresenter;
 import com.wlj.base.bean.Base;
@@ -37,11 +40,11 @@ import java.util.List;
  * Created by wlj on 2016/11/03
  */
 
-public class SWRVPresenter extends BasePresenter<SWRVView> {
+public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
 
     private final String tabBarStr;
     private final int classify;
-    private final SWRVModel mSWRVModel;
+    private final ClassifyListModel mSWRVModel;
     private Activity mActivity;
     private RecyclerView recycerview;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -53,10 +56,10 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
     private String seachType;
     private String seachText;
 
-    public SWRVPresenter(Activity mActivity, Bundle arguments) {
+    public ClassifyListPresenter(Activity mActivity, Bundle arguments) {
 
         this.mActivity = mActivity;
-        mSWRVModel = new SWRVModel(mActivity);
+        mSWRVModel = new ClassifyListModel(mActivity);
         tabBarStr = arguments.getString("tabBarStr");
         classify = arguments.getInt("classify", -1);
     }
@@ -78,6 +81,7 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
             case R.id.home_artgallery:
                 //艺术馆
                 recycerview.setLayoutManager(new LinearLayoutManager(mActivity));
+                itemlayout = R.layout.item_classify_artgallery;
                 break;
             case R.id.home_workofart:
                 //艺术品 瀑布流
@@ -87,9 +91,15 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
                 break;
             case R.id.home_artview:
                 //艺术观
+                recycerview.setLayoutManager(new LinearLayoutManager(mActivity));
+                if ("史学篇".equals(tabBarStr)) {
+                    itemlayout = R.layout.item_classify_artview_history;
+                } else if ("现实篇".equals(tabBarStr)) {
+                    itemlayout = R.layout.item_classify_artview_reality;
+                }
 
                 break;
-            case SWRVModel.request_type_seach:
+            case ClassifyListModel.request_type_seach:
                 // 这里写  只能是默认，每次搜索都可能不同，所以放到setseachtype
                 if (MsgContext.seachArtist.equals(seachType)) {
                     //艺术家 和上面的艺术家一样
@@ -110,6 +120,7 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
 
     private void recycerview(final int classify, int layout) {
 
+        //item create
         datas = new ArrayList<>();
         CommonAdapter<Base> commonAdapter = new CommonAdapter<Base>(mActivity, layout, datas) {
 
@@ -133,7 +144,16 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
                         view.workOfArtRecycerview(viewHolder, item, position);
                         //瀑布流
                         break;
-                    case SWRVModel.request_type_seach:
+                    case R.id.home_artview:
+                        //艺术观
+                        if ("史学篇".equals(tabBarStr)) {
+                            view.artviewHistoryRecycerview(viewHolder, item, position);
+                        } else if ("现实篇".equals(tabBarStr)) {
+                            view.artviewRealityRecycerview(viewHolder, item, position);
+                        }
+                        break;
+
+                    case ClassifyListModel.request_type_seach:
                         //搜索
                         if (MsgContext.seachWork.equals(seachType)) {
                             //艺术品 和上面的艺术品一样
@@ -147,7 +167,7 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
 
             }
         };
-
+        //Click
         commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
@@ -163,6 +183,7 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
                             break;
                         case R.id.home_artgallery:
                             //艺术馆
+                            cla = GalleryActivity.class;
                             break;
                         case R.id.home_workofart:
                             //艺术品 瀑布流
@@ -170,9 +191,14 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
                             break;
                         case R.id.home_artview:
                             //艺术观
+                            if ("史学篇".equals(tabBarStr)) {
+                                cla = ArtViewHistoryActivity.class;
 
+                            } else if ("现实篇".equals(tabBarStr)) {
+                                cla = ArtViewRealityActivity.class;
+                            }
                             break;
-                        case SWRVModel.request_type_seach:
+                        case ClassifyListModel.request_type_seach:
                             // 这里写  只能是默认，每次搜索都可能不同，所以放到setseachtype
                             if (MsgContext.seachArtist.equals(seachType)) {
                                 //艺术家 和上面的艺术家一样
@@ -189,8 +215,9 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
                     Base base = (Base) tag;
                     JSONObject jsonObject = base.getResultJsonObject();
                     bundle.putString("id", jsonObject.optString("pub_id"));
-                    GoToHelp.go(mActivity, cla, bundle);
+                    bundle.putString("artist_id", jsonObject.optString("artist_id"));
 
+                    GoToHelp.go(mActivity, cla, bundle);
                 }
 
             }
@@ -228,7 +255,10 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
         loadMoreWrapper.setOnLoadMoreListener(new LoadMoreWrapper.OnLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
-                loadMore();
+
+                if (asyncCall != null && !asyncCall.isComplate()) {
+                    loadMore();
+                }
             }
         });
 
@@ -249,11 +279,11 @@ public class SWRVPresenter extends BasePresenter<SWRVView> {
 
         mSWRVModel.setPage(page);
 
-        if (classify == SWRVModel.request_type_seach) {
+        if (classify == ClassifyListModel.request_type_seach) {
             // 搜索
             mSWRVModel.setSeachName(seachText);
             mSWRVModel.setSeachType(seachType);
-            asyncCall = mSWRVModel.Request(SWRVModel.request_type_seach);
+            asyncCall = mSWRVModel.Request(ClassifyListModel.request_type_seach);
         } else {
             mSWRVModel.setTabBarStr(tabBarStr);
             mSWRVModel.setClassify(classify);

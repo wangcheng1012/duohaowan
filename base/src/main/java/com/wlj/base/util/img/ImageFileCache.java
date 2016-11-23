@@ -9,19 +9,23 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import com.orhanobut.logger.Logger;
 import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.Log;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.StatFs;
+import android.widget.ImageView;
 
 public class ImageFileCache {
 
     public static final String CACHDIR = "imgCach";
 
     public static final String WHOLESALE_CONV = ".cach";
+    public static final String crop = "crop";
 
     /**
      * 过期时间3天
@@ -33,7 +37,7 @@ public class ImageFileCache {
      ****/
     private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
     private static final int CACHE_SIZE = 10;
-    ;
+
     /**
      * 计算sdcard上的剩余空间
      *
@@ -201,14 +205,16 @@ public class ImageFileCache {
 
         for (int i = 0; i < files.length; i++) {
 
-            if (files[i].getName().contains(WHOLESALE_CONV)) {
+            if (files[i].getName().contains(WHOLESALE_CONV) || files[i].getName().contains(crop)) {
 
                 dirSize += files[i].length();
 
-            } else {
-                //不需要存的,删掉
-                files[i].delete();
             }
+//            else {
+//                Logger.e("delete");
+//                //不需要存的,删掉
+//                files[i].delete();
+//            }
 
         }
 
@@ -222,7 +228,7 @@ public class ImageFileCache {
 
             for (int i = 0; i < removeFactor; i++) {
 
-                if (files[i].getName().contains(WHOLESALE_CONV)) {
+                if (files[i].getName().contains(WHOLESALE_CONV) || files[i].getName().contains(crop)) {
 
                     files[i].delete();
 
@@ -395,4 +401,54 @@ public class ImageFileCache {
 
     }
 
+    public ImageFileCache display(String path, ImageView imageView, int width, int height) {
+
+        BitmapLoadTask loadTask = new BitmapLoadTask(path, imageView);
+        loadTask.execute(width,height);
+
+        return this;
+    }
+
+    public ImageFileCache getBitmap(Bitmap bitmap){
+
+        return this;
+    }
+
+    public class BitmapLoadTask extends AsyncTask<Integer, Object, Bitmap> {
+
+        private final String path;
+        private ImageView container;
+
+        public BitmapLoadTask(String path, ImageView container) {
+            this.container = container;
+            if (path == null) {
+                throw new IllegalArgumentException("args may not be null");
+            }
+            this.path = path;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Integer... params) {
+            Bitmap bitmap = null;
+
+            if (bitmap == null) {
+                bitmap = BitmapUtil.getInstall().decodeBitmapFromFile(path, params[0], params[1]);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onCancelled(Bitmap bitmap) {
+
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(container == null){
+                getBitmap(bitmap);
+            }else{
+                container.setImageBitmap(bitmap);
+            }
+        }
+    }
 }

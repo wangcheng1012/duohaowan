@@ -17,11 +17,13 @@
             <ImageView
                 android:id="@+id/classify_list_black"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/icon_back" />
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:src="@drawable/back_black" />
 
             <TextView
                 android:id="@+id/toolbar_title"

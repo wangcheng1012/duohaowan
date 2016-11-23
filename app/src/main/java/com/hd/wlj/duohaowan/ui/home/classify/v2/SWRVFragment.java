@@ -2,6 +2,7 @@ package com.hd.wlj.duohaowan.ui.home.classify.v2;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.hd.wlj.duohaowan.R;
 import com.wlj.base.ui.BaseFragment;
+import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,11 +37,6 @@ public class SWRVFragment extends BaseFragment implements SWRVContract.View {
 //        Bundle args = new Bundle();
 //        fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -96,12 +93,16 @@ public class SWRVFragment extends BaseFragment implements SWRVContract.View {
         return recycerview;
     }
 
-    public RecyclerView.Adapter getLoadMoreWrapper() {
-        return presenter.getLoadMoreWrapper();
+    public RecyclerView.Adapter getAdapter() {
+        return presenter.getAdapter();
     }
 
     public void setMyInterface(SWRVInterface myInterface) {
         this.myInterface = myInterface;
+    }
+
+    public void setAdapter(RecyclerView.Adapter adapter) {
+        presenter.setAdapter(adapter);
     }
 
     public interface SWRVInterface {

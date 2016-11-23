@@ -17,9 +17,11 @@ import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.DpAndPx;
+import com.wlj.base.util.MathUtil;
 
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -76,7 +78,7 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
 
         presenter.loadCardData();
         cardSeekBar.setOnSeekBarChangeListener(this);
-        cardSeekBar.setMax(30);
+        cardSeekBar.setMax(100);
         cardSeekBar.setProgress(1);
 
         cardRadioGroup.setOnCheckedChangeListener(this);
@@ -130,7 +132,7 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
     }
 
     // ------------回掉activity
-    private void merge(int space) {
+    private void merge(float space) {
 
         if (mListener != null) {
             if (cardType == Card1Type) {
@@ -174,8 +176,8 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         if (fromUser && checked) {
-//            BigDecimal divide = MathUtil.divide(progress, 100, 2);
-            merge(progress);
+            BigDecimal divide = MathUtil.divide(progress, 100, 2);
+            merge(divide.floatValue());
         }
     }
 

@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * Created by wlj on 2016/11/10.
  */
-
 public class BorderPresenter extends BasePresenter<BorderView> {
 
 
@@ -24,8 +23,7 @@ public class BorderPresenter extends BasePresenter<BorderView> {
         borderModel = new BorderModel();
     }
 
-    public void loadBorderData(String rootPubConlumnId) {
-        borderModel.setRootPubConlumnId(rootPubConlumnId);
+    public void loadBorderClassifyData() {
         borderModel.Request()
                 .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
                     @Override
@@ -41,5 +39,47 @@ public class BorderPresenter extends BasePresenter<BorderView> {
                     }
                 });
 
+    }
+
+    public void loadBorderBiliData(String id, String width, String height) {
+        borderModel.setWidth(width);
+        borderModel.setHeight(height);
+        borderModel.setPaintingFrameConlumn_id(id);
+        borderModel.Request(BorderModel.type_border_bili)
+                .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                    @Override
+                    public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                        if (view != null) {
+                            view.showBorderBili(list);
+                        }
+                    }
+
+                    @Override
+                    public void fail(Exception paramException) {
+
+                    }
+                });
+
+    }
+
+
+
+    public void loadSenceData(int width, int height) {
+        borderModel.setHeight(height+"");
+        borderModel.setWidth(width +"");
+        borderModel.Request(BorderModel.type_sence)
+                .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                    @Override
+                    public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                        if (view != null) {
+                            view.showBorder(list);
+                        }
+                    }
+
+                    @Override
+                    public void fail(Exception paramException) {
+
+                    }
+                });
     }
 }

@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.orhanobut.logger.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -204,7 +206,7 @@ public class ImageLoader {
         Bitmap bitmap = getBitmapFromMemoryCache(path);
         if (bitmap == null) {
             BitmapLoadTask2 bitmapLoadTask2 = new BitmapLoadTask2(path);
-            bitmapLoadTask2.execute(width, mWidth);
+            bitmapLoadTask2.execute(width, height);
         } else {
 
             ImageHolder imageHolder = new ImageHolder();
@@ -214,7 +216,6 @@ public class ImageLoader {
             msg.obj = imageHolder;
             msg.what = 1;
             mHandler.sendMessage(msg);
-
         }
 
     }
@@ -322,7 +323,7 @@ public class ImageLoader {
      * @param reqHeight
      * @return
      */
-    private Bitmap decodeSampledBitmapFromFile(String pathName,
+    public Bitmap decodeSampledBitmapFromFile(String pathName,
                                                int reqWidth, int reqHeight) {
         // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -330,8 +331,10 @@ public class ImageLoader {
         BitmapFactory.decodeFile(pathName, options);
 
         // 调用上面定义的方法计算inSampleSize值
-        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+        int i = calculateInSampleSize(options, reqWidth,
                 reqHeight);
+//        Logger.i(i+"   sdklsdjf");
+        options.inSampleSize = i;
         // 使用获取到的inSampleSize值再次解析图片
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(pathName, options);

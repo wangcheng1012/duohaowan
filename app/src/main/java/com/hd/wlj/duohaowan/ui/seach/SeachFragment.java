@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.hd.wlj.duohaowan.R;
-import com.hd.wlj.duohaowan.ui.home.classify.SWRVFragment;
-import com.hd.wlj.duohaowan.ui.home.classify.SWRVModel;
+import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListFragment;
+import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListModel;
 import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
@@ -33,7 +33,7 @@ public class SeachFragment extends BaseFragment {
     @BindView(R.id.seach_text)
     EditText seachText;
     private String type;
-    private SWRVFragment fragment;
+    private ClassifyListFragment fragment;
 
     @Override
     protected int getlayout() {
@@ -56,16 +56,18 @@ public class SeachFragment extends BaseFragment {
     private void initRecyclerView() {
         if (fragment == null) {
 
-            fragment = SWRVFragment.newInstance(null, SWRVModel.request_type_seach);
+            fragment = ClassifyListFragment.newInstance(null, ClassifyListModel.request_type_seach);
+
+            FragmentManager manager = getChildFragmentManager();
+            FragmentTransaction fragmentTransaction = manager.beginTransaction();
+            fragmentTransaction.add(R.id.seach_recyclerciew, fragment);
+            fragmentTransaction.commitAllowingStateLoss();
+
         }
 
-        FragmentManager manager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = manager.beginTransaction();
-        fragmentTransaction.add(R.id.seach_recyclerciew, fragment);
-        fragmentTransaction.commitAllowingStateLoss();
     }
 
-    @OnClick({R.id.seach_tv})
+    @OnClick({R.id.seach_tv,R.id.seach_tag1, R.id.seach_tag2, R.id.seach_tag3, R.id.seach_tag4})
     public void onClick(View view) {
         switch (view.getId()) {
 
@@ -85,8 +87,20 @@ public class SeachFragment extends BaseFragment {
 
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(seachText.getWindowToken(), 0);
-
+                break;
+            case R.id.seach_tag1:
+                seachText.setText("国画");
+                break;
+            case R.id.seach_tag2:
+                seachText.setText("油画");
+                break;
+            case R.id.seach_tag3:
+                seachText.setText("书法");
+                break;
+            case R.id.seach_tag4:
+                seachText.setText("工艺美术");
                 break;
         }
     }
+
 }

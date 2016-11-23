@@ -8,15 +8,14 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
-import com.orhanobut.logger.Logger;
 import com.wlj.base.util.DpAndPx;
 import com.wlj.base.widget.IconfontTextview;
 
@@ -30,6 +29,7 @@ public class ImgInpImg extends FrameLayout {
     private TextView iconFontView1;
     private EditText editTextView;
     private TextView iconFontView2;
+    private OnClickListener mListener;
 
     public ImgInpImg(Context context) {
         this(context,null);
@@ -107,14 +107,6 @@ public class ImgInpImg extends FrameLayout {
         editTextView.setInputType(type);
     }
 
-    /**
-     * iconFontView2 的点击事件
-     * @param onClickListener
-     */
-    public  void setOnClickListener(OnClickListener onClickListener){
-        iconFontView2.setOnClickListener(onClickListener);
-    }
-
     public String getText(){
 
         return editTextView.getText()+"";
@@ -141,5 +133,40 @@ public class ImgInpImg extends FrameLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) editTextView.getLayoutParams();
         layoutParams.leftMargin = DpAndPx.dpToPx(getContext(), f);
         editTextView.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        switch (event.getAction()){
+
+            case MotionEvent.ACTION_DOWN:
+//                mListener.onClick(this);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+
+//                if (x + getLeft() < getRight() && y + getTop() < getBottom()) {
+//                    mListener.onClick(this);
+//                }
+
+                break;
+
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+
+    /**
+     * iconFontView2 的点击事件
+     * @param mListener
+     */
+    public  void setViewOnClickListener(OnClickListener mListener){
+        this.mListener = mListener;
     }
 }

@@ -13,12 +13,13 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/imageadjustment_bg"
+            android:background="@color/white"
             app:layout_scrollFlags="exitUntilCollapsed">
 
-            <ImageView
+            <com.hd.wlj.duohaowan.view.RectClickImageView
                 android:id="@+id/adjustment_image"
                 android:layout_width="match_parent"
+                android:layout_gravity="center"
                 android:layout_height="300dp"
                 android:scaleType="fitCenter"
                 app:layout_collapseMode="parallax" />

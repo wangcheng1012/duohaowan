@@ -225,7 +225,7 @@ public class SwitchViewPager<T> implements
                 Glide.with(mContext).
                         load(getContentText(item))
                         .placeholder(R.drawable.project_bg)
-                        .crossFade()
+                        .crossFade(1000)
                         .into(imageView1);
 
 //                loadImage.addTask(getContentText(item), imageView1);

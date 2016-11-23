@@ -177,7 +177,7 @@ public class KamHorizontalScrollView extends HorizontalScrollView {
     }
 
     private View getView(int index) {
-        int childCount = childGroup.getChildCount()/2;
+        int childCount = childGroup.getChildCount();
         if (childCount == 0) {
             return null;
         }
@@ -231,7 +231,7 @@ public class KamHorizontalScrollView extends HorizontalScrollView {
         /*因为在左边增加了View，因此所有View的x坐标都会增加，因此需要让ScrollView也跟着移动，才能从屏幕看来保持平滑。*/
         int tmpwidth = view.getLayoutParams().width;
         if (tmpwidth == 0) tmpwidth = getWinWidth();
-        Logger.i( "the new view's width = " + view.getLayoutParams().width);
+//        Logger.i( "the new view's width = " + view.getLayoutParams().width);
         this.scrollTo(this.getScrollX() + tmpwidth, 0);
         return true;
     }

@@ -1,6 +1,7 @@
 package com.hd.wlj.duohaowan.ui.home;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,7 @@ import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
+import com.wlj.base.util.img.BitmapUtil;
 import com.wlj.base.util.img.LoadImage;
 import com.wlj.base.util.statusbar.StatusBarUtil;
 import com.wlj.base.widget.SwitchViewPager;
@@ -147,7 +149,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     private void initHot() {
 
-//        mHorizontalScrollView = (HorizontalScrollView) part_home_head.findViewById(R.id.id_horizontalScrollView);
         mGallery = (LinearLayout) part_home_head.findViewById(R.id.id_gallery);
         mHorizontalScrollView = (KamHorizontalScrollView) part_home_head.findViewById(R.id.id_horizontalScrollView);
 
@@ -175,18 +176,19 @@ public class HomeFragment extends BaseFragment implements HomeView {
                 holder.setImageResource(R.id.item_home_recyclerView_image, R.drawable.project_bg);
                 Glide.with(HomeFragment.this)
                         .load(Urls.HOST + resultJsonObject.optString("pic"))
+                        .asBitmap()
                         .placeholder(R.drawable.project_bg)
-                        .into(new SimpleTarget<GlideDrawable>() {
+//                        .thumbnail(0.4f)
+                        .into(new SimpleTarget<Bitmap>(500,500) {
                             @Override
-                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-
-                                int intrinsicWidth = resource.getIntrinsicWidth();
-                                int height = view.getWidth() * resource.getIntrinsicHeight() / intrinsicWidth;
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                int intrinsicWidth = resource.getWidth();
+                                int height = view.getWidth() * resource.getHeight() / intrinsicWidth;
 
                                 view.setMinimumWidth(intrinsicWidth);
                                 view.setMinimumHeight(height);
 
-                                view.setImageDrawable(resource);
+                                view.setImageBitmap(resource);
                             }
                         });
 
@@ -322,10 +324,10 @@ public class HomeFragment extends BaseFragment implements HomeView {
         for (int i = 0; i < list.size(); i++) {
             mGallery.addView(createHotItem(i));
         }
-        for (int i = list.size() - 1; i >= 0; i--) {
-
-            mHorizontalScrollView.addLeft(createHotItem(i));
-        }
+//        for (int i = list.size() - 1; i >= 0; i--) {
+//
+//            mHorizontalScrollView.addLeft(createHotItem(i));
+//        }
     }
 
     private View createHotItem(int index) {
@@ -339,9 +341,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
         String pics = resultJsonObject.optString("pic");
         if (pics != null && pics.length() > 0) {
-//                Glide.with(HomeFragment.this).load(Urls.HOST +pics).crossFade().placeholder(R.drawable.project_bg).into(mImg);
-            LoadImage.getinstall().addTask(Urls.HOST + pics, mImg);
-            LoadImage.getinstall().doTask();
+            Glide.with(HomeFragment.this).load(Urls.HOST +pics).crossFade(1000).centerCrop().error(R.drawable.project_bg).into(mImg);
         }
         view.setLayoutParams(layoutParams);
         return view;
