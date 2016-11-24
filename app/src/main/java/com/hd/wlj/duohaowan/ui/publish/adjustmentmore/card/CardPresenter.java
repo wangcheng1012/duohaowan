@@ -1,9 +1,8 @@
-package com.hd.wlj.duohaowan.ui.publish.complate;
+package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.card;
 
 import android.app.Activity;
 
 import com.hd.wlj.duohaowan.ui.mvp.BasePresenter;
-import com.hd.wlj.duohaowan.ui.publish.PublishModel;
 import com.wlj.base.bean.Base;
 import com.wlj.base.web.asyn.AsyncCall;
 
@@ -13,15 +12,15 @@ import java.util.List;
  * Created by wlj on 2016/11/10.
  */
 
-public class ComplatePresenter extends BasePresenter<ComplateView> {
+public class CardPresenter extends BasePresenter<CardView> {
 
 
-    private final PublishModel borderModel;
+    private final CardModel borderModel;
     private Activity activity;
 
-    public ComplatePresenter(Activity activity) {
+    public CardPresenter(Activity activity) {
         this.activity = activity;
-        borderModel = new PublishModel();
+        borderModel = new CardModel();
     }
 
     public void loadCardData() {

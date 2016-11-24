@@ -1,4 +1,4 @@
-package com.hd.wlj.duohaowan.ui.publish.complate;
+package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.complate;
 
 import android.app.Activity;
 

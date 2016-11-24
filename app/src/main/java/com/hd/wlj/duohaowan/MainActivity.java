@@ -1,6 +1,5 @@
 package com.hd.wlj.duohaowan;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -24,32 +23,16 @@ import com.hd.wlj.duohaowan.ui.follow.FollowFragment;
 import com.hd.wlj.duohaowan.ui.home.HomeFragment;
 import com.hd.wlj.duohaowan.ui.my.MyFragment;
 import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
+import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.sencemore.SenceMoreActivity;
 import com.hd.wlj.duohaowan.ui.seach.SeachFragment;
 import com.hd.wlj.duohaowan.util.TakePhotoCrop;
-import com.jph.takephoto.app.TakePhoto;
-import com.jph.takephoto.app.TakePhotoImpl;
-import com.jph.takephoto.model.CropOptions;
-import com.jph.takephoto.model.InvokeParam;
-import com.jph.takephoto.model.TContextWrap;
-import com.jph.takephoto.model.TException;
 import com.jph.takephoto.model.TResult;
-import com.jph.takephoto.permission.InvokeListener;
-import com.jph.takephoto.permission.PermissionManager;
-import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.lling.photopicker.PhotoPickerActivity;
-import com.mylhyl.acp.Acp;
-import com.mylhyl.acp.AcpListener;
-import com.mylhyl.acp.AcpOptions;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
-import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.GoToHelp;
-import com.wlj.base.util.UIHelper;
-import com.wlj.base.util.img.ImageFileCache;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.ButterKnife;
 
@@ -167,8 +150,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
             case R.id.publish_choosescene:
 
                 Bundle bundle = new Bundle();
-                bundle.putInt("from", ImageAdjustmentActivity.from_main_choosesece);
-                GoToHelp.go(this, ImageAdjustmentActivity.class, bundle);
+                GoToHelp.go(this, SenceMoreActivity.class, bundle);
 
                 popWindow.dismiss();
                 break;

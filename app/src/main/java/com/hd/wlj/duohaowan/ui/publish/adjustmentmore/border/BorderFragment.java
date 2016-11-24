@@ -1,12 +1,9 @@
-package com.hd.wlj.duohaowan.ui.publish.border;
+package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.border;
 
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,39 +15,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
-import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
-import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
-import com.hd.wlj.duohaowan.view.RectClickImageView;
-import com.lling.photopicker.utils.ImageLoader;
+import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
+import com.hd.wlj.duohaowan.util.ImageUtil2;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
-import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.UIHelper;
-import com.wlj.base.util.img.BitmapUtil;
-import com.wlj.base.util.img.LoadImage;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,12 +58,6 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     RecyclerView biliRecyclerView;
 
     private BorderPresenter presenter;
-    private ImageMergeListener mListener;
-    private Bitmap borderBitmap;
-    private Rect rect;
-    //    private int from;
-    private String pub_id;
-    private MergeBitmap.MergeType type;
     private int min = 100;
     private List mData;
     private CommonAdapter commonAdapter;
@@ -85,8 +65,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     private CommonAdapter biliAdapter;
     private View preSelectBiliView;
     private View preSelectClassifyView;
-    private Bitmap workBitmap;
-    private ImageAdjustmentActivity activity;
+    private AdjustmentImageActivity activity;
     private int progress = 100;
 
     public BorderFragment() {
@@ -116,7 +95,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         ButterKnife.bind(this, view);
         view.setMinimumHeight(0);
 
-        activity = (ImageAdjustmentActivity) getActivity();
+        activity = (AdjustmentImageActivity) getActivity();
 
         presenter.loadBorderClassifyData();
 
@@ -173,22 +152,9 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
 
                         UIHelper.closeProgressbar();
 
-                        borderBitmap = resource;
-                        Logger.e(resource.getWidth() + " " + resource.getHeight());
-                        // 回掉
-                        int position_x = resultJsonObject.optInt("position_x", 0);
-                        int position_y = resultJsonObject.optInt("position_y", 0);
-                        int inner_width = resultJsonObject.optInt("inner_width", 100);
-                        int inner_height = resultJsonObject.optInt("inner_height", 100);
-                        rect = new Rect(position_x, position_y, position_x + inner_width, position_y + inner_height);
-                        pub_id = resultJsonObject.optString("pub_id");
-                        type = MergeBitmap.MergeType.border;
-
-                        mListener.setOriginalRect(rect);
-                        merge(pub_id, borderBitmap, 1d);
+                        merge(resource, resultJsonObject);
 
                         //seekbar
-                        min = Math.min(inner_width, inner_height);
                         adjustHeightSb.setMax(min);
                         adjustHeightSb.setProgress(min);
                     }
@@ -205,6 +171,55 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         return biliAdapter;
     }
 
+    /**
+     * onclick点击 调整
+     *
+     * @param resource
+     * @param resultJsonObject
+     */
+    private void merge(Bitmap resource, JSONObject resultJsonObject) {
+        String pic = resultJsonObject.optString("pic");
+        MergeBitmap mergeBitmap = activity.getMergeBitmap();
+        mergeBitmap.setBorderBitmap(resource);
+        // Rect
+        int position_x = resultJsonObject.optInt("position_x", 0);
+        int position_y = resultJsonObject.optInt("position_y", 0);
+        int inner_width = resultJsonObject.optInt("inner_width", 100);
+        int inner_height = resultJsonObject.optInt("inner_height", 100);
+        Rect rect = new Rect(position_x, position_y, position_x + inner_width, position_y + inner_height);
+        //set
+        mergeBitmap.setBorkRect_old(rect);
+        mergeBitmap.setWorkRect(rect);
+        mergeBitmap.setBorderId(resultJsonObject.optString("pub_id"));
+        mergeBitmap.setBorderPath(pic);
+        mergeBitmap.setBorderBitmap(resource);
+        // 去掉 选中的卡纸效果
+        mergeBitmap.setCard1space(0);
+        mergeBitmap.setCard2space(0);
+
+        Bitmap bitmap = mergeBitmap.buildFinalBitmap();
+        activity.getmRectClickImageView().setImageBitmap(bitmap);
+
+        //seekbar
+        min = Math.min(inner_width, inner_height);
+    }
+
+    /**
+     * SeekBar 的调整
+     *
+     * @param divide
+     */
+    private void seekBarMerge(double divide) {
+        Rect borkRectOld = activity.getMergeBitmap().getBorkRect_old();
+        if (borkRectOld == null) {
+            return;
+        }
+        Rect rect = ImageUtil2.resizeRectangle(borkRectOld, divide);
+        activity.getMergeBitmap().setWorkRect(rect);
+
+        Bitmap bitmap = activity.getMergeBitmap().buildFinalBitmap();
+        activity.getmRectClickImageView().setImageBitmap(bitmap);
+    }
 
     private void createBiliItem(ViewHolder holder, Base o, int position) {
 
@@ -225,6 +240,11 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         adjustRecyclerView.setAdapter(initAdapter());
     }
 
+    /**
+     * 画框 种类 Adapter
+     *
+     * @return
+     */
     private RecyclerView.Adapter initAdapter() {
         if (mData == null) {
             mData = new ArrayList();
@@ -249,17 +269,9 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
                 }
                 preSelectClassifyView = view;
                 preSelectClassifyView.setSelected(true);
-                //
-                Base tag = (Base) view.getTag(R.id.tag_first);
-                JSONObject jsonObject = tag.getResultJsonObject();
 
-                if (workBitmap == null) {
-                    workBitmap = activity.getMergeBitmap().getWorkBitmap();
-                }
 
-                int width = workBitmap.getWidth();
-                int height = workBitmap.getHeight();
-                presenter.loadBorderBiliData(jsonObject.optString("pub_id"), width + "", height + "");
+                presenter.loadBorderBiliData(view, activity.getMergeBitmap());
             }
 
             @Override
@@ -306,33 +318,23 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     //=---------- SeekBarChangeListener
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+
         if (fromUser && min != 0) {
             this.progress = progress;
             double divide = MathUtil.divide(progress, min, 2).doubleValue();
-            merge(pub_id, borderBitmap, divide);
-        }
-    }
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar){ }
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar){  }//end
 
-    // ------------回掉
-    private void merge(String pub_id, Bitmap bitmap, double scale) {
-        if (mListener != null) {
-            mListener.merge(pub_id, bitmap, scale, type);
+            seekBarMerge(divide);
+
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ImageMergeListener) {
-            mListener = (ImageMergeListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement ImageMergeListener");
-        }
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
     }//end
 
 

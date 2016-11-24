@@ -77,7 +77,12 @@
         <activity
             android:name=".ui.home.classify.artview.ArtViewRealityActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.publish.sencemore.SenceMoreActivity"></activity>
+        <activity
+            android:name=".ui.publish.adjustmentmore.sencemore.SenceMoreActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.publish.adjustmentmore.AdjustmentImageActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

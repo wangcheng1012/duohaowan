@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.MainActivity;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
@@ -31,7 +29,7 @@ import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.border.BorderPresenter;
 import com.hd.wlj.duohaowan.ui.publish.border.BorderView;
-import com.hd.wlj.duohaowan.ui.publish.publishModel;
+import com.hd.wlj.duohaowan.ui.publish.PublishModel;
 import com.hd.wlj.duohaowan.util.UploadChucks;
 import com.hd.wlj.duohaowan.view.RectClickImageView;
 import com.jph.takephoto.app.TakePhoto;
@@ -70,8 +68,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static android.R.attr.width;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -119,21 +115,21 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
         Intent intent = getActivity().getIntent();
         from = intent.getIntExtra("from", 1);
 
-        if (from == ImageAdjustmentActivity.from_main_choosesece) {
-            senceSave.setVisibility(View.GONE);
-        }
-        ImageAdjustmentActivity activity = (ImageAdjustmentActivity) getActivity();
-        MergeBitmap mergeBitmap = activity.getMergeBitmap();
-        Bitmap bitmap = mergeBitmap.getBorderBitmap();
-        if(bitmap == null){
-            bitmap = mergeBitmap.getWorkBitmap();
-        }
         int width = 0;
         int height  = 0;
+        ImageAdjustmentActivity activity = (ImageAdjustmentActivity) getActivity();
+
+
+        MergeBitmap mergeBitmap = activity.getMergeBitmap();
+        Bitmap bitmap = mergeBitmap.getBorderBitmap();
+        if (bitmap == null) {
+            bitmap = mergeBitmap.getWorkBitmap();
+        }
         if(bitmap != null){
             width = bitmap.getWidth();
             height = bitmap.getHeight();
         }
+
         presenter.loadSenceData( width ,  height );
         rectClickImageView = activity.getmRectClickImageView();
 
@@ -142,11 +138,11 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
             public void onClick(Rect rect) {
                 // 场景 imageview 上的Rect 点击
 
-                PicChoose();
-
-                mListener.setOriginalRect(rect);
-                //这里其实不会 合成 只是把rect、 pub_id和 backgroundBitmap 设置进去了，
-                merge(pub_id, backgroundBitmap, 1d);
+//                PicChoose();
+//
+//                mListener.setOriginalRect(rect);
+//                //这里其实不会 合成 只是把rect、 pub_id和 backgroundBitmap 设置进去了，
+//                merge(pub_id, backgroundBitmap, 1d);
             }
 
             @Override
@@ -223,9 +219,9 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
                         Rect rect = new Rect(position_x, position_y, position_x + inner_width, position_y + inner_height);
                         list.add(rect);
 
-                        MergeBitmap mergeBitmap = new MergeBitmap();
-                        mergeBitmap.setId(rect);
-                        ImageAdjustmentActivity.mergeBitmaps.add(mergeBitmap);
+//                        MergeBitmap mergeBitmap = new MergeBitmap();
+//                        mergeBitmap.setId(rect);
+//                        ImageAdjustmentActivity.mergeBitmaps.add(mergeBitmap);
                     }
 
 //                    if(from == ImageAdjustmentActivity.from_main_choosesece) {
@@ -331,12 +327,12 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
         Long chunk = 0l;
         String name = file_input.getName();
 
-
         Long had_upload = 0l;
         while (had_upload < file_input.length()) {
             fis.read(file_bytes);
 
             final UploadChucks uploadChucks = new UploadChucks(getActivity());
+            uploadChucks.setName(name);
             uploadChucks.setFile_bytes(file_bytes);
             uploadChucks.setChunks(chunks);
             uploadChucks.setChunk(chunk);
@@ -382,7 +378,7 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
 //        String money = complateMoney.getText() + "";
 //        String intro = complateIntro.getText() + "";
 
-        publishModel model = new publishModel(getActivity());
+        PublishModel model = new PublishModel(getActivity());
 
         model.setHavebachground(true);
 
@@ -392,7 +388,7 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
 
         ArrayList<MergeBitmap> objects = new ArrayList<>();
         objects.add(tmp);
-        model.setMerger(objects);
+        model.setMergeBitmaps(objects);
 
         model.Request().setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
             @Override
@@ -454,14 +450,14 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
     public void takeSuccess(TResult result) {
         Logger.i("takeSuccess：" + result.getImage().getPath());
 
-        Bundle bundle = new Bundle();
-        bundle.putString("path", result.getImage().getPath());
-        bundle.putInt("from", ImageAdjustmentActivity.from_sece_work);
-
-        Intent intent = new Intent(getActivity(), ImageAdjustmentActivity.class);
-        intent.putExtras(bundle);
-
-        startActivity(intent);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("path", result.getImage().getPath());
+//        bundle.putInt("from", ImageAdjustmentActivity.from_sece_work);
+//
+//        Intent intent = new Intent(getActivity(), ImageAdjustmentActivity.class);
+//        intent.putExtras(bundle);
+//
+//        startActivity(intent);
     }
 
     @Override

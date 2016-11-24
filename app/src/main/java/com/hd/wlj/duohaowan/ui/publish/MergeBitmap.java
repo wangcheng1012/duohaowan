@@ -1,37 +1,30 @@
 package com.hd.wlj.duohaowan.ui.publish;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.util.ImageUtil2;
-import com.mylhyl.acp.Acp;
-import com.mylhyl.acp.AcpListener;
-import com.mylhyl.acp.AcpOptions;
-import com.orhanobut.logger.Logger;
+import com.lling.photopicker.utils.ImageLoader;
+import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.img.BitmapUtil;
-import com.wlj.base.web.asyn.HexM;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.List;
-
-import static android.os.Environment.getExternalStoragePublicDirectory;
-
-public class MergeBitmap {
+public class MergeBitmap implements Parcelable {
 
     private Rect id;
 
     private String workPath;
+    private String borderPath;
+    private String backgroundPath;
+
     /**
      * 间隙
      */
@@ -95,13 +88,59 @@ public class MergeBitmap {
 
     private String card1Id;
     private String card2Id;
-    private String BackgroundId;
+    private String backgroundId;
     private String borderId;
 
     private boolean haveBackground;
 
+    public MergeBitmap() {
+    }
+
+    protected MergeBitmap(Parcel in) {
+
+        id = in.readParcelable(Rect.class.getClassLoader());
+        workPath = in.readString();
+        borderPath = in.readString();
+        backgroundPath = in.readString();
+        card1space = in.readFloat();
+        card1Color = in.readInt();
+        lineinner = in.readFloat();
+        lineoutside = in.readFloat();
+        card2space = in.readFloat();
+        card2Color = in.readInt();
+        borkRect_old = in.readParcelable(Rect.class.getClassLoader());
+//        borderBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+//        workBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        workRect = in.readParcelable(Rect.class.getClassLoader());
+        card1Rect = in.readParcelable(Rect.class.getClassLoader());
+        card2Rect = in.readParcelable(Rect.class.getClassLoader());
+        backgroundRect = in.readParcelable(Rect.class.getClassLoader());
+//        backgroundBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+//        endBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        card1Id = in.readString();
+        card2Id = in.readString();
+        backgroundId = in.readString();
+        borderId = in.readString();
+        haveBackground = in.readByte() != 0;
+
+    }
+
+    public static final Creator<MergeBitmap> CREATOR = new Creator<MergeBitmap>() {
+        @Override
+        public MergeBitmap createFromParcel(Parcel in) {
+            return new MergeBitmap(in);
+        }
+
+        @Override
+        public MergeBitmap[] newArray(int size) {
+            return new MergeBitmap[size];
+        }
+    };
+
+
     public Bitmap buildBackgroundBitmap() {
         haveBackground = true;
+
         Bitmap bitmap = buildFinalBitmap();
         //加背景
         if (backgroundBitmap != null && bitmap != null) {
@@ -110,20 +149,139 @@ public class MergeBitmap {
         return bitmap;
     }
 
-    public Bitmap buildFinalBitmap() {
+    /**
+     * 场景多图
+     */
+    public synchronized void buildBackgroundMore(final Context mContext,final ImageLoader.BackBitmap backBitmap){
+
+        buildMore(mContext, new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap mBitmap) {
+                //加背景
+                if (backgroundBitmap != null && mBitmap != null) {
+
+                    mBitmap = ImageUtil2.imageSynthesis(backgroundBitmap, mBitmap, backgroundRect, false);
+
+                    backBitmap.back(mBitmap);
+                }
+            }
+        });
+
+    }
+
+    /**
+     * 合成图片
+     * @param mContext
+     * @param backBitmap
+     */
+    public synchronized void buildMore(final Context mContext, final ImageLoader.BackBitmap backBitmap) {
 
         haveBackground = false;
 
-        if (borderBitmap == null) {
-            return workBitmap;
+        // 作平为空 没的返回
+        if (workBitmap == null && StringUtils.isEmpty(workPath)) {
+            return;
         }
-        if (workBitmap == null) {
-            return null;
-        }
-        //最终的 合成图片
-        Bitmap bitmap_final = borderBitmap;
+        //边框为空 取作品
+        if (borderBitmap == null && StringUtils.isEmpty(borderPath)) {
 
+            if (!StringUtils.isEmpty(workPath)) {
+                ImageLoader.getInstance(mContext).getBitmap(workPath, 500, 350, backBitmap);
+            }
+            return;
+        }
+        // 画框
+        if(borderBitmap != null){
+
+            //最终的 合成图片
+            buildAll(borderBitmap,mContext, backBitmap);
+        }else if (borderPath != null) {
+
+            Glide.with(mContext).load(Urls.HOST + borderPath).asBitmap().into(new SimpleTarget<Bitmap>(500, 500) {
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+
+                    buildAll(resource,mContext, backBitmap);
+                }
+            });
+        }
+
+    }
+
+    /**
+     * 分别 buildAll
+     * @param bitmap_final
+     * @param mContext
+     * @param backBitmap
+     */
+    private void buildAll(Bitmap bitmap_final, Context mContext, ImageLoader.BackBitmap backBitmap) {
         //——————————卡纸2
+        bitmap_final = buildCard2(bitmap_final);
+
+        //——————————卡纸1
+        bitmap_final = buildCard1(bitmap_final);
+
+        //-----------加作品
+        bitmap_final = buildWork(mContext, backBitmap, bitmap_final);
+
+        backBitmap.back(bitmap_final);
+    }
+
+    /**
+     *   作品
+     * @param mContext
+     * @param backBitmap
+     * @param bitmap_final
+     * @return
+     */
+    private Bitmap buildWork(Context mContext, final ImageLoader.BackBitmap backBitmap, Bitmap bitmap_final) {
+
+        if(workBitmap != null) {
+
+            bitmap_final = ImageUtil2.imageSynthesis(bitmap_final, workBitmap, workRect, true);
+        }else if(!StringUtils.isEmpty(workPath)){
+
+            final Bitmap finalBitmap_final = bitmap_final;
+
+            ImageLoader.getInstance(mContext).getBitmap(workPath, 500, 350, new ImageLoader.BackBitmap() {
+                @Override
+                public void back(Bitmap mBitmap) {
+
+                    Bitmap bitmap = ImageUtil2.imageSynthesis(finalBitmap_final, mBitmap, workRect, true);
+
+                    backBitmap.back(bitmap);
+                }
+            });
+
+        }
+        return bitmap_final;
+    }
+
+    /**
+     *  ——————————卡纸1
+     * @param bitmap_final
+     * @return
+     */
+    private Bitmap buildCard1(Bitmap bitmap_final) {
+        if (card1space != 0f) {
+            if (card1Rect == null) {
+                card1Rect = new Rect();
+            }
+            if (card1Color == 0) {
+                card1Color = Color.BLACK;
+            }
+
+            bitmap_final = ImageUtil2.mergeCard1(bitmap_final, card1Rect, card1space, card1Color, lineinner, lineoutside);
+        }
+        return bitmap_final;
+    }
+
+    /**
+     * //——————————卡纸2
+     * @param bitmap_final
+     * @return
+     */
+    private Bitmap buildCard2(Bitmap bitmap_final) {
         if (card2space != 0f) {
             if (card2Rect == null) {
                 card2Rect = new Rect();
@@ -149,18 +307,27 @@ public class MergeBitmap {
             //卡纸2颜色
             bitmap_final = ImageUtil2.mergeCard2(bitmap_final, borkRect_old, card2_inner_end_rect, card2space, card2Color);
         }
+        return bitmap_final;
+    }
+
+    public Bitmap buildFinalBitmap() {
+
+        haveBackground = false;
+
+        if (borderBitmap == null) {
+            return workBitmap;
+        }
+        if (workBitmap == null) {
+            return null;
+        }
+        //最终的 合成图片
+        Bitmap bitmap_final = borderBitmap;
+
+        //——————————卡纸2
+        bitmap_final = buildCard2(bitmap_final);
 
         //——————————卡纸1
-        if (card1space != 0f) {
-            if (card1Rect == null) {
-                card1Rect = new Rect();
-            }
-            if (card1Color == 0) {
-                card1Color = Color.BLACK;
-            }
-
-            bitmap_final = ImageUtil2.mergeCard1(bitmap_final, card1Rect, card1space, card1Color, lineinner, lineoutside);
-        }
+        bitmap_final = buildCard1(bitmap_final);
 
         //-----------加作品
         bitmap_final = ImageUtil2.imageSynthesis(bitmap_final, workBitmap, workRect, true);
@@ -226,11 +393,11 @@ public class MergeBitmap {
     }
 
     public String getBackgroundId() {
-        return BackgroundId;
+        return backgroundId;
     }
 
     public void setBackgroundId(String backgroundId) {
-        BackgroundId = backgroundId;
+        this.backgroundId = backgroundId;
     }
 
     public String getBorderId() {
@@ -305,6 +472,22 @@ public class MergeBitmap {
         this.id = id;
     }
 
+    public String getBorderPath() {
+        return borderPath;
+    }
+
+    public void setBorderPath(String borderPath) {
+        this.borderPath = borderPath;
+    }
+
+    public String getBackgroundPath() {
+        return backgroundPath;
+    }
+
+    public void setBackgroundPath(String backgroundPath) {
+        this.backgroundPath = backgroundPath;
+    }
+
     /**
      * 获取作平二进制流
      *
@@ -314,32 +497,56 @@ public class MergeBitmap {
     public String getworkBitmapByte(Activity activity) {
 
         if (workBitmap == null || workPath == null) return null;
-//        int i = workBitmap.getRowBytes() * workBitmap.getHeight();
+        String s = BitmapUtil.getInstall().bitmaptoString(workBitmap);
+        return s;
+//
+    }
 
-//        Bitmap bitmap1 = BitmapUtil.getInstall().decodeBitmapFromFile(workPath, 500, 500);
-//
-//        int i2 = bitmap1.getRowBytes() * bitmap1.getHeight();
-//        Logger.e("workBitmap"+i +"  bitmap1:"+i2);
-//        if (bitmap1 != null) {
-            String s = BitmapUtil.getInstall().bitmaptoString(workBitmap);
-            return s;
-//        }
-//            Bitmap bitmap = BitmapFactory.decodeFile(workPath, options);
-//            FileInputStream fis = new FileInputStream(workPath);
-//
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//            int read = fis.read();
-//            while (read != -1) {
-//                baos.write(read);
-//                read = fis.read();
-//            }
-//
-//            byte[] byteArray = baos.toByteArray();
-//
-//            String s = HexM.encodeHexString(byteArray);
+    /**
+     * Describe the kinds of special objects contained in this Parcelable's
+     * marshalled representation.
+     *
+     * @return a bitmask indicating the set of special object types marshalled
+     * by the Parcelable.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-//        return null;
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(id, flags);
+        dest.writeString(workPath);
+        dest.writeString(borderPath);
+        dest.writeString(backgroundPath);
+        dest.writeFloat(card1space);
+        dest.writeInt(card1Color);
+        dest.writeFloat(lineinner);
+        dest.writeFloat(lineoutside);
+        dest.writeFloat(card2space);
+        dest.writeInt(card2Color);
+        dest.writeParcelable(borkRect_old, flags);
+//        dest.writeParcelable(borderBitmap, flags);
+//        dest.writeParcelable(workBitmap, flags);
+        dest.writeParcelable(workRect, flags);
+        dest.writeParcelable(card1Rect, flags);
+        dest.writeParcelable(card2Rect, flags);
+        dest.writeParcelable(backgroundRect, flags);
+//        dest.writeParcelable(backgroundBitmap, flags);
+//        dest.writeParcelable(endBitmap, flags);
+        dest.writeString(card1Id);
+        dest.writeString(card2Id);
+        dest.writeString(backgroundId);
+        dest.writeString(borderId);
+        dest.writeByte((byte) (haveBackground ? 1 : 0));
     }
 
     public enum MergeType {background, border, card1, card2}

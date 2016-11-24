@@ -107,9 +107,10 @@ public class LoadMoreWrapper<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (isShowLoadMore(position))
         {
             int totalDy = recycerview.computeVerticalScrollOffset();
+            int totalDx = recycerview.computeHorizontalScrollOffset();
 //            int scrollY = recycerview.getScrollY();
             //这里 只屏蔽了 没滚动
-            if (mOnLoadMoreListener != null && totalDy > 0)
+            if (mOnLoadMoreListener != null && (totalDy > 0 || totalDx >0))
             {
                 mOnLoadMoreListener.onLoadMoreRequested();
             }

@@ -120,7 +120,7 @@ public class ImageUtil2 {
      * @param save                true 线backGroudImage
      * @return 合成后的 BufferedImage	被合成的图像会自动居中
      */
-    public static Bitmap imageSynthesis(Bitmap backGroudImage, Bitmap bufferedImage_input, Rect findRectangle, boolean save) {
+    public static synchronized Bitmap imageSynthesis(Bitmap backGroudImage, Bitmap bufferedImage_input, Rect findRectangle, boolean save) {
 
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
@@ -157,12 +157,16 @@ public class ImageUtil2 {
         if (save) {
             RealRect = new Rect(x_zuopin, y_zuopin, x_zuopin + width_zuopin_scale, y_zuopin + height_zuopin_scale);
         }
+        Bitmap scaledBitmap = bitmap;
+        //
+        if(save){
+            int mW = 350;
+            int mh = bitmap.getHeight() * mW / bitmap.getWidth();
 
-        int mW = 300;
-        int mh = bitmap.getHeight() * mW / bitmap.getWidth();
+            scaledBitmap = Bitmap.createScaledBitmap(bitmap, mW, mh, false);
+            bitmap.recycle();
+        }
 
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, mW, mh, false);
-        bitmap.recycle();
 
         return scaledBitmap;
     }

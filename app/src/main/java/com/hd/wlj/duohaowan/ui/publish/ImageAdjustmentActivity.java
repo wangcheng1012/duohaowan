@@ -47,18 +47,12 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
      * 主界面 选择作品
      */
     public final static int from_main_choosework = 1;
-    /**
-     * 主界面 选择场景
-     */
-    public final static int from_main_choosesece = 2;
+
     /**
      * 完成界面 选择场景
      */
     public final static int from_border_sece = 3;
-    /**
-     * 场景界面 选择作品
-     */
-    public final static int from_sece_work = 4;
+
     public static ArrayList<MergeBitmap> mergeBitmaps = new ArrayList<>();
     @BindView(R.id.adjustment_image)
     RectClickImageView mRectClickImageView;
@@ -87,8 +81,6 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
                 onBackPressed();
             }
         });
-
-//
         initView();
 
         mTabLayout.setupWithViewPager(mViewpager);
@@ -135,34 +127,6 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
             }
             seceFragmentAdapter();
 
-        } else if (from == from_main_choosesece) {
-            // 主界面 选择场景
-            mergeBitmaps.clear();
-//            mergeBitmap = new MergeBitmap();
-//            mergeBitmaps.add(mergeBitmap);
-
-            seceFragmentAdapter();
-        } else {
-            // 场景界面 选择作品
-            Rect rect = (Rect)intent.getParcelableExtra("rect");
-            for (MergeBitmap bitmap : mergeBitmaps) {
-                Rect id = bitmap.getId();
-                if(id.equals(rect)){
-                    mergeBitmap = bitmap;
-                }
-            }
-            path = intent.getStringExtra("path");
-            mergeBitmap.setWorkPath(path);
-            ImageLoader.getInstance(this).getBitmap(path, 500, 350, new ImageLoader.BackBitmap() {
-
-                @Override
-                public void back(Bitmap mBitmap) {
-                    mRectClickImageView.setImageBitmap(mBitmap);
-                    mergeBitmap.setWorkBitmap(mBitmap);
-                }
-            });
-
-            workFragmentAdapter();
         }
 
     }
@@ -367,7 +331,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
     @Override
     public void setOriginalRect(Rect rect) {
 
-        if (from == from_main_choosework || from == from_sece_work) {
+        if (from == from_main_choosework) {
             mergeBitmap.setBorkRect_old(rect);
         } else {
             mergeBitmap.setBackgroundRect(rect);

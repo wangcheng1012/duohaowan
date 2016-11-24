@@ -94,22 +94,12 @@
         android:visibility="gone" />
 
     <Button
-        android:id="@+id/complate_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@color/black"
-        android:text="发布"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
-
-    <Button
         android:id="@+id/complate_backgound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@color/black"
-        android:text="场景选择"
+        android:text="完成"
         android:textColor="@color/white"
         android:textSize="20sp" />
 

@@ -13,7 +13,7 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.LoginActivity;
 import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
-import com.hd.wlj.duohaowan.ui.publish.publishModel;
+import com.hd.wlj.duohaowan.ui.publish.PublishModel;
 import com.hd.wlj.duohaowan.util.UploadChucks;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
@@ -100,7 +100,7 @@ public class ComplateFragment extends BaseFragment {
         String money = complateMoney.getText() + "";
         String intro = complateIntro.getText() + "";
 
-        publishModel model = new publishModel(getActivity());
+        PublishModel model = new PublishModel(getActivity());
 
         model.setHavebachground(false);
 
@@ -109,7 +109,7 @@ public class ComplateFragment extends BaseFragment {
         model.setPrice(money);
         ArrayList<MergeBitmap> objects = new ArrayList<>();
         objects.add(tmp);
-        model.setMerger(objects);
+        model.setMergeBitmaps(objects);
 
         model.Request().setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
             @Override
