@@ -57,7 +57,7 @@
             style="@style/text_base"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="自估价：" />
+            android:text="自  估  价：" />
 
         <EditText
             android:id="@+id/complate_money"
@@ -65,7 +65,70 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:hint="元" />
+            android:hint="单位元" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="作  品  宽：" />
+
+        <EditText
+            android:id="@+id/complate_width"
+            style="@style/text_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="单位cm" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="作  品  高：" />
+
+        <EditText
+            android:id="@+id/complate_height"
+            style="@style/text_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="单位cm" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/text_base"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="标       签：" />
+
+        <EditText
+            android:id="@+id/complate_tag"
+            style="@style/text_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="标签" />
 
     </LinearLayout>
 

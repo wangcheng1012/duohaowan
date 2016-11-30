@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
+    android:background="@color/_EFEFEF"
+    android:paddingBottom="5dp">
+
+    <View
+        android:id="@+id/artview_history_point"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_alignTop="@+id/artview_askedandlearn_text"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/shape_oval" />
+
+    <TextView
+        android:id="@+id/artview_askedandlearn_text"
+        style="@style/text_base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@+id/artview_history_point"
+        android:layout_toLeftOf="@+id/artview_askedandlearn_statetime"
+        android:layout_toRightOf="@+id/artview_history_point"
+        android:layout_toStartOf="@+id/artview_askedandlearn_statetime"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text=" " />
+
+    <TextView
+        android:id="@+id/artview_askedandlearn_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/artview_askedandlearn_text"
+        android:layout_alignStart="@+id/artview_askedandlearn_text"
+        android:layout_below="@+id/artview_askedandlearn_text"
+        android:layout_marginTop="5dp"
+        android:text=" "
+        android:textColor="@color/black1"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/artview_askedandlearn_statetime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.2"
+        android:text=" "
+        android:textSize="10sp" />
+
+
+</RelativeLayout>

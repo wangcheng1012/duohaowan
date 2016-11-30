@@ -70,8 +70,8 @@ public class HomeModelImpl extends BaseAsyncModle {
         } else if (type == hot) {
             //  tag_type  标签 1/推荐	2/热门	3(热门+推荐)
             HttpPost httpPost = new HttpPost(Urls.list_pub);
-            httpPost.addParemeter("rootPubConlumnId", MsgContext.home_hot);
-            httpPost.addParemeter("tag_type", "2");
+            httpPost.addParemeter("pubConlumnId", MsgContext.home_hot);
+//            httpPost.addParemeter("tag_type", "2");
 
             asRequestModle.setHttpPost(httpPost);
 

@@ -64,7 +64,7 @@ public class ClassifyListModel extends BaseAsyncModle {
                         httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
                         httpPost.addParemeter("tag_type", "2");
                         break;
-                    case "最新":
+                    case "其他":
                         httpPost.addParemeter("secondPubConlumnId", "581407b20e9f110d8cbbdb94");
                         break;
                     default:
@@ -79,7 +79,7 @@ public class ClassifyListModel extends BaseAsyncModle {
                 //艺术馆
                 switch (tabBarStr) {
 
-                    case "热门":
+                    case "预告":
                         httpPost.addParemeter("secondPubConlumnId", "581ef1a1d6c4594f90fa046c");
                         httpPost.addParemeter("tag_type", "2");
                         break;
@@ -106,8 +106,6 @@ public class ClassifyListModel extends BaseAsyncModle {
                         httpPost.addParemeter("secondPubConlumnId", "5812ef5478e0802052dd7a2f");
                         httpPost.addParemeter("tag_string", tabBarStr);
                         break;
-
-
                 }
 
                 break;
@@ -119,6 +117,9 @@ public class ClassifyListModel extends BaseAsyncModle {
                     httpPost.addParemeter("pubConlumnId", "5833e67ed6c4592b41d886ee");
                 } else if ("现实篇".equals(tabBarStr)) {
                     httpPost.addParemeter("pubConlumnId", "5833e686d6c4592b41d886ef");
+                } else {
+                    //问学篇
+                    httpPost.addParemeter("pubConlumnId", "5833e67ed6c4592b41d886ee");
                 }
                 break;
 

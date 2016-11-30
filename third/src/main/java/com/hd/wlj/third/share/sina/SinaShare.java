@@ -1,31 +1,37 @@
 package com.hd.wlj.third.share.sina;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.hd.wlj.third.share.Constants;
+import com.hd.wlj.third.share.ShareModle;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.TextObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
+import com.sina.weibo.sdk.api.share.BaseResponse;
+import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
 import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
 import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
+import com.sina.weibo.sdk.constant.WBConstants;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.wlj.base.util.UIHelper;
 
-public abstract class SinaShare {
-    private String dateText;
-    private Bitmap image;
+public class SinaShare {
+
+    private ShareModle mShareModle;
     private Activity mActivity;
-    private ImageView mImageView;
     private IWeiboShareAPI mWeiboShareAPI;
 
-    public SinaShare(Activity paramActivity, Bundle savedInstanceState) {
+    public SinaShare(ShareModle mShareModle, Activity paramActivity, Bundle savedInstanceState) {
+        this.mShareModle = mShareModle;
         this.mActivity = paramActivity;
         // 创建微博分享接口实例
         mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(mActivity.getApplicationContext(), Constants.SS_APP_KEY);
@@ -42,57 +48,50 @@ public abstract class SinaShare {
         if (savedInstanceState != null) {
             mWeiboShareAPI.handleWeiboResponse(mActivity.getIntent(), new myResponse(mActivity));
         }
-
-        onnewintent(mWeiboShareAPI);
     }
-
-    //	   @Override
-//	    protected void onNewIntent(Intent intent) {
-//	        super.onNewIntent(intent);
-//
-//	        // 从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
-//	        // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
-//	        // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
-//	        mWeiboShareAPI.handleWeiboResponse(intent, this);
-//	    }
+    public void onNewIntent(Intent intent) {
+        // 从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
+        // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
+        // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
+        mWeiboShareAPI.handleWeiboResponse(intent, new myResponse(mActivity));
+    }
     private ImageObject getImageObj() {
         ImageObject localImageObject = new ImageObject();
-        localImageObject.setImageObject(this.image);
+//        localImageObject.setImageObject(this.image);
+        localImageObject.imagePath = mShareModle.getPicLocalPath();
         return localImageObject;
     }
 
     private TextObject getTextObj() {
-        this.dateText = this.dateText.replaceAll("<[^>]*>", "");
+        String dateText = mShareModle.getContent().replaceAll("<[^>]*>", "");
         TextObject localTextObject = new TextObject();
-        localTextObject.text = this.dateText.substring(0, Math.min(140, this.dateText.length()));
+        localTextObject.text =  dateText.substring(0, Math.min(140, dateText.length()));
         return localTextObject;
     }
 
-    public abstract void onnewintent(IWeiboShareAPI paramIWeiboShareAPI);
-
     public void sendMultiMessage() {
-        WeiboMultiMessage localWeiboMultiMessage = new WeiboMultiMessage();
-        localWeiboMultiMessage.textObject = getTextObj();
+        WeiboMultiMessage multiMessage = new WeiboMultiMessage();
+        multiMessage.textObject = getTextObj();
 
-        if (this.image != null)
-            localWeiboMultiMessage.imageObject = getImageObj();
+        if (mShareModle.getPicLocalPath() != null)
+            multiMessage.imageObject = getImageObj();
 
-        SendMultiMessageToWeiboRequest localSendMultiMessageToWeiboRequest = new SendMultiMessageToWeiboRequest();
-        localSendMultiMessageToWeiboRequest.transaction = String.valueOf(System.currentTimeMillis());
-        localSendMultiMessageToWeiboRequest.multiMessage = localWeiboMultiMessage;
+        SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
+        request.transaction = String.valueOf(System.currentTimeMillis());
+        request.multiMessage = multiMessage;
         AuthInfo localAuthInfo = new AuthInfo(this.mActivity, Constants.SS_APP_KEY, Constants.SS_REDIRECT_URL, Constants.SS_SCOPE);
         Oauth2AccessToken localOauth2AccessToken = AccessTokenKeeper.readAccessToken(this.mActivity);
         String str = "";
         if (localOauth2AccessToken != null)
             str = localOauth2AccessToken.getToken();
-        this.mWeiboShareAPI.sendRequest(this.mActivity, localSendMultiMessageToWeiboRequest, localAuthInfo, str, new WeiboAuthListener() {
+        this.mWeiboShareAPI.sendRequest(this.mActivity, request, localAuthInfo, str, new WeiboAuthListener() {
             public void onCancel() {
 
                 UIHelper.toastMessage(mActivity, "取消Auth");
             }
 
-            public void onComplete(Bundle paramAnonymousBundle) {
-                Oauth2AccessToken localOauth2AccessToken = Oauth2AccessToken.parseAccessToken(paramAnonymousBundle);
+            public void onComplete(Bundle bundle) {
+                Oauth2AccessToken localOauth2AccessToken = Oauth2AccessToken.parseAccessToken(bundle);
                 AccessTokenKeeper.writeAccessToken(mActivity, localOauth2AccessToken);
                 UIHelper.toastMessage(mActivity, "成功");
             }
@@ -104,13 +103,4 @@ public abstract class SinaShare {
         });
     }
 
-    public void setDateText(String paramString) {
-
-        this.dateText = paramString;
-    }
-
-    public void setmBitmap(Bitmap paramBitmap) {
-
-        this.image = paramBitmap;
-    }
 }

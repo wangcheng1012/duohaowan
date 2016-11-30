@@ -23,12 +23,17 @@ public class BorderModel extends BaseAsyncModle {
     private final static String baakground = "58214a7dd6c45965757937d9";
     public final static int type_border_bili = 22;
     public final static int type_sence = 21;
+    public final static int count_more = 2;
+    public final static int count_single = 1;
 
     private String paintingFrameConlumn_id;
     private String pubConlumnId;
     private String width;
     private String height;
-
+    /**
+     * 单图 多图
+     */
+    private int  count;
 
     public BorderModel() {
         super();
@@ -59,7 +64,6 @@ public class BorderModel extends BaseAsyncModle {
             httpPost.addParemeter("pubConlumnId", Border_bili);
             httpPost.addParemeter("width", width);
             httpPost.addParemeter("height", height);
-
             httpPost.addParemeter("paintingFrameConlumn_id", paintingFrameConlumn_id);
             asRequestModle.setHttpPost(httpPost);
             asRequestModle.setJiami(false);
@@ -71,6 +75,7 @@ public class BorderModel extends BaseAsyncModle {
             httpPost.addParemeter("rootPubConlumnId", baakground);
             httpPost.addParemeter("width", width);
             httpPost.addParemeter("height", height);
+            httpPost.addParemeter("count", count);
             asRequestModle.setHttpPost(httpPost);
             asRequestModle.setJiami(false);
 
@@ -97,5 +102,13 @@ public class BorderModel extends BaseAsyncModle {
 
     public void setHeight(String height) {
         this.height = height;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

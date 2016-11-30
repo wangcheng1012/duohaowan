@@ -5,11 +5,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
@@ -41,6 +44,8 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
     SeekBar cardSeekBar;
     @BindView(R.id.card_horizontalScrollView_ll)
     LinearLayout cardHorizontalScrollView;
+    @BindView(R.id.bili_textview)
+    TextView biliTv;
 
     private CardPresenter presenter;
     private ImageMergeListener mListener;
@@ -81,7 +86,12 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
         cardSeekBar.setMax(100);
         cardSeekBar.setProgress(1);
 
+        setBiliTV(0);
+
         cardRadioGroup.setOnCheckedChangeListener(this);
+    }
+    private void setBiliTV( double scale) {
+        biliTv.setText( "缩放比例："+ (int)(scale*100) +"%" );
     }
 
     @Override
@@ -142,6 +152,7 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
             } else {
                 mListener.mergeCard(space, MergeBitmap.MergeType.card2);
             }
+            setBiliTV(space);
         }
     }
 
@@ -161,7 +172,6 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
         super.onDestroy();
         presenter.detachView();
     }
-
 
     /**
      * Notification that the progress level has changed. Clients can use the fromUser parameter
@@ -224,4 +234,5 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
         }
 
     }
+
 }

@@ -25,7 +25,9 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
+import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.sencemore.SenceMoreActivity;
 import com.hd.wlj.duohaowan.util.ImageUtil2;
+import com.lling.photopicker.utils.ImageLoader;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
@@ -56,6 +58,8 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     RecyclerView adjustRecyclerView;
     @BindView(R.id.adjust_recyclerView_bili)
     RecyclerView biliRecyclerView;
+    @BindView(R.id.adjust_height_tv)
+    TextView biliTv;
 
     private BorderPresenter presenter;
     private int min = 100;
@@ -91,6 +95,10 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         return R.layout.fragment_adjust_image;
     }
 
+    private void setBiliTV( double scale) {
+        biliTv.setText( "缩放比例："+ (int)(scale*100) +"%" );
+    }
+
     protected void initView() {
         ButterKnife.bind(this, view);
         view.setMinimumHeight(0);
@@ -103,8 +111,27 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         adjustHeightSb.setProgress(progress);
         adjustHeightSb.setMax(min);
 
+        double scale = MathUtil.divide(progress, min, 2).doubleValue();
+        setBiliTV(scale);
+
         initRecyclerView();
         initRecyclerViewBIli();
+
+        initMerge();
+
+    }
+
+    private void initMerge() {
+
+        MergeBitmap mergeBitmap = activity.getMergeBitmap();
+
+        mergeBitmap.buildMore(mcontext, new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap mBitmap) {
+                activity.getmRectClickImageView().setImageBitmap(mBitmap);
+            }
+        });
+
     }
 
     private void initRecyclerViewBIli() {
@@ -157,6 +184,8 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
                         //seekbar
                         adjustHeightSb.setMax(min);
                         adjustHeightSb.setProgress(min);
+//                        double scale = MathUtil.divide(progress, min, 2).doubleValue();
+                        setBiliTV(1);
                     }
                 });
 
@@ -197,8 +226,16 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         mergeBitmap.setCard1space(0);
         mergeBitmap.setCard2space(0);
 
-        Bitmap bitmap = mergeBitmap.buildFinalBitmap();
-        activity.getmRectClickImageView().setImageBitmap(bitmap);
+
+        mergeBitmap.buildMore(mcontext, new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap mBitmap) {
+                activity.getmRectClickImageView().setImageBitmap(mBitmap);
+            }
+        });
+
+//        Bitmap bitmap = mergeBitmap.buildFinalBitmap();
+//        activity.getmRectClickImageView().setImageBitmap(bitmap);
 
         //seekbar
         min = Math.min(inner_width, inner_height);
@@ -210,6 +247,9 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
      * @param divide
      */
     private void seekBarMerge(double divide) {
+        //比例显示
+        setBiliTV(divide);
+        //
         Rect borkRectOld = activity.getMergeBitmap().getBorkRect_old();
         if (borkRectOld == null) {
             return;
@@ -217,10 +257,22 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         Rect rect = ImageUtil2.resizeRectangle(borkRectOld, divide);
         activity.getMergeBitmap().setWorkRect(rect);
 
-        Bitmap bitmap = activity.getMergeBitmap().buildFinalBitmap();
-        activity.getmRectClickImageView().setImageBitmap(bitmap);
+        activity.getMergeBitmap().buildMore(mcontext, new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap mBitmap) {
+                activity.getmRectClickImageView().setImageBitmap(mBitmap);
+            }
+        });
+//        Bitmap bitmap = activity.getMergeBitmap().buildFinalBitmap();
+//        activity.getmRectClickImageView().setImageBitmap(bitmap);
     }
 
+    /**
+     * 画框比例
+     * @param holder
+     * @param o
+     * @param position
+     */
     private void createBiliItem(ViewHolder holder, Base o, int position) {
 
         holder.getConvertView().setTag(R.id.tag_first, o);
@@ -230,9 +282,11 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         final JSONObject resultJsonObject = o.getResultJsonObject();
 
         textview.setText(resultJsonObject.optString("name"));
-
     }
 
+    /**
+     * 画框种类
+     */
     private void initRecyclerView() {
 
         adjustRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -269,7 +323,6 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
                 }
                 preSelectClassifyView = view;
                 preSelectClassifyView.setSelected(true);
-
 
                 presenter.loadBorderBiliData(view, activity.getMergeBitmap());
             }
@@ -318,14 +371,10 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     //=---------- SeekBarChangeListener
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-
         if (fromUser && min != 0) {
             this.progress = progress;
             double divide = MathUtil.divide(progress, min, 2).doubleValue();
-
             seekBarMerge(divide);
-
         }
     }
 

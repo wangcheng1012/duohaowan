@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.home.classify.arist.AristDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewAskedandLearnActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewHistoryActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewRealityActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.gallery.GalleryActivity;
@@ -96,6 +97,9 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                     itemlayout = R.layout.item_classify_artview_history;
                 } else if ("现实篇".equals(tabBarStr)) {
                     itemlayout = R.layout.item_classify_artview_reality;
+                }else{
+                    //问学篇
+                    itemlayout = R.layout.item_classify_artview_askandlearn;
                 }
 
                 break;
@@ -150,6 +154,9 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                             view.artviewHistoryRecycerview(viewHolder, item, position);
                         } else if ("现实篇".equals(tabBarStr)) {
                             view.artviewRealityRecycerview(viewHolder, item, position);
+                        }else{
+                            //问学篇
+                            view.artviewAskandLearnRecycerview(viewHolder, item, position);
                         }
                         break;
 
@@ -196,6 +203,8 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
 
                             } else if ("现实篇".equals(tabBarStr)) {
                                 cla = ArtViewRealityActivity.class;
+                            }else{
+                                cla = ArtViewAskedandLearnActivity.class;
                             }
                             break;
                         case ClassifyListModel.request_type_seach:

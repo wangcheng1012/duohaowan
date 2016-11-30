@@ -37,6 +37,7 @@ public class SenceMorePresenter extends BasePresenter<SenceMoreView> {
     private AsyncCall asyncCall;
     private List<Base> mDate;
     private LoadMoreWrapper loadMoreWrapper;
+    private int count;
 
     public SenceMorePresenter(Activity activity) {
         this.activity = activity;
@@ -44,13 +45,15 @@ public class SenceMorePresenter extends BasePresenter<SenceMoreView> {
         uploadChucks = new UploadChucks(activity);
     }
 
-    public void load() {
+    public void load(int count) {
+        this.count = count;
         loadSenceData(1);
     }
 
     private void loadSenceData(int page) {
+        borderModel.setCount(count);
         borderModel.setPage(page);
-        borderModel.setPageSize(5);
+        borderModel.setPageSize(10);
         asyncCall = borderModel.Request(BorderModel.type_sence);
         loadBack();
     }
@@ -154,7 +157,7 @@ public class SenceMorePresenter extends BasePresenter<SenceMoreView> {
 
             @Override
             public void fail(Exception paramException) {
-
+                UIHelper.loadingClose();
             }
         });
 

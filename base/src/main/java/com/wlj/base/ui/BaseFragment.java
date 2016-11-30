@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.squareup.leakcanary.RefWatcher;
+import com.wlj.base.util.AppContext;
 import com.wlj.base.util.Log;
 
 /**
@@ -102,7 +104,8 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        RefWatcher refWatcher = AppContext.getAppContext().getRefWatcher();
+        refWatcher.watch(this);
         Log.w("dd", "onDestroy " + getClass().getSimpleName() + getId());
     }
 

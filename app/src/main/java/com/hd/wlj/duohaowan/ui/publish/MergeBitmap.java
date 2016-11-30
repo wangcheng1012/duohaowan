@@ -17,7 +17,9 @@ import com.lling.photopicker.utils.ImageLoader;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.img.BitmapUtil;
 
-public class MergeBitmap implements Parcelable {
+import java.util.List;
+
+public class MergeBitmap implements Parcelable, Cloneable {
 
     private Rect id;
 
@@ -96,47 +98,29 @@ public class MergeBitmap implements Parcelable {
     public MergeBitmap() {
     }
 
-    protected MergeBitmap(Parcel in) {
+    public MergeBitmap Clone(MergeBitmap mergeBitmap) {
 
-        id = in.readParcelable(Rect.class.getClassLoader());
-        workPath = in.readString();
-        borderPath = in.readString();
-        backgroundPath = in.readString();
-        card1space = in.readFloat();
-        card1Color = in.readInt();
-        lineinner = in.readFloat();
-        lineoutside = in.readFloat();
-        card2space = in.readFloat();
-        card2Color = in.readInt();
-        borkRect_old = in.readParcelable(Rect.class.getClassLoader());
-//        borderBitmap = in.readParcelable(Bitmap.class.getClassLoader());
-//        workBitmap = in.readParcelable(Bitmap.class.getClassLoader());
-        workRect = in.readParcelable(Rect.class.getClassLoader());
-        card1Rect = in.readParcelable(Rect.class.getClassLoader());
-        card2Rect = in.readParcelable(Rect.class.getClassLoader());
-        backgroundRect = in.readParcelable(Rect.class.getClassLoader());
-//        backgroundBitmap = in.readParcelable(Bitmap.class.getClassLoader());
-//        endBitmap = in.readParcelable(Bitmap.class.getClassLoader());
-        card1Id = in.readString();
-        card2Id = in.readString();
-        backgroundId = in.readString();
-        borderId = in.readString();
-        haveBackground = in.readByte() != 0;
+//        mergeBitmap.setBackgroundId(backgroundId);
+//        mergeBitmap.setBackgroundPath(backgroundPath);
 
+        mergeBitmap.setWorkRect(workRect);
+
+        mergeBitmap.setBorderPath(borderPath);
+        mergeBitmap.setBorderId(borderId);
+        mergeBitmap.setBorkRect_old(borkRect_old);
+
+        mergeBitmap.setCard2Color(card2Color);
+        mergeBitmap.setCard2Id(card2Id);
+        mergeBitmap.setCard2Rect(card2Rect);
+        mergeBitmap.setCard2space(card2space);
+
+        mergeBitmap.setCard1Color(card1Color);
+        mergeBitmap.setCard1Id(card1Id);
+        mergeBitmap.setCard1Rect(card1Rect);
+        mergeBitmap.setCard1space(card1space);
+
+        return mergeBitmap;
     }
-
-    public static final Creator<MergeBitmap> CREATOR = new Creator<MergeBitmap>() {
-        @Override
-        public MergeBitmap createFromParcel(Parcel in) {
-            return new MergeBitmap(in);
-        }
-
-        @Override
-        public MergeBitmap[] newArray(int size) {
-            return new MergeBitmap[size];
-        }
-    };
-
 
     public Bitmap buildBackgroundBitmap() {
         haveBackground = true;
@@ -152,7 +136,7 @@ public class MergeBitmap implements Parcelable {
     /**
      * 场景多图
      */
-    public synchronized void buildBackgroundMore(final Context mContext,final ImageLoader.BackBitmap backBitmap){
+    public synchronized void buildBackgroundMore(final Context mContext, final ImageLoader.BackBitmap backBitmap) {
 
         buildMore(mContext, new ImageLoader.BackBitmap() {
             @Override
@@ -171,6 +155,7 @@ public class MergeBitmap implements Parcelable {
 
     /**
      * 合成图片
+     *
      * @param mContext
      * @param backBitmap
      */
@@ -186,22 +171,28 @@ public class MergeBitmap implements Parcelable {
         if (borderBitmap == null && StringUtils.isEmpty(borderPath)) {
 
             if (!StringUtils.isEmpty(workPath)) {
-                ImageLoader.getInstance(mContext).getBitmap(workPath, 500, 350, backBitmap);
+                getWorkBitmap(mContext, new ImageLoader.BackBitmap() {
+                    @Override
+                    public void back(Bitmap mBitmap) {
+                        workBitmap = mBitmap;
+                        backBitmap.back(mBitmap);
+                    }
+                });
             }
             return;
         }
         // 画框
-        if(borderBitmap != null){
+        if (borderBitmap != null) {
 
             //最终的 合成图片
-            buildAll(borderBitmap,mContext, backBitmap);
-        }else if (borderPath != null) {
+            buildAll(borderBitmap, mContext, backBitmap);
+        } else if (borderPath != null) {
 
             Glide.with(mContext).load(Urls.HOST + borderPath).asBitmap().into(new SimpleTarget<Bitmap>(500, 500) {
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
 
-                    buildAll(resource,mContext, backBitmap);
+                    buildAll(resource, mContext, backBitmap);
                 }
             });
         }
@@ -210,6 +201,7 @@ public class MergeBitmap implements Parcelable {
 
     /**
      * 分别 buildAll
+     *
      * @param bitmap_final
      * @param mContext
      * @param backBitmap
@@ -228,7 +220,8 @@ public class MergeBitmap implements Parcelable {
     }
 
     /**
-     *   作品
+     * 作品
+     *
      * @param mContext
      * @param backBitmap
      * @param bitmap_final
@@ -236,14 +229,14 @@ public class MergeBitmap implements Parcelable {
      */
     private Bitmap buildWork(Context mContext, final ImageLoader.BackBitmap backBitmap, Bitmap bitmap_final) {
 
-        if(workBitmap != null) {
+        if (workBitmap != null) {
 
             bitmap_final = ImageUtil2.imageSynthesis(bitmap_final, workBitmap, workRect, true);
-        }else if(!StringUtils.isEmpty(workPath)){
+        } else if (!StringUtils.isEmpty(workPath)) {
 
             final Bitmap finalBitmap_final = bitmap_final;
 
-            ImageLoader.getInstance(mContext).getBitmap(workPath, 500, 350, new ImageLoader.BackBitmap() {
+            getWorkBitmap(mContext, new ImageLoader.BackBitmap() {
                 @Override
                 public void back(Bitmap mBitmap) {
 
@@ -252,13 +245,13 @@ public class MergeBitmap implements Parcelable {
                     backBitmap.back(bitmap);
                 }
             });
-
         }
         return bitmap_final;
     }
 
     /**
-     *  ——————————卡纸1
+     * ——————————卡纸1
+     *
      * @param bitmap_final
      * @return
      */
@@ -278,6 +271,7 @@ public class MergeBitmap implements Parcelable {
 
     /**
      * //——————————卡纸2
+     *
      * @param bitmap_final
      * @return
      */
@@ -338,6 +332,10 @@ public class MergeBitmap implements Parcelable {
 
     public Bitmap getWorkBitmap() {
         return workBitmap;
+    }
+
+    public void getWorkBitmap(Context mContext, ImageLoader.BackBitmap backBitmap) {
+        ImageLoader.getInstance(mContext).getBitmap(workPath, 500, 350, backBitmap);
     }
 
     public void setWorkBitmap(Bitmap workBitmap) {
@@ -502,6 +500,48 @@ public class MergeBitmap implements Parcelable {
 //
     }
 
+
+    protected MergeBitmap(Parcel in) {
+
+        id = in.readParcelable(Rect.class.getClassLoader());
+        workPath = in.readString();
+        borderPath = in.readString();
+        backgroundPath = in.readString();
+        card1space = in.readFloat();
+        card1Color = in.readInt();
+        lineinner = in.readFloat();
+        lineoutside = in.readFloat();
+        card2space = in.readFloat();
+        card2Color = in.readInt();
+        borkRect_old = in.readParcelable(Rect.class.getClassLoader());
+//        borderBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+//        workBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        workRect = in.readParcelable(Rect.class.getClassLoader());
+        card1Rect = in.readParcelable(Rect.class.getClassLoader());
+        card2Rect = in.readParcelable(Rect.class.getClassLoader());
+        backgroundRect = in.readParcelable(Rect.class.getClassLoader());
+//        backgroundBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+//        endBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        card1Id = in.readString();
+        card2Id = in.readString();
+        backgroundId = in.readString();
+        borderId = in.readString();
+        haveBackground = in.readByte() != 0;
+
+    }
+
+    public static final Creator<MergeBitmap> CREATOR = new Creator<MergeBitmap>() {
+        @Override
+        public MergeBitmap createFromParcel(Parcel in) {
+            return new MergeBitmap(in);
+        }
+
+        @Override
+        public MergeBitmap[] newArray(int size) {
+            return new MergeBitmap[size];
+        }
+    };
+
     /**
      * Describe the kinds of special objects contained in this Parcelable's
      * marshalled representation.
@@ -548,6 +588,7 @@ public class MergeBitmap implements Parcelable {
         dest.writeString(borderId);
         dest.writeByte((byte) (haveBackground ? 1 : 0));
     }
+
 
     public enum MergeType {background, border, card1, card2}
 

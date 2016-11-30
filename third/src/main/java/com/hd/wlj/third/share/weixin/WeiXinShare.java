@@ -1,11 +1,13 @@
 package com.hd.wlj.third.share.weixin;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
+import com.hd.wlj.third.R;
 import com.hd.wlj.third.share.Constants;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXImageObject;
@@ -132,22 +134,22 @@ public class WeiXinShare {
         return localWXMediaMessage;
     }
 
-    private WXMediaMessage webPageShare(String paramString1, String paramString2, String paramString3, Bitmap paramBitmap) {
+    private WXMediaMessage webPageShare(String webpageUrl, String title, String description, Bitmap bitmap) {
         if (!this.api.isWXAppInstalled()) {
             Toast.makeText(this.mActivity, "您还未安装微信客户端", Toast.LENGTH_SHORT).show();
             return null;
         }
         WXWebpageObject localWXWebpageObject = new WXWebpageObject();
-        localWXWebpageObject.webpageUrl = paramString1;
-        WXMediaMessage localWXMediaMessage = new WXMediaMessage(localWXWebpageObject);
-        localWXMediaMessage.title = paramString2.substring(0, Math.min(paramString2.length(), 256));
-        localWXMediaMessage.description = paramString3.substring(0, Math.min(paramString3.length(), 512));
-        if (paramBitmap != null) {
-            Bitmap localBitmap = Bitmap.createScaledBitmap(paramBitmap, THUMB_SIZE, THUMB_SIZE, true);
-            paramBitmap.recycle();
-            localWXMediaMessage.setThumbImage(localBitmap);
+        localWXWebpageObject.webpageUrl = webpageUrl;
+        WXMediaMessage wxMediaMessage = new WXMediaMessage(localWXWebpageObject);
+        wxMediaMessage.title = title.substring(0, Math.min(title.length(), 256));
+        wxMediaMessage.description = description.substring(0, Math.min(description.length(), 512));
+        if (bitmap != null) {
+            Bitmap localBitmap = Bitmap.createScaledBitmap(bitmap, THUMB_SIZE, THUMB_SIZE, true);
+            bitmap.recycle();
+            wxMediaMessage.setThumbImage(localBitmap);
         }
-        return localWXMediaMessage;
+        return wxMediaMessage;
     }
 
     /**
@@ -170,8 +172,8 @@ public class WeiXinShare {
         sendMessage(textObj(paramString));
     }
 
-    public void sendWebPage(String paramString1, String paramString2, String paramString3, Bitmap paramBitmap) {
-        sendMessage(webPageShare(paramString1, paramString2, paramString3, paramBitmap));
+    public void sendWebPage(String webpageUrl, String title, String description, Bitmap bitmap) {
+        sendMessage(webPageShare(webpageUrl, title, description, bitmap));
     }
 
     public void setPengyouquan(boolean paramBoolean) {

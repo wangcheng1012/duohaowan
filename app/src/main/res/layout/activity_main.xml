@@ -21,8 +21,8 @@
 
             <ImageView
                 android:id="@+id/image_home"
-                android:src="@drawable/tab_home_select"
-                style="@style/tabbar_img" />
+                style="@style/tabbar_img"
+                android:src="@drawable/tab_home_select" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -115,15 +115,15 @@
 
     <!-- 中间按钮背景 -->
 
-    <ImageView
-        android:id="@+id/toggle_btn"
-        android:padding="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignTop="@+id/frameMenu"
-        android:layout_centerInParent="true"
-        android:src="@drawable/tab_fabu" />
+    <!--<ImageView-->
+    <!--android:id="@+id/toggle_btn"-->
+    <!--android:padding="5dp"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_alignTop="@+id/frameMenu"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:src="@drawable/tab_fabu" />-->
 
     <!-- 中间按钮 -->
 
@@ -131,22 +131,23 @@
         android:id="@+id/frame_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/frameMenu"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/frameMenu">
+        android:layout_alignParentTop="true">
 
     </FrameLayout>
 
     <ImageView
-        android:id="@+id/plus_btn"
-        android:padding="5dp"
+        android:id="@+id/publish_fabu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/tab_fabu"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/frameMenu"
         android:layout_below="@+id/frame_content"
-        android:layout_alignLeft="@+id/toggle_btn"
-        android:layout_alignStart="@+id/toggle_btn" />
+        android:layout_centerInParent="true"
+        android:padding="5dp"
+        android:src="@drawable/logo_wan" />
 
 
 </RelativeLayout>

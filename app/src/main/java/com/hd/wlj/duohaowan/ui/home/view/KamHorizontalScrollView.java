@@ -6,7 +6,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 
 import com.orhanobut.logger.Logger;
 import com.wlj.base.util.MathUtil;
@@ -16,6 +18,7 @@ import java.math.BigDecimal;
 /**
  * 如果不需要支持Android2.3，可以将代码中所有KamLinearLayout替换为ViewGroup .
  * 水平一屏显示多张、无限循环滚动
+ * item 的 外成不能掉OnClickListener
  */
 public class KamHorizontalScrollView extends HorizontalScrollView {
 

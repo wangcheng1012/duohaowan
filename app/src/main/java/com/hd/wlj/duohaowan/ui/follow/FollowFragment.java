@@ -98,7 +98,7 @@ public class FollowFragment extends Fragment {
     private void initdata() {
         tabBarList = new ArrayList<>();
         tabBarList.add("作品");
-        tabBarList.add("作家");
+        tabBarList.add("艺术家");
 
         fragments = new ArrayList<>();
 

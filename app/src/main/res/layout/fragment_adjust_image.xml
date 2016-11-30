@@ -20,24 +20,27 @@
         android:text="在皮尺上左右滑动可以调整作品尺寸"
         android:textColor="@color/black2" />
 
-    <!--<TextView-->
-    <!--android:id="@+id/adjust_height_tv"-->
-    <!--style="@style/text_base"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginTop="20dp"-->
-    <!--android:text="作品高：54 (cm)" />-->
+    <TextView
+        android:id="@+id/adjust_height_tv"
+        style="@style/text_base"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:text="缩放比例：100%" />
 
     <SeekBar
         android:id="@+id/adjust_height_sb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        />
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp" />
 
 
     <FrameLayout
@@ -56,12 +59,12 @@
     </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_marginTop="8dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="@color/_ededed"
         android:id="@+id/adjust_recyclerView_bili"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/_ededed"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" />
 
 </LinearLayout>

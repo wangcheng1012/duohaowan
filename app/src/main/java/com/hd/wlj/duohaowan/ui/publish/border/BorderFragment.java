@@ -3,10 +3,8 @@ package com.hd.wlj.duohaowan.ui.publish.border;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,39 +16,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
 import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
-import com.hd.wlj.duohaowan.view.RectClickImageView;
-import com.lling.photopicker.utils.ImageLoader;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
-import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.UIHelper;
-import com.wlj.base.util.img.BitmapUtil;
-import com.wlj.base.util.img.LoadImage;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +57,8 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     RecyclerView adjustRecyclerView;
     @BindView(R.id.adjust_recyclerView_bili)
     RecyclerView biliRecyclerView;
+    @BindView(R.id.adjust_height_tv)
+    TextView bilitTv;
 
     private BorderPresenter presenter;
     private ImageMergeListener mListener;
@@ -124,8 +113,15 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         adjustHeightSb.setProgress(progress);
         adjustHeightSb.setMax(min);
 
+        double scale = MathUtil.divide(progress, min, 2).doubleValue();
+        setBiliTV(scale);
+
         initRecyclerView();
         initRecyclerViewBIli();
+    }
+
+    private void setBiliTV( double scale) {
+        bilitTv.setText( "缩放比例："+ (int)(scale*100) +"%" );
     }
 
     private void initRecyclerViewBIli() {
@@ -312,15 +308,20 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
             merge(pub_id, borderBitmap, divide);
         }
     }
+
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar){ }
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar){  }//end
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }//end
 
     // ------------回掉
     private void merge(String pub_id, Bitmap bitmap, double scale) {
         if (mListener != null) {
             mListener.merge(pub_id, bitmap, scale, type);
+            setBiliTV(scale);
         }
     }
 

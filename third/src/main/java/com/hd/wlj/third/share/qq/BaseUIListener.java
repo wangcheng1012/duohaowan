@@ -10,8 +10,7 @@ import com.wlj.base.util.UIHelper;
 
 import org.json.JSONObject;
 
-public class BaseUIListener
-        implements IUiListener {
+public class BaseUIListener implements IUiListener {
     private static final int ON_CANCEL = 2;
     private static final int ON_COMPLETE = 0;
     private static final int ON_ERROR = 1;
@@ -42,11 +41,10 @@ public class BaseUIListener
         this.mContext = paramContext;
     }
 
-    public BaseUIListener(Context paramContext, String paramString) {
+    public BaseUIListener(Context paramContext, String mScope) {
         this.mContext = paramContext;
-        this.mScope = paramString;
+        this.mScope = mScope;
     }
-
 
     public void cancel() {
         this.mIsCaneled = true;

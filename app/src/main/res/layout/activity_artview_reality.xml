@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/title" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/artview_reality_recyclerview"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/title"
+            app:layout_scrollFlags="snap" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/part_artview_reality" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/artview_reality_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
 
 
-    </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.NestedScrollView>
 
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:background="@color/white"-->
-        <!--android:orientation="vertical"-->
-        <!--android:paddingEnd="5dp"-->
-        <!--android:paddingLeft="5dp"-->
-        <!--android:paddingRight="5dp"-->
-        <!--android:paddingStart="5dp">-->
 
-        <!--<include layout="@layout/part_artview_reality" />-->
-
-    <!--</LinearLayout>-->
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

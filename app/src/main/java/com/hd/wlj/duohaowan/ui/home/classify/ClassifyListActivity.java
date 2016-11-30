@@ -8,11 +8,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
-import com.hd.wlj.duohaowan.ui.my.MyFragment;
 
 import java.util.ArrayList;
 
@@ -29,8 +29,11 @@ public class ClassifyListActivity extends AppCompatActivity {
     TextView toolbarTitle;
     @BindView(R.id.classify_list_black)
     ImageView classifyListBlack;
+    @BindView(R.id.toolbar_right)
+    Button toolbarRight;
     private ArrayList<String> tabBarList;
     private ArrayList<Fragment> fragments;
+    private int classify;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,13 @@ public class ClassifyListActivity extends AppCompatActivity {
                 finish();
             }
         });
+        toolbarRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
 
         initData();
         initViewPage();
@@ -75,6 +85,25 @@ public class ClassifyListActivity extends AppCompatActivity {
         );
 
         tablayout.setupWithViewPager(viewpager);
+        viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (classify == R.id.home_artview && position == 2) {
+                    toolbarRight.setVisibility(View.VISIBLE);
+                } else {
+                    toolbarRight.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**
@@ -87,7 +116,7 @@ public class ClassifyListActivity extends AppCompatActivity {
         fragments = new ArrayList<>();
 
         Intent intent = getIntent();
-        int classify = intent.getIntExtra("classify", -1);
+        classify = intent.getIntExtra("classify", -1);
         String title = intent.getStringExtra("title");
 //title
         toolbarTitle.setText(title);
@@ -98,10 +127,10 @@ public class ClassifyListActivity extends AppCompatActivity {
 //                艺术家
 //              tabBarList.clear();
                 tabBarList.add("热门");
-                tabBarList.add("最新");
                 tabBarList.add("国画");
                 tabBarList.add("油画");
                 tabBarList.add("书法");
+                tabBarList.add("其他");
 
                 for (String tmpBarStr : tabBarList) {
                     fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
@@ -111,10 +140,10 @@ public class ClassifyListActivity extends AppCompatActivity {
             case R.id.home_artgallery:
                 //艺术馆
 //                tabBarList.add("推荐");
-                tabBarList.add("热门");
+                tabBarList.add("预告");
                 tabBarList.add("最新");
-                tabBarList.add("画廊");
                 tabBarList.add("艺术馆");
+                tabBarList.add("得意艺术馆");
                 for (String tmpBarStr : tabBarList) {
                     fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }
@@ -125,7 +154,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("国画");
                 tabBarList.add("油画");
                 tabBarList.add("书法");
-                tabBarList.add("工艺品");
+                tabBarList.add("其他");
                 for (String tmpBarStr : tabBarList) {
                     fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }
@@ -138,11 +167,12 @@ public class ClassifyListActivity extends AppCompatActivity {
 
                 //不全用ClassifyListFragment
                 for (String tmpBarStr : tabBarList) {
-                    if("问学篇".equals(tmpBarStr)) {
-                        fragments.add(new Fragment());
-                    }else{
-                        fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
-                    }
+//                    if("问学篇".equals(tmpBarStr)) {
+                    fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+//                    }else{
+//                        fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
+//
+//                    }
                 }
 
                 break;

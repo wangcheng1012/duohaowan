@@ -16,6 +16,8 @@ public interface ClassifyListView {
     void artviewHistoryRecycerview(ViewHolder viewHolder, Base item, int position);
 
     void artviewRealityRecycerview(ViewHolder viewHolder, Base item, int position);
+
+    void artviewAskandLearnRecycerview(ViewHolder viewHolder, Base item, int position);
 }
 
 

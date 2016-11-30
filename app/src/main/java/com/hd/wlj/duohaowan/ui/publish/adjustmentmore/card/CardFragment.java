@@ -1,22 +1,22 @@
 package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.card;
 
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
-import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
+import com.lling.photopicker.utils.ImageLoader;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.DpAndPx;
@@ -44,6 +44,8 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
     SeekBar cardSeekBar;
     @BindView(R.id.card_horizontalScrollView_ll)
     LinearLayout cardHorizontalScrollView;
+    @BindView(R.id.bili_textview)
+    TextView biliTv;
 
     private CardPresenter presenter;
     private int cardType;
@@ -84,8 +86,12 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
         cardSeekBar.setOnSeekBarChangeListener(this);
         cardSeekBar.setMax(100);
         cardSeekBar.setProgress(1);
-
+        setBiliTV(0);
         cardRadioGroup.setOnCheckedChangeListener(this);
+    }
+
+    private void setBiliTV(double scale) {
+        biliTv.setText("缩放比例：" + (int) (scale * 100) + "%");
     }
 
     @Override
@@ -135,8 +141,15 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
                     mergeBitmap.setLineinner((float) inner);
                     mergeBitmap.setLineoutside((float) outside);
 
-                    Bitmap bitmap = mergeBitmap.buildFinalBitmap();
-                    activity.getmRectClickImageView().setImageBitmap(bitmap);
+                    mergeBitmap.buildMore(mcontext, new ImageLoader.BackBitmap() {
+                        @Override
+                        public void back(Bitmap mBitmap) {
+                            activity.getmRectClickImageView().setImageBitmap(mBitmap);
+                        }
+                    });
+
+//                    Bitmap bitmap = mergeBitmap.buildFinalBitmap();
+//                    activity.getmRectClickImageView().setImageBitmap(bitmap);
                 }
 
             }
@@ -153,10 +166,17 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
         } else {
             activity.getMergeBitmap().setCard2space(space);
         }
-
-        Bitmap bitmap = activity.getMergeBitmap().buildFinalBitmap();
-        activity.getmRectClickImageView().setImageBitmap(bitmap);
+        setBiliTV(space);
+        activity.getMergeBitmap().buildMore(mcontext, new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap mBitmap) {
+                activity.getmRectClickImageView().setImageBitmap(mBitmap);
+            }
+        });
+//        Bitmap bitmap = activity.getMergeBitmap().buildFinalBitmap();
+//        activity.getmRectClickImageView().setImageBitmap(bitmap);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -191,5 +211,13 @@ public class CardFragment extends BaseFragment implements CardView, SeekBar.OnSe
             merge(0);
         }
 
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // TODO: inflate a fragment view
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        ButterKnife.bind(this, rootView);
+        return rootView;
     }
 }

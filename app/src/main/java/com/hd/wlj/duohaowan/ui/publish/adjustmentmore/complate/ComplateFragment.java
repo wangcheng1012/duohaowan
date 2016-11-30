@@ -3,34 +3,19 @@ package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.complate;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.hd.wlj.duohaowan.App;
-import com.hd.wlj.duohaowan.MainActivity;
 import com.hd.wlj.duohaowan.R;
-import com.hd.wlj.duohaowan.ui.LoginActivity;
-import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
-import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.PublishModel;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
-import com.hd.wlj.duohaowan.util.UploadChucks;
-import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
-import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
-import com.wlj.base.web.asyn.AsyncCall;
-
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,8 +34,15 @@ public class ComplateFragment extends BaseFragment {
     EditText complateMoney;
     @BindView(R.id.complate_intro)
     EditText complateIntro;
+    @BindView(R.id.complate_width)
+    EditText complateWidth;
+    @BindView(R.id.complate_height)
+    EditText complateHeight;
+    @BindView(R.id.complate_tag)
+    EditText complateTag;
     private ComplatePresenter presenter;
     private AdjustmentImageActivity activity;
+    private PublishModel publishModel;
 
     @Override
     protected int getlayout() {
@@ -59,9 +51,17 @@ public class ComplateFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        view.setMinimumHeight(0);
         ButterKnife.bind(this, view);
         activity = (AdjustmentImageActivity) getActivity();
+
+
+        publishModel = (PublishModel) activity.getIntent().getParcelableExtra("publishModel");
+        complateName.setText(publishModel.getName());
+        complateYear.setText(publishModel.getYears());
+        complateMoney.setText(publishModel.getPrice());
+        complateWidth.setText(publishModel.getWidth());
+        complateHeight.setText(publishModel.getHeight());
+        complateTag.setText(publishModel.getTag());
 
         presenter = new ComplatePresenter(getActivity());
     }
@@ -77,13 +77,30 @@ public class ComplateFragment extends BaseFragment {
                 String money = complateMoney.getText() + "";
                 String intro = complateIntro.getText() + "";
 
-                Intent intent1 = activity.getIntent();
-                PublishModel publishModel = (PublishModel)intent1.getParcelableExtra("publishModel");
+                String width = complateWidth.getText() + "";
+                String height = complateHeight.getText() + "";
+                String tag = complateTag.getText() + "";
+
+
+                if (StringUtils.isEmpty(name) ||
+                        StringUtils.isEmpty(year) ||
+                        StringUtils.isEmpty(money) ||
+                        StringUtils.isEmpty(width) ||
+                        StringUtils.isEmpty(height) ||
+                        StringUtils.isEmpty(tag)
+                        ) {
+                    UIHelper.toastMessage(activity, "请填完作品信息");
+                    return;
+                }
+
                 publishModel.setName(name);
                 publishModel.setYears(year);
                 publishModel.setPrice(money);
+                publishModel.setWidth(width);
+                publishModel.setHeight(height);
+                publishModel.setTag(tag);
 
-                getActivity().setResult(Activity.RESULT_OK,intent1);
+                getActivity().setResult(Activity.RESULT_OK, activity.getIntent());
                 getActivity().finish();
 //                Bundle bundle = new Bundle();
 //                bundle.putInt("from", ImageAdjustmentActivity.from_border_sece);

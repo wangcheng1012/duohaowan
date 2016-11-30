@@ -29,6 +29,8 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.orhanobut.logger.Logger;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 /**
  * 全局应用程序类：用于保存和调用全局应用配置及访问网络数据
@@ -47,6 +49,7 @@ public class AppContext extends Application {
 	private static AppContext appContext;
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
 	private String saveImagePath;//保存图片路径
+	private RefWatcher refWatcher;
 
 	public static AppContext getAppContext() {
 		return appContext;
@@ -58,7 +61,13 @@ public class AppContext extends Application {
         //注册App异常崩溃处理器
         Thread.setDefaultUncaughtExceptionHandler(AppException.getAppExceptionHandler());
         appContext = this;
+		refWatcher = LeakCanary.install(this);
         init();
+	}
+
+
+	public  RefWatcher getRefWatcher( ) {
+		return  refWatcher;
 	}
 
 	/**
@@ -434,24 +443,24 @@ public class AppContext extends Application {
 //		return memCacheRegion.get(key);
 //	}
 //
-//	/**
-//	 * 保存磁盘缓存
-//	 * @param key
-//	 * @param value
-//	 * @throws IOException
-//	 */
-//	public void setDiskCache(String key, String value) throws IOException {
-//		FileOutputStream fos = null;
-//		try{
-//			fos = openFileOutput("cache_"+key+".data", Context.MODE_PRIVATE);
-//			fos.write(value.getBytes());
-//			fos.flush();
-//		}finally{
-//			try {
-//				fos.close();
-//			} catch (Exception e) {}
-//		}
-//	}
+	/**
+	 * 保存磁盘缓存
+	 * @param key
+	 * @param value
+	 * @throws IOException
+	 */
+	public void setDiskCache(String key, String value) throws IOException {
+		FileOutputStream fos = null;
+		try{
+			fos = openFileOutput("cache_"+key+".data", Context.MODE_PRIVATE);
+			fos.write(value.getBytes());
+			fos.flush();
+		}finally{
+			try {
+				fos.close();
+			} catch (Exception e) {}
+		}
+	}
 //
 //	/**
 //	 * 获取磁盘缓存数据

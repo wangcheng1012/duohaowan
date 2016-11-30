@@ -255,9 +255,14 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
 
         JSONObject artist = jsonObject.optJSONObject("artist");
 
+        JSONArray showTag_list = jsonObject.optJSONArray("showTag_list");
+        if(showTag_list != null){
+            String s = showTag_list.optString(0);
+            viewHolder.setText(R.id.classify_workofart_workname, s);
+        }
         viewHolder.setText(R.id.classify_workofart_intro, jsonObject.optString("name"));
         viewHolder.setText(R.id.classify_workofart_zan, jsonObject.optInt("nice_count", 0) + "");
-        viewHolder.setText(R.id.classify_workofart_workname, jsonObject.optString("showTag_list"));
+
         viewHolder.setText(R.id.classify_workofart_name, artist != null ? artist.optString("realname") : "");
 
         ImageView head = viewHolder.getView(R.id.classify_workofart_head);
@@ -361,6 +366,15 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
             viewHolder.getView(R.id.view).setVisibility(View.VISIBLE);
         }
 
+    }
 
+    @Override
+    public void artviewAskandLearnRecycerview(ViewHolder viewHolder, Base item, int position) {
+
+        JSONObject jsonObject = item.getResultJsonObject();
+
+        viewHolder.setText(R.id.artview_askedandlearn_text,CyptoUtils.decryptBASE64(jsonObject.optString("intro")));
+        viewHolder.setText(R.id.artview_askedandlearn_name,jsonObject.optString("name"));
+        viewHolder.setText(R.id.artview_askedandlearn_statetime,StringUtils.getTime(jsonObject.optLong("time"), "yyyy-MM-dd"));
     }
 }

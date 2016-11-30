@@ -80,6 +80,10 @@ public abstract class BaseAsyncModle extends Base implements AsyncCall.callWeb {
         return this.activity;
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     public int getPage() {
 
         return this.page;

@@ -66,5 +66,6 @@ dependencies {
         exclude module: 'support-v4'
     }
 
+//    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
 }

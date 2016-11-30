@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".App"
@@ -25,6 +27,20 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+
+        </activity>
+        <activity
+            android:name=".LoadingActivity"
+            android:screenOrientation="portrait">
+             <!--android:theme="@style/loading" -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -82,7 +98,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.publish.adjustmentmore.AdjustmentImageActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.classify.gallery.photo.WebViewLoadHtml"
+            android:screenOrientation="landscape" />
+        <activity android:name=".ui.home.classify.artview.ArtViewAskedandLearnActivity" />
+        <activity
+            android:name=".ui.home.classify.artview.Main2Activity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

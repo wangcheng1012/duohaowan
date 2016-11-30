@@ -38,14 +38,15 @@ public class DetailsModelImpl extends BaseAsyncModle {
     public void addRequestParemeter(AsyncRequestModle asRequestModle) throws IOException {
 
         String login_key = AppConfig.getAppConfig().get(AppConfig.CONF_KEY);
+        String name = AppConfig.getAppConfig().get(AppConfig.CONF_NAME);
         String randCode = System.currentTimeMillis() + "";
         String user_sign = Md5Util.MD5Normal(login_key + randCode.toLowerCase());
 
         HttpPost httpPost = new HttpPost(Urls.get_pub);
         httpPost.addParemeter("pub_id", getId());
         if (AppContext.getAppContext().islogin()) {
-            httpPost.addParemeter("login_key", login_key);
-            httpPost.addParemeter("randCode", login_key);
+            httpPost.addParemeter("login_name", name);
+            httpPost.addParemeter("randCode", randCode+"");
             httpPost.addParemeter("user_sign", user_sign);
         }
         asRequestModle.setHttpPost(httpPost);

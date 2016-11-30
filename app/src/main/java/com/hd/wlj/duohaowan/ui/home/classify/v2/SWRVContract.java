@@ -44,7 +44,7 @@ public class SWRVContract {
         int getRequestType();
 
         /**
-         * 异步请求 返回来的数据有些要先处理了才能用
+         * 异步请求 返回来的数据有些要先处理了才能用,不需要处理的直接返回
          *
          * @param list
          * @param base

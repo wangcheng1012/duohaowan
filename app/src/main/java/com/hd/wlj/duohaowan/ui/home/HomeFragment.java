@@ -17,11 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
+import com.hd.wlj.duohaowan.ui.home.classify.arist.AristDetailsActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.artview.ArtViewHistoryActivity;
+import com.hd.wlj.duohaowan.ui.home.classify.gallery.GalleryActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.work.WorkDetailsActivity;
 import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListActivity;
 import com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView;
@@ -30,14 +32,14 @@ import com.wlj.base.ui.BaseFragment;
 import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
-import com.wlj.base.util.img.BitmapUtil;
-import com.wlj.base.util.img.LoadImage;
 import com.wlj.base.util.statusbar.StatusBarUtil;
+import com.wlj.base.web.MsgContext;
 import com.wlj.base.widget.SwitchViewPager;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
+import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
 
 import org.json.JSONObject;
 
@@ -48,7 +50,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class HomeFragment extends BaseFragment implements HomeView {
+public class HomeFragment extends BaseFragment implements HomeView, LoadMoreWrapper.OnLoadMoreListener {
 
     @BindView(R.id.home_recyclerView)
     RecyclerView homeRecyclerView;
@@ -57,12 +59,12 @@ public class HomeFragment extends BaseFragment implements HomeView {
     private HomePresenterImpl homePresenter;
     private FrameLayout bannerViewGroup;
     private List<Base> mData;
-    private View part_home_head;
+    //    private View part_home_head;
     private TextView header_new;
-    private HeaderAndFooterWrapper<Base> mHeaderAndFooterWrapper;
     private LinearLayout mGallery;
     private List<Base> hostList;
     private KamHorizontalScrollView mHorizontalScrollView;
+    private LoadMoreWrapper loadMoreWrapper;
 
     public HomeFragment() {
     }
@@ -86,6 +88,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
         if (getArguments() != null) {
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -118,16 +121,24 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homePresenter.loadBannerData();
         homePresenter.loadNews();
         homePresenter.loadHot();
-        homePresenter.loadNewest();
+        homePresenter.loadNewest(1);
     }
-
 
     private void initHead() {
 
-        part_home_head = LayoutInflater.from(getContext()).inflate(R.layout.part_home_head, null);
+//        part_home_head = LayoutInflater.from(getContext()).inflate(R.layout.part_home_head, null);
 
-        bannerViewGroup = (FrameLayout) part_home_head.findViewById(R.id.home_autoScrollViewPager);
-        header_new = (TextView) part_home_head.findViewById(R.id.home_header_new);
+        bannerViewGroup = (FrameLayout) view.findViewById(R.id.home_autoScrollViewPager);
+        header_new = (TextView) view.findViewById(R.id.home_header_new);
+
+
+        header_new.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject tag = (JSONObject) v.getTag();
+                goDetails(tag);
+            }
+        });
 
         initClassify();
         initHot();
@@ -141,16 +152,16 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     private void initClassify() {
 
-        part_home_head.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
-        part_home_head.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
-        part_home_head.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
-        part_home_head.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
+        view.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
+        view.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
+        view.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
+        view.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
     }
 
     private void initHot() {
 
-        mGallery = (LinearLayout) part_home_head.findViewById(R.id.id_gallery);
-        mHorizontalScrollView = (KamHorizontalScrollView) part_home_head.findViewById(R.id.id_horizontalScrollView);
+        mGallery = (LinearLayout) view.findViewById(R.id.id_gallery);
+        mHorizontalScrollView = (KamHorizontalScrollView) view.findViewById(R.id.id_horizontalScrollView);
 
         mHorizontalScrollView.setCreatItem(new KamHorizontalScrollView.CreatItem() {
             @Override
@@ -179,7 +190,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
                         .asBitmap()
                         .placeholder(R.drawable.project_bg)
 //                        .thumbnail(0.4f)
-                        .into(new SimpleTarget<Bitmap>(500,500) {
+                        .into(new SimpleTarget<Bitmap>(500, 500) {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 int intrinsicWidth = resource.getWidth();
@@ -268,10 +279,14 @@ public class HomeFragment extends BaseFragment implements HomeView {
             }
         });
         //添加header
-        mHeaderAndFooterWrapper = new HeaderAndFooterWrapper<Base>(commonAdapter);
-        mHeaderAndFooterWrapper.addHeaderView(part_home_head);
-        homeRecyclerView.setAdapter(mHeaderAndFooterWrapper);
-        mHeaderAndFooterWrapper.notifyDataSetChanged();
+//        HeaderAndFooterWrapper mHeaderAndFooterWrapper = new HeaderAndFooterWrapper<Base>(commonAdapter);
+//        mHeaderAndFooterWrapper.addHeaderView(view);
+        //
+        loadMoreWrapper = new LoadMoreWrapper(commonAdapter, homeRecyclerView);
+        loadMoreWrapper.setLoadMoreView(new View(getContext()));
+        loadMoreWrapper.setOnLoadMoreListener(this);
+        homeRecyclerView.setAdapter(loadMoreWrapper);
+        loadMoreWrapper.notifyDataSetChanged();
     }
 
 
@@ -309,6 +324,14 @@ public class HomeFragment extends BaseFragment implements HomeView {
         } else {
             UIHelper.toastMessage(getContext(), "banner图片为空");
         }
+        //点击
+        switchViewPager.setOnItemPagerViewClickListener(new SwitchViewPager.PageritemClickListener() {
+            @Override
+            public void ItemClickListener(ImageView imageView1) {
+                Base tag = (Base) imageView1.getTag(R.id.tag_first);
+                goDetails(tag.getResultJsonObject());
+            }
+        });
     }
 
     @Override
@@ -316,6 +339,8 @@ public class HomeFragment extends BaseFragment implements HomeView {
         JSONObject jsonObject = base.getResultJsonObject();
 //        Html.fromHtml("s");
         header_new.setText(jsonObject.optString("name"));
+
+        header_new.setTag(jsonObject);
     }
 
     @Override
@@ -332,18 +357,29 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     private View createHotItem(int index) {
 
+        int height = mHorizontalScrollView.getHeight();
+        height -=  mHorizontalScrollView.getPaddingTop();
+        height -=  mHorizontalScrollView.getPaddingBottom();
+
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_hot, null);
         ImageView mImg = (ImageView) view.findViewById(R.id.home_hot_img);
         int width = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / 2 - width / 10, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / 2 - width / 10, height);
         //
-        JSONObject resultJsonObject = hostList.get(index).getResultJsonObject();
+        final JSONObject resultJsonObject = hostList.get(index).getResultJsonObject();
 
         String pics = resultJsonObject.optString("pic");
         if (pics != null && pics.length() > 0) {
-            Glide.with(HomeFragment.this).load(Urls.HOST +pics).crossFade(1000).centerCrop().error(R.drawable.project_bg).into(mImg);
+            Glide.with(HomeFragment.this).load(Urls.HOST + pics).crossFade(1000).centerCrop().error(R.drawable.project_bg).into(mImg);
         }
         view.setLayoutParams(layoutParams);
+
+        mImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goDetails(resultJsonObject);
+            }
+        });
         return view;
 
     }
@@ -352,7 +388,12 @@ public class HomeFragment extends BaseFragment implements HomeView {
     public void showNewest(List<Base> paramList) {
 
         mData.addAll(paramList);
-        mHeaderAndFooterWrapper.notifyDataSetChanged();
+        loadMoreWrapper.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onLoadMoreRequested() {
+        homePresenter.loadMoreNewest();
     }
 
 
@@ -360,6 +401,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
         void onFragmentInteraction(Uri uri);
     }
 
+    /**
+     * f分类点击事件
+     */
     private class ClassifyOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -372,7 +416,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
                     bundle.putInt("classify", R.id.home_artist);
                     break;
                 case R.id.home_artgallery:
-                    bundle.putString("title", "艺术馆列表");
+                    bundle.putString("title", "艺术展列表");
                     bundle.putInt("classify", R.id.home_artgallery);
                     break;
                 case R.id.home_workofart:
@@ -387,10 +431,49 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
             GoToHelp.go(getActivity(), ClassifyListActivity.class, bundle);
 
-            part_home_head.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
-            part_home_head.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
-            part_home_head.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
-            part_home_head.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
+            view.findViewById(R.id.home_artist).setOnClickListener(new ClassifyOnClickListener());
+            view.findViewById(R.id.home_artgallery).setOnClickListener(new ClassifyOnClickListener());
+            view.findViewById(R.id.home_workofart).setOnClickListener(new ClassifyOnClickListener());
+            view.findViewById(R.id.home_artview).setOnClickListener(new ClassifyOnClickListener());
         }
+    }
+
+
+    /**
+     * 质询 新闻 banner点击事件
+     *
+     * @param jsonObject
+     */
+    private void goDetails(JSONObject jsonObject) {
+
+        String pub_link_secondPubConlumn_id = jsonObject.optString("pub_link_secondPubConlumn_id");
+        Bundle bundle = new Bundle();
+        bundle.putString("id", jsonObject.optString("pub_link_id"));
+        Class cls = WorkDetailsActivity.class;
+        switch (pub_link_secondPubConlumn_id) {
+            case MsgContext.gallery:
+                //艺术馆
+                cls = GalleryActivity.class;
+                break;
+            case MsgContext.zhixun:
+                //资讯
+                cls = ArtViewHistoryActivity.class;
+                break;
+            case MsgContext.arist:
+                //作家名片
+                JSONObject pub_link = jsonObject.optJSONObject("pub_link");
+                if (pub_link == null) {
+                    return;
+                }
+                String artist_id = pub_link.optString("artist_id");
+                bundle.putString("artist_id", artist_id);
+                cls = AristDetailsActivity.class;
+                break;
+            case MsgContext.work:
+                //艺术品
+                cls = WorkDetailsActivity.class;
+                break;
+        }
+        GoToHelp.go(getActivity(), cls, bundle);
     }
 }

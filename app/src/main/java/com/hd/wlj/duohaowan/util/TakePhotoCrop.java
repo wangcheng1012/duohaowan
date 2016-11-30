@@ -150,7 +150,10 @@ public class TakePhotoCrop implements InvokeListener, TakePhoto.TakeResultListen
     }
 
     public interface CropBack {
-
+        /**
+         * 裁剪返回
+         * @param result
+         */
         void cropback(TResult result);
     }
 

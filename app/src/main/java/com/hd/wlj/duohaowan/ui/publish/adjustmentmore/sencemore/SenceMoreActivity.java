@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,6 +19,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 import com.hd.wlj.duohaowan.App;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
@@ -25,6 +29,7 @@ import com.hd.wlj.duohaowan.ui.LoginActivity;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.PublishModel;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
+import com.hd.wlj.duohaowan.ui.publish.border.BorderModel;
 import com.hd.wlj.duohaowan.util.TakePhotoCrop;
 import com.hd.wlj.duohaowan.view.RectClickImageView;
 import com.jph.takephoto.model.TResult;
@@ -66,6 +71,8 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
     ImageView black;
     @BindView(R.id.sence_more_recyclerview)
     RecyclerView recyclerview;
+    @BindView(R.id.sence_more__tabLayout)
+    TabLayout tabLayout;
 
     private SenceMorePresenter presenter;
     private PublishModel publishModel;
@@ -92,9 +99,35 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
         initRecyclerview();
 
-        presenter.load();
-
         rectClickImageViewClick();
+
+        //单图
+        presenter.load(BorderModel.count_single);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                String text = tab.getText() + "";
+//                UIHelper.toastMessage(SenceMoreActivity.this,text);
+                if ("单图".equals(text)) {
+                    presenter.load(BorderModel.count_single);
+                } else {
+                    presenter.load(BorderModel.count_more);
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void rectClickImageViewClick() {
@@ -102,6 +135,7 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
         image.setRectAreaOnClickListioner(new RectClickImageView.RectAreaOnClickListioner() {
             @Override
             public void onClick(Rect rect) {
+
                 clickRect = rect;
                 //选图 裁剪
                 takePhotoCrop.photoPicker();
@@ -137,9 +171,9 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
                 String pics = resultJsonObject.optString("pic");
                 if (pics != null && pics.length() > 0) {
-                    // Glide.with(this).load(Urls.HOST + pics).asBitmap().fitCenter().into(mImg);
+                    Glide.with(SenceMoreActivity.this).load(Urls.HOST + pics).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE).centerCrop().into(mImg);
                     // 这里用裁剪了 要私人
-                    LoadImage.getinstall().addTask(Urls.HOST + pics, mImg).doTask();
+//                    LoadImage.getinstall().addTask(Urls.HOST + pics, mImg).doTask();
                 }
             }
         };
@@ -161,6 +195,11 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
     }
 
+    /**
+     * Recyclerview 的 Click
+     *
+     * @param view
+     */
     private void itemClick(View view) {
 
         Base base = (Base) view.getTag(R.id.tag_first);
@@ -190,10 +229,10 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
             image.setRectList(list);
             // 显示
             String pics = resultJsonObject.optString("pic");
-            LoadImage.getinstall().addTask(Urls.HOST + pics, image).doTask();
+            Glide.with(SenceMoreActivity.this).load(Urls.HOST + pics).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE).override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).fitCenter().into(image);
+//            LoadImage.getinstall().addTask(Urls.HOST + pics, image).doTask();
             //
         } else {
-
             UIHelper.toastMessage(SenceMoreActivity.this, "没找到放作品的位置");
         }
     }
@@ -239,23 +278,17 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
         if (resultCode != RESULT_OK) return;
 
         if (requestCode == TakePhotoCrop.IMAGE) {
-//            if (resultCode == RESULT_OK) {
-//                ArrayList<String> result = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT);
+            //选图
             ArrayList<String> uristr = data.getStringArrayListExtra(PhotoPickerActivity.KEY_RESULT_URLSTR);
-
             takePhotoCrop.onCrop(Uri.parse(uristr.get(0)));
-//            }
         } else if (requestCode == CHOOSE) {
-//            if (resultCode == RESULT_OK) {
-
+            //裁剪
             Rect rect = (Rect) data.getParcelableExtra("rect");
+            publishModel = null;
             publishModel = (PublishModel) data.getParcelableExtra("publishModel");
-//            List<MergeBitmap> mergeBitmaps = publishModel.getMergeBitmaps();
             MergeBitmap mergeBitmap = publishModel.getMergeBitmap(rect);
-//            for (int i = 0; i < mergeBitmaps.size(); i++) {
-
-//                MergeBitmap mergeBitmap = mergeBitmaps.get(i);
-
+            publishModel.onClone(mergeBitmap);//clone
+            //合成
             BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
             Bitmap bitmap = drawable.getBitmap();
             mergeBitmap.setBackgroundBitmap(bitmap);
@@ -263,13 +296,9 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
             mergeBitmap.buildBackgroundMore(SenceMoreActivity.this, new ImageLoader.BackBitmap() {
                 @Override
                 public void back(Bitmap mBitmap) {
-
                     image.setImageBitmap(mBitmap);
                 }
             });
-
-//            }
-
         }
 
     }
@@ -280,6 +309,11 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
         takePhotoCrop.onRequestPermissionsResult_(requestCode, permissions, grantResults);
     }
 
+    /**
+     * 裁剪返回
+     *
+     * @param result
+     */
     @Override
     public void cropback(TResult result) {
 
@@ -297,8 +331,22 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
     } //end
 
+    /**
+     * 发布- 分段上传
+     */
     @OnClick(R.id.sence_save)
     public void onClick() {
+        if ( StringUtils.isEmpty(publishModel.getName()) ||
+                        StringUtils.isEmpty(publishModel.getYears()) ||
+                        StringUtils.isEmpty(publishModel.getPrice()) ||
+                        StringUtils.isEmpty(publishModel.getWidth()) ||
+                        StringUtils.isEmpty(publishModel.getHeight()) ||
+                        StringUtils.isEmpty(publishModel.getTag())
+                ) {
+            UIHelper.toastMessage(getApplicationContext(), "请填完作品信息");
+            return;
+        }
+
         App applicationContext = (App) getApplicationContext();
         if (!applicationContext.islogin()) {
             UIHelper.toastMessage(applicationContext, "请先登录");
@@ -314,11 +362,17 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
                 return;
             }
 
-            new up(this).execute(new File(workPath),i);
+            new up(this).execute(new File(workPath), i);
 
         }
     }
 
+    /**
+     * 发布- 分段上传成功 - save
+     *
+     * @param fileName
+     * @param i
+     */
     @Override
     public void uploadComplte(String fileName, int i) {
 
@@ -336,11 +390,14 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
     }
 
-    private class up extends AsyncTask<Object,Void,Object> {
+    /**
+     * 分段上传 任务
+     */
+    private class up extends AsyncTask<Object, Void, Object> {
 
         private Activity mActivity;
 
-        public up(Activity mActivity){
+        public up(Activity mActivity) {
 
             this.mActivity = mActivity;
         }
@@ -357,7 +414,7 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
             try {
 
-                presenter.uploadChucks((File)params[0],(int)params[1]);
+                presenter.uploadChucks((File) params[0], (int) params[1]);
 
             } catch (Exception e) {
                 e.printStackTrace();

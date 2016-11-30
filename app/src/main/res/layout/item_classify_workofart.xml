@@ -58,7 +58,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_toRightOf="@+id/classify_workofart_head"
-            android:text="TextView"
+            android:text=" "
             android:textColor="@color/black2" />
 
         <TextView
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/classify_workofart_head"
             android:layout_alignLeft="@+id/classify_workofart_name"
-            android:text="TextView" />
+            android:text=" " />
 
 
     </RelativeLayout>

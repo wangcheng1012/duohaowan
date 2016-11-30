@@ -3,8 +3,11 @@ package com.hd.wlj.duohaowan.ui.publish.complate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.hd.wlj.duohaowan.App;
@@ -46,6 +49,12 @@ public class ComplateFragment extends BaseFragment {
     EditText complateMoney;
     @BindView(R.id.complate_intro)
     EditText complateIntro;
+    @BindView(R.id.complate_width)
+    EditText complateWidth;
+    @BindView(R.id.complate_height)
+    EditText complateHeight;
+    @BindView(R.id.complate_tag)
+    EditText complateTag;
     private ComplatePresenter presenter;
     private MergeBitmap mergeBitmap;
 
@@ -56,7 +65,6 @@ public class ComplateFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        view.setMinimumHeight(0);
         ButterKnife.bind(this, view);
         ImageAdjustmentActivity activity = (ImageAdjustmentActivity) getActivity();
         mergeBitmap = activity.getMergeBitmap();
@@ -69,11 +77,11 @@ public class ComplateFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.complate_save:
 
-                for ( MergeBitmap tmp : ImageAdjustmentActivity.mergeBitmaps) {
+                for (MergeBitmap tmp : ImageAdjustmentActivity.mergeBitmaps) {
 
                     try {
 
-                        uploadChucks( tmp);
+                        uploadChucks(tmp);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -85,6 +93,7 @@ public class ComplateFragment extends BaseFragment {
 
                 Bundle bundle = new Bundle();
                 bundle.putInt("from", ImageAdjustmentActivity.from_border_sece);
+                bundle.putParcelable("publishModel",getPublishModel());
                 Intent intent = new Intent(getActivity(), ImageAdjustmentActivity.class);
                 intent.putExtras(bundle);
 
@@ -95,18 +104,9 @@ public class ComplateFragment extends BaseFragment {
 
     private void save(MergeBitmap tmp) {
 
-        String name = complateName.getText() + "";
-        String year = complateYear.getText() + "";
-        String money = complateMoney.getText() + "";
-        String intro = complateIntro.getText() + "";
-
-        PublishModel model = new PublishModel(getActivity());
+        PublishModel model = getPublishModel();
 
         model.setHavebachground(false);
-
-        model.setName(name);
-        model.setYears(year);
-        model.setPrice(money);
         ArrayList<MergeBitmap> objects = new ArrayList<>();
         objects.add(tmp);
         model.setMergeBitmaps(objects);
@@ -127,24 +127,47 @@ public class ComplateFragment extends BaseFragment {
         });
     }
 
+    @NonNull
+    private PublishModel getPublishModel() {
+        String name = complateName.getText() + "";
+        String year = complateYear.getText() + "";
+        String money = complateMoney.getText() + "";
+//        String intro = complateIntro.getText() + "";
+        String width = complateWidth.getText() + "";
+        String height = complateHeight.getText() + "";
+        String tag = complateTag.getText() + "";
+
+
+        PublishModel model = new PublishModel(getActivity());
+
+
+        model.setName(name);
+        model.setYears(year);
+        model.setPrice(money);
+        model.setWidth(width);
+        model.setHeight(height);
+        model.setTag(tag);
+        return model;
+    }
+
 
     /**
      * 分段上传文件
      *
+     * @param tmp
      * @return
      * @throws Exception
-     * @param tmp
      */
-    public  void uploadChucks(final MergeBitmap tmp) throws Exception {
+    public void uploadChucks(final MergeBitmap tmp) throws Exception {
 
         App context = (App) getActivity().getApplicationContext();
-        if(!context.islogin()){
-            UIHelper.toastMessage(context,"请先登录");
+        if (!context.islogin()) {
+            UIHelper.toastMessage(context, "请先登录");
             GoToHelp.go(getActivity(), LoginActivity.class);
             return;
         }
 
-        UIHelper.loading("图片上传中，请耐心等候……",getActivity());
+        UIHelper.loading("图片上传中，请耐心等候……", getActivity());
 
         Integer file_size = 1024 * 200;
 
@@ -178,7 +201,7 @@ public class ComplateFragment extends BaseFragment {
                 public void OnAsyncBack(List<Base> list, Base base, int requestType) {
                     JSONObject jsonObject = base.getResultJsonObject();
                     String fileName = jsonObject.optString("fileName");
-                    if(!StringUtils.isEmpty(fileName)){
+                    if (!StringUtils.isEmpty(fileName)) {
                         tmp.setWorkPath(fileName);
 
                         save(tmp);
@@ -206,4 +229,11 @@ public class ComplateFragment extends BaseFragment {
         fis.close();
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // TODO: inflate a fragment view
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        ButterKnife.bind(this, rootView);
+        return rootView;
+    }
 }

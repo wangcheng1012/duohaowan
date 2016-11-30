@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
+import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.ui.follow.FollowFragment;
 import com.hd.wlj.duohaowan.ui.home.HomeFragment;
 import com.hd.wlj.duohaowan.ui.my.MyFragment;
@@ -35,6 +36,7 @@ import com.wlj.base.util.GoToHelp;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class MainActivity extends BaseFragmentActivity implements OnClickListener, HomeFragment.OnFragmentInteractionListener, TakePhotoCrop.CropBack {
 
@@ -43,7 +45,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     // 定义图片组件对象
     private ImageView homeIv, seachIv, followIv, myIv;
     // 定义按钮图片组件
-    private ImageView toggleImageView, plusImageView;
+    private ImageView /*toggleImageView, */publishImageView;
     // 定义PopupWindow
     private PopupWindow popWindow;
     // 获取手机屏幕分辨率的类
@@ -92,9 +94,10 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         myIv = (ImageView) findViewById(R.id.image_my);
 
         // 实例化按钮图片组件
-        toggleImageView = (ImageView) findViewById(R.id.toggle_btn);
-        plusImageView = (ImageView) findViewById(R.id.plus_btn);
+//        toggleImageView = (ImageView) findViewById(R.id.toggle_btn);
+        publishImageView = (ImageView) findViewById(R.id.publish_fabu);
 
+        Glide.with(this).load(R.drawable.logo_wan).bitmapTransform(new CropCircleTransformation(this)).into(publishImageView);
     }
 
     /**
@@ -108,7 +111,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         myFl.setOnClickListener(this);
 
         // 给按钮图片设置监听
-        toggleImageView.setOnClickListener(this);
+        publishImageView.setOnClickListener(this);
     }
 
     /**
@@ -139,10 +142,10 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
                 break;
             // 点击中间按钮
-            case R.id.toggle_btn:
-                clickToggleBtn();
-
-                break;
+//            case R.id.toggle_btn:
+//                clickToggleBtn();
+//
+//                break;
 
             case R.id.publish_choosework:
                 takePhotoCrop.photoPicker();
@@ -154,10 +157,10 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
                 popWindow.dismiss();
                 break;
-//            case R.id.publish_fabu:
-//
-////                popWindow.dismiss();
-//                break;
+            case R.id.publish_fabu:
+                clickToggleBtn();
+//                popWindow.dismiss();
+                break;
 //            case R.id.publish_bianji:
 //
 ////                popWindow.dismiss();
@@ -228,17 +231,17 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
             popWindow.dismiss();
         } else {
-            showPopupWindow(toggleImageView);
+            showPopupWindow(publishImageView);
         }
         // 改变按钮显示的图片为按下时的状态
-        plusImageView.setSelected(true);
+        publishImageView.setSelected(true);
     }
 
     /**
      * 改变显示的按钮图片为正常状态
      */
     private void changeButtonImage() {
-        plusImageView.setSelected(false);
+        publishImageView.setSelected(false);
     }
 
     /**

@@ -63,7 +63,6 @@ public class AdjustmentImageActivity extends BaseFragmentActivity {
             @Override
             public void onClick(View v) { onBackPressed();  }
         });
-
     }
 
     private void initView() {

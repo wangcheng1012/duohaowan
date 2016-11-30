@@ -50,13 +50,13 @@
 
     </LinearLayout>
 
-    <!--<TextView-->
-    <!--style="@style/text_base"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginTop="20dp"-->
-    <!--android:text="卡纸宽：54 (cm)" />-->
-
+    <TextView
+        android:id="@+id/bili_textview"
+        style="@style/text_base"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="缩放比例：0%" />
     <SeekBar
         android:id="@+id/card_seekBar"
         android:layout_width="match_parent"
@@ -79,7 +79,6 @@
 
         <LinearLayout
             android:id="@+id/card_horizontalScrollView_ll"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" />

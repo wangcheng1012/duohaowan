@@ -1,4 +1,5 @@
 package com.hd.wlj.duohaowan.ui.home;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,8 +14,8 @@ import com.wlj.base.web.asyn.AsyncCall;
 import java.util.List;
 
 /**
-* Created by wlj on 2016/10/26
-*/
+ * Created by wlj on 2016/10/26
+ */
 
 public class HomePresenterImpl extends BasePresenter<HomeView> {
 
@@ -30,9 +31,11 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
 
         }
     };
+    private Thread thread;
+    private AsyncCall asyncCall;
 
-    public HomePresenterImpl(Activity activity){
-          homeModel = new HomeModelImpl(activity);
+    public HomePresenterImpl(Activity activity) {
+        homeModel = new HomeModelImpl(activity);
     }
 
     @Override
@@ -65,7 +68,11 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
         homeModel.loadNews(new AsyncCall.OnAsyncBackListener() {
             @Override
             public void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt) {
-
+                handler.removeCallbacks(null);
+                if (thread != null) {
+                    thread.interrupt();
+                    thread = null;
+                }
                 tinner(paramList);
             }
 
@@ -76,12 +83,12 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
         });
     }
 
-    public void loadHot(){
+    public void loadHot() {
 
         homeModel.Request(HomeModelImpl.hot).setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
             @Override
             public void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt) {
-                if(view != null) {
+                if (view != null) {
                     view.showHot(paramList);
                 }
             }
@@ -93,12 +100,14 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
         });
     }
 
-    public  void loadNewest(){
-
-        homeModel.Request(HomeModelImpl.newest ).setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+    public void loadNewest(int page) {
+        homeModel.setPage(page);
+        homeModel.setPageSize(10);
+        asyncCall = homeModel.Request(HomeModelImpl.newest);
+        asyncCall.setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
             @Override
             public void OnAsyncBack(List<Base> paramList, Base paramBase, int paramInt) {
-                if(view != null) {
+                if (view != null) {
                     view.showNewest(paramList);
                 }
             }
@@ -110,16 +119,23 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
         });
     }
 
+    public void loadMoreNewest() {
+        if(!asyncCall.isComplate()) {
+            loadNewest(asyncCall.getPageIndex() + 1);
+        }
+    }
+
+
     /**
      * 定时切换新闻
      *
      * @param paramList
      */
     private void tinner(final List<Base> paramList) {
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true) {
+                while (true) {
 
                     for (int i = 0; i < paramList.size(); i++) {
 
@@ -142,7 +158,8 @@ public class HomePresenterImpl extends BasePresenter<HomeView> {
                 }
 
             }
-        }).start();
+        });
+        thread.start();
     }
 
 }

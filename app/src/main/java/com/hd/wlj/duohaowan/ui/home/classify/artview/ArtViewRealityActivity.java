@@ -2,11 +2,9 @@ package com.hd.wlj.duohaowan.ui.home.classify.artview;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +20,6 @@ import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.CyptoUtils;
 import com.wlj.base.util.StringUtils;
 import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,12 +41,21 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
     ImageView titleBack;
     @BindView(R.id.title_title)
     TextView titleTitle;
+    @BindView(R.id.item_reality_name)
+    TextView name;
+    @BindView(R.id.item_reality_time)
+    TextView time;
+    @BindView(R.id.item_reality_intro)
+    TextView intro;
+    @BindView(R.id.view)
+    View lineview;
+    @BindView(R.id.item_reality_imageLL)
+    LinearLayout imagell;
     @BindView(R.id.artview_reality_recyclerview)
     RecyclerView recyclerview;
-    private HeaderAndFooterWrapper header;
     private List<String> mData;
     private DetailsPresenterImpl presenter;
-    private ViewHolder headerholder;
+    private CommonAdapter<String> commonAdapter;
 
 
     @Override
@@ -73,10 +79,9 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
     private void initRecyclerview() {
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         mData = new ArrayList<>();
-        View headerview = LayoutInflater.from(this).inflate(R.layout.part_artview_reality, null);
-        headerholder = new ViewHolder(headerview);
+
         // 评论列表数据
-        CommonAdapter<String> commonAdapter = new CommonAdapter<String>(this, R.layout.item_work_recyclerview, mData) {
+         commonAdapter = new CommonAdapter<String>(this, R.layout.item_work_recyclerview, mData) {
 
             @Override
             protected void convert(com.zhy.adapter.recyclerview.base.ViewHolder holder, String str, int position) {
@@ -121,11 +126,10 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
             }
         };
 
-        header = new HeaderAndFooterWrapper(commonAdapter);
-        header.addHeaderView(headerview);
+//        header = new HeaderAndFooterWrapper(commonAdapter);
+//        header.addHeaderView(headerview);
 
-        recyclerview.setAdapter(header);
-
+        recyclerview.setAdapter(commonAdapter);
     }
 
     private void initTitle() {
@@ -145,17 +149,16 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
 
         JSONObject jsonObject = item.getResultJsonObject();
 
-        headerholder.name.setText( jsonObject.optString("name"));
-        headerholder.time.setText( StringUtils.getTime(jsonObject.optLong("time"), "yyyy-MM-dd"));
-        headerholder.intro.setText(  CyptoUtils.decryptBASE64(jsonObject.optString("intro")));
+        name.setText( jsonObject.optString("name"));
+        time.setText( StringUtils.getTime(jsonObject.optLong("time"), "yyyy-MM-dd"));
+        intro.setText(  CyptoUtils.decryptBASE64(jsonObject.optString("intro")));
 
         JSONArray pics = jsonObject.optJSONArray("pics");
 
-        LinearLayout imagell = headerholder.imagell;
         imagell.removeAllViews();
 
         if (pics != null) {
-            headerholder.view.setVisibility(View.GONE);
+            lineview.setVisibility(View.GONE);
             for (int i = 0; i < pics.length(); i++) {
                 String s = pics.optString(i);
 
@@ -169,7 +172,7 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
             }
         } else {
 
-            headerholder.view.setVisibility(View.VISIBLE);
+            lineview.setVisibility(View.VISIBLE);
         }
 
         //评论
@@ -180,7 +183,7 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
             for (int i = 0; i < comment_list.length(); i++) {
                 mData.add(comment_list.optJSONObject(i) + "");
             }
-            header.notifyDataSetChanged();
+            commonAdapter.notifyDataSetChanged();
         }
 
     }
@@ -190,20 +193,6 @@ public class ArtViewRealityActivity extends BaseFragmentActivity implements Deta
 
     }
 
-    static class ViewHolder {
-        @BindView(R.id.item_reality_name)
-        TextView name;
-        @BindView(R.id.item_reality_time)
-        TextView time;
-        @BindView(R.id.item_reality_intro)
-        TextView intro;
-        @BindView(R.id.view)
-        View view;
-        @BindView(R.id.item_reality_imageLL)
-        LinearLayout imagell;
 
-        ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
+
 }

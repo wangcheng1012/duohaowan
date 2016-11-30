@@ -46,7 +46,12 @@
             <android.support.design.widget.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="背景" />
+                android:text="单图" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多图" />
 
         </android.support.design.widget.TabLayout>
 
@@ -69,9 +74,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingTop="5dp"
+                android:background="@color/_ededed"
                 android:paddingBottom="5dp"
-                android:background="@color/_ededed">
+                android:paddingTop="5dp">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -79,13 +84,13 @@
                 android:id="@+id/sence_save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/black"
                 android:text="发布"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 

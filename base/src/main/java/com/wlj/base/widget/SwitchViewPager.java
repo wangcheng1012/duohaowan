@@ -221,7 +221,7 @@ public class SwitchViewPager<T> implements
 //                LoadImage loadImage = LoadImage.getinstall();
                 imageView1.setAdjustViewBounds(true);
                 imageView1.setScaleType(ScaleType.FIT_XY);
-
+                imageView1.setTag(R.id.tag_first,item);
                 Glide.with(mContext).
                         load(getContentText(item))
                         .placeholder(R.drawable.project_bg)

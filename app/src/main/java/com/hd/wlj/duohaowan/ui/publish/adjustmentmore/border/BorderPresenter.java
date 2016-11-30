@@ -7,6 +7,7 @@ import android.view.View;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.mvp.BasePresenter;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
+import com.lling.photopicker.utils.ImageLoader;
 import com.wlj.base.bean.Base;
 import com.wlj.base.web.asyn.AsyncCall;
 
@@ -47,11 +48,9 @@ public class BorderPresenter extends BasePresenter<BorderView> {
     }
 
 
-
-
     public void loadSenceData(int width, int height) {
-        borderModel.setHeight(height+"");
-        borderModel.setWidth(width +"");
+        borderModel.setHeight(height + "");
+        borderModel.setWidth(width + "");
         borderModel.Request(BorderModel.type_sence)
                 .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
                     @Override
@@ -69,31 +68,38 @@ public class BorderPresenter extends BasePresenter<BorderView> {
     }
 
 
-    public void loadBorderBiliData(View v, MergeBitmap mergeBitmap) {
+    public void loadBorderBiliData(View v, final MergeBitmap mergeBitmap) {
 
         Base tag = (Base) v.getTag(R.id.tag_first);
         JSONObject jsonObject = tag.getResultJsonObject();
-        String pub_id = jsonObject.optString("pub_id");
+        final String pub_id = jsonObject.optString("pub_id");
 
-        Bitmap workBitmap = mergeBitmap.getWorkBitmap();
-        borderModel.setWidth(workBitmap.getWidth()+"");
-        borderModel.setHeight(workBitmap.getHeight()+"");
-        borderModel.setBackgroundWall_id(mergeBitmap.getBackgroundId());
-        borderModel.setPaintingFrameConlumn_id(pub_id);
+        mergeBitmap.getWorkBitmap(v.getContext(), new ImageLoader.BackBitmap() {
+            @Override
+            public void back(Bitmap workBitmap) {
 
-        borderModel.Request(BorderModel.type_border_bili)
-                .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
-                    @Override
-                    public void OnAsyncBack(List<Base> list, Base base, int requestType) {
-                        if (view != null) {
-                            view.showBorderBili(list);
-                        }
-                    }
+                borderModel.setWidth(workBitmap.getWidth() + "");
+                borderModel.setHeight(workBitmap.getHeight() + "");
+                borderModel.setBackgroundWall_id(mergeBitmap.getBackgroundId());
+                borderModel.setPaintingFrameConlumn_id(pub_id);
 
-                    @Override
-                    public void fail(Exception paramException) {
+                borderModel.Request(BorderModel.type_border_bili)
+                        .setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                            @Override
+                            public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                                if (view != null) {
+                                    view.showBorderBili(list);
+                                }
+                            }
 
-                    }
-                });
+                            @Override
+                            public void fail(Exception paramException) {
+
+                            }
+                        });
+            }
+        });
+
+
     }
 }

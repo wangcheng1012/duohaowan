@@ -25,10 +25,16 @@ public class MsgContext  {
 
 	public static final String home_banner = "57fca5edef722c216b767c98";
 	public static final String home_news = "57fca5ffef722c216b767c99";
-	public static final String home_hot = "57fca56def722c216b767c91";
+	public static final String home_hot = "583662e6ef722c0b94b5bee9";
 	public static final String home_newest ="5812ef5478e0802052dd7a2f";
 
 
 	public static String seachArtist = "581407b20e9f110d8cbbdb94";
 	public static String seachWork = "5812ef5478e0802052dd7a2f";
+
+	public final static String gallery =  "581ef1a1d6c4594f90fa046c";	//艺术馆
+	public final static String zhixun =   "581b09c7d6c45925f82e4917";	//资讯
+	public final static String arist =   "581407b20e9f110d8cbbdb94";	//作家名片
+	public final static String work =   "5812ef5478e0802052dd7a2f";	//艺术品
+
 }

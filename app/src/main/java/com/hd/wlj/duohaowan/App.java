@@ -1,10 +1,8 @@
 package com.hd.wlj.duohaowan;
 
 import android.Manifest;
-import android.content.Intent;
 
 import com.hd.wlj.duohaowan.ui.LoginActivity;
-import com.lling.photopicker.PhotoPickerActivity;
 import com.mylhyl.acp.Acp;
 import com.mylhyl.acp.AcpListener;
 import com.mylhyl.acp.AcpOptions;
@@ -20,8 +18,11 @@ import java.util.List;
  */
 public class App extends AppContext {
 
+
+
     @Override
     protected void init() {
+
         //网络请求 出现301  时自动跳转到登录页面
         AppConfig.getAppConfig().setLoginClass(LoginActivity.class);
         Logger.init().methodCount(2).methodOffset(0).logLevel(BuildConfig.DEBUG ? LogLevel.FULL : LogLevel.NONE);

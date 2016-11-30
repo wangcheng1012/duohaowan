@@ -49,21 +49,8 @@ public class SWRVFragment extends BaseFragment implements SWRVContract.View {
         ButterKnife.bind(this, view);
 
         init();
-
-        initSwipeRefreshLayout();
     }
 
-    private void initSwipeRefreshLayout() {
-
-        //设置刷新时动画的颜色，可以设置4个
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                presenter.onRefresh();
-            }
-        });
-    }
 
     @Override
     public void onDetach() {

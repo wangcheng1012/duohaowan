@@ -33,6 +33,11 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
     private String name;
     private String years;
     private String price;
+    private String width ;
+    private String height;
+    private String tag;
+
+
     private boolean havebachground;
 
     private List<MergeBitmap> mergeBitmaps;
@@ -52,6 +57,9 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
 
     protected PublishModel(Parcel in) {
         name = in.readString();
+        width = in.readString();
+        height = in.readString();
+        tag = in.readString();
         years = in.readString();
         price = in.readString();
         havebachground = in.readByte() != 0;
@@ -70,6 +78,23 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
         }
     };
 
+    /**
+     * 把 mb 复制到mergeBitmaps里没有WorkPath的MergeBitmap
+     * @param mb
+     */
+    public void onClone(MergeBitmap  mb ){
+        for (MergeBitmap bitmap :  mergeBitmaps) {
+            //是否要复制 是通过有没有作品路径定的
+            String workPath = bitmap.getWorkPath();
+
+            if( mb != bitmap && StringUtils.isEmpty(workPath)){
+                Rect id = bitmap.getId();
+                mb.Clone(bitmap);
+                bitmap.setId(id);
+            }
+        }
+    }
+
     @Override
     public void addRequestParemeter(AsyncRequestModle asRequestModle) throws IOException {
         //卡纸
@@ -77,8 +102,9 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
         httpPost.addParemeter("artworks_name", name);
         httpPost.addParemeter("years", years);
         httpPost.addParemeter("price_fen", MathUtil.parseInteger(price) * 100 + "");
-        httpPost.addParemeter("true_width", "30");
-        httpPost.addParemeter("true_height", "50");
+        httpPost.addParemeter("true_width", getWidth());
+        httpPost.addParemeter("true_height", getHeight());
+        httpPost.addParemeter("tag_string", getTag());
         httpPost.addParemeter("pubConlumnId", "5812ef8078e0802052dd7a31");//类别编号
 
         JSONArray artworksCompoment = new JSONArray();
@@ -161,6 +187,42 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
         this.havebachground = havebachground;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getYears() {
+        return years;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public String getWidth() {
+        return width;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     public void setMergeBitmaps(List<MergeBitmap> mergeBitmaps) {
         this.mergeBitmaps = mergeBitmaps;
     }
@@ -201,6 +263,9 @@ public class PublishModel extends BaseAsyncModle implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
+        dest.writeString(width);
+        dest.writeString(height);
+        dest.writeString(tag);
         dest.writeString(years);
         dest.writeString(price);
         dest.writeByte((byte) (havebachground ? 1 : 0));

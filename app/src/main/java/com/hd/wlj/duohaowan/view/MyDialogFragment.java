@@ -48,7 +48,7 @@ public class MyDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_touchimageview, null);
 
         ImageViewTouch  imageviewtouch = (ImageViewTouch) view.findViewById(R.id.dialog_touchimage);
-
+        final View progressBar = view.findViewById(R.id.dialog_progressBar);
         imageviewtouch.setSingleTapListener(new ImageViewTouch.OnImageViewTouchSingleTapListener() {
             @Override
             public void onSingleTapConfirmed() {
@@ -71,6 +71,7 @@ public class MyDialogFragment extends DialogFragment {
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         Logger.i("isFromMemoryCache:%s,isFirstResource:%s",isFromMemoryCache,isFirstResource);
+                        progressBar.setVisibility(View.GONE);
                         return false;
                     }
                 })

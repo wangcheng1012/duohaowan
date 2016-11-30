@@ -4,14 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <View
-        android:layout_width="10dp"
-        android:layout_height="match_parent"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false" />
-
     <LinearLayout
+        android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/shape_hui1_white"
@@ -34,10 +28,10 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="10dp"
-        android:layout_height="match_parent"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false" />
+    <!--<View-->
+        <!--android:layout_width="10dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:clickable="false"-->
+        <!--android:focusable="false"-->
+        <!--android:focusableInTouchMode="false" />-->
 </LinearLayout>

@@ -68,6 +68,20 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
         recycerview.setLayoutManager(layoutManager);
 
         recycerview(itemlayout);
+
+        initSwipeRefreshLayout();
+    }
+
+    private void initSwipeRefreshLayout() {
+
+        //设置刷新时动画的颜色，可以设置4个
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                SWRVPresenter.this.onRefresh();
+            }
+        });
     }
 
     private void recycerview(int layout) {
@@ -196,7 +210,7 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
 
                 if (asyncCall.isComplate() && datas.size() != 0) {
                     //加载完
-                    loadmoretext.setText("已经到底了");
+//                    loadmoretext.setText("已经到底了");
                 }
             }
 
@@ -209,7 +223,7 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
                     UIHelper.toastMessage(AppContext.getAppContext(), paramException.getMessage());
                 }
                 loadComplate();
-                loadmoretext.setText("异常");
+//                loadmoretext.setText("异常");
             }
         });
     }

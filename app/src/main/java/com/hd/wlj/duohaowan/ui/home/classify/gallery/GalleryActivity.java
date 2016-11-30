@@ -9,9 +9,11 @@ import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.been.ShouCang;
+import com.hd.wlj.duohaowan.ui.home.classify.gallery.photo.WebViewLoadHtml;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.CyptoUtils;
+import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.UIHelper;
 import com.wlj.base.web.asyn.AsyncCall;
 
@@ -92,6 +94,13 @@ public class GalleryActivity extends BaseFragmentActivity implements GalleryView
                 Glide.with(this).load(Urls.HOST + jsonObject.optString("pic")).into(newsImageView);
             }
         }
+
+        newsImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GoToHelp.go(GalleryActivity.this,WebViewLoadHtml.class);
+            }
+        });
 
     }
 

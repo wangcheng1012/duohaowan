@@ -2,10 +2,12 @@ package com.hd.wlj.duohaowan.ui.home.classify.work;
 
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -24,8 +26,13 @@ import com.hd.wlj.duohaowan.been.ShouCang;
 import com.hd.wlj.duohaowan.been.Zan;
 import com.hd.wlj.duohaowan.view.MyDialogFragment;
 import com.hd.wlj.duohaowan.view.RectClickImageView;
+import com.hd.wlj.third.share.ShareModle;
+import com.hd.wlj.third.share.ShareUI;
+import com.tencent.connect.common.Constants;
+import com.tencent.tauth.Tencent;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
+import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
@@ -60,12 +67,16 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
     ImageView titleBack;
     @BindView(R.id.title_title)
     TextView titleTitle;
+    @BindView(R.id.title_right)
+    TextView titleRight;
 
     private DetailsPresenterImpl presenter;
     private ViewHolder holder;
     private List<String> mData;
     private JSONObject jsonData;
     private HeaderAndFooterWrapper header;
+    private ShareUI shareUI;
+    private ShareModle shareModle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +89,39 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         presenter.attachView(this);
 
         Intent intent = getIntent();
-        initTitle();
         init();
 
         String id = intent.getStringExtra("id");
         presenter.loadDetailsData(id);
+
+        share(savedInstanceState);
+        initTitle();
+    }
+
+    private void share(Bundle savedInstanceState) {
+
+        shareModle = new ShareModle();
+        shareUI = new ShareUI(WorkDetailsActivity.this, shareModle, savedInstanceState);
+    }
+
+    /**
+     * 添加分享的数据
+     */
+    private void makeShareData() {
+        String intro = jsonData.optString("intro");
+        if (StringUtils.isEmpty(intro)) {
+            intro = "暂无简介";
+        }
+        shareModle.setName(jsonData.optString("name"));
+        shareModle.setContent(intro);
+        shareModle.setResPic(R.mipmap.ic_launcher);
+        shareModle.setPic(Urls.HOST + jsonData.optString("pic"), WorkDetailsActivity.this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        shareUI.mSinaShare.onNewIntent(intent);
     }
 
     private void initTitle() {
@@ -93,6 +132,15 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             }
         });
         titleTitle.setText("详情");
+        titleRight.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/iconfont.ttf"));
+        titleRight.setTextSize(23f);
+        titleRight.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                shareUI.showdialog(true);
+            }
+        });
     }
 
     private void init() {
@@ -153,7 +201,6 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
 
         recyclerView.setAdapter(header);
     }
-
 
     @Override
     protected void onDestroy() {
@@ -231,21 +278,48 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             if (!StringUtils.isEmpty(name)) {
                 holder.workname.setText("⟪ " + name + " ⟫");
             } else {
-                holder.workname.setText("⟪ " + "作品名称" + " ⟫");
+                holder.workname.setText("");
             }
 
             //标签
+            holder.taglayout.removeAllViews();
+            JSONArray showTag_list = jsonData.optJSONArray("showTag_list");
+            if (showTag_list != null) {
+                int toPx4 = DpAndPx.dpToPx(this, 4);
+                int toPx8 = DpAndPx.dpToPx(this, 8);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.rightMargin = toPx8;
+                for (int i = 0; i < showTag_list.length(); i++) {
+                    String tag = showTag_list.optString(i);
+                    TextView textView = new TextView(this);
+                    textView.setGravity(Gravity.CENTER);
+                    textView.setText(tag);
+                    textView.setPadding(toPx8, toPx4, toPx8, toPx4);
+                    textView.setTextColor(getResources().getColor(R.color.black1));
+                    textView.setBackgroundResource(R.drawable.shape_huang_corners8);
+                    textView.setLayoutParams(layoutParams);
+                    holder.taglayout.addView(textView);
+                }
+            }
+            //浏览 记录
             JSONArray user_see_jsonArray = jsonData.optJSONArray("user_see_jsonArray");
             if (user_see_jsonArray != null) {
+                holder.workDetailsLayout.removeAllViews();
+                holder.linearLayout.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams2.rightMargin = DpAndPx.dpToPx(this, 8);
                 for (int i = 0; i < user_see_jsonArray.length(); i++) {
                     JSONObject jsonObject = user_see_jsonArray.optJSONObject(i);
 
                     String picname = jsonObject.optString("picname");
                     ImageView imageView = new ImageView(this);
-
-                    Glide.with(this).load(Urls.HOST + picname).into(imageView);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setLayoutParams(layoutParams2);
+                    Glide.with(this).load(Urls.HOST + picname).bitmapTransform(new CropCircleTransformation(this)).into(imageView);
                     holder.workDetailsLayout.addView(imageView);
                 }
+            } else {
+                holder.linearLayout.setVisibility(View.GONE);
             }
             //~~
             String cicun = jsonData.optString("cicun");
@@ -291,6 +365,9 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
 
 
 //            holder.zan.setTag(jsonData.optInt("nice_count", 0));
+
+            //分享
+            makeShareData();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -407,11 +484,12 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         presenter.comment(jsonData, workdetailsComment);
     }
 
-
     static class ViewHolder {
 
         @BindView(R.id.work_detail_head)
         ImageView workDetailHead;
+        @BindView(R.id.work_details_ll)
+        LinearLayout linearLayout;
         @BindView(R.id.work_details_name)
         TextView userName;
         @BindView(R.id.work_details_zhiwei)
@@ -461,7 +539,16 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        Tencent.onActivityResultData(requestCode, resultCode, data, shareUI.mQQshare.loginListener);
+        if (requestCode == Constants.REQUEST_QQ_SHARE) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, shareUI.mQQshare);
+        }
+
+    }
 }
 
 

@@ -152,23 +152,24 @@ public class ImageUtil2 {
             canvas.drawBitmap(scaledInstance, x_zuopin, y_zuopin, null);
             canvas.drawBitmap(backGroudImage, new Matrix(), null);
         }
+
         scaledInstance.recycle();
 
         if (save) {
             RealRect = new Rect(x_zuopin, y_zuopin, x_zuopin + width_zuopin_scale, y_zuopin + height_zuopin_scale);
         }
-        Bitmap scaledBitmap = bitmap;
+//        Bitmap scaledBitmap = bitmap;
         //
-        if(save){
-            int mW = 350;
-            int mh = bitmap.getHeight() * mW / bitmap.getWidth();
+//        if(save && bitmap.getWidth() > 600){
+//            //背景不缩放
+//            int mW = 600;
+//            int mh = bitmap.getHeight() * mW / bitmap.getWidth();
+//
+//            scaledBitmap = Bitmap.createScaledBitmap(bitmap, mW, mh, false);
+//            bitmap.recycle();
+//        }
 
-            scaledBitmap = Bitmap.createScaledBitmap(bitmap, mW, mh, false);
-            bitmap.recycle();
-        }
-
-
-        return scaledBitmap;
+        return bitmap;
     }
 
 
@@ -182,7 +183,9 @@ public class ImageUtil2 {
      * @return
      */
     public static Bitmap mergeCard1(Bitmap backGroudImage, Rect card1Rect, float space, int color, float lineinner, float lineoutside) {
-        int w = 1;
+        int w = 2;
+        if(lineinner == 0){ lineinner = 3; }
+        if(lineoutside == 0){ lineoutside = 1.5f; }
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
 
@@ -235,6 +238,7 @@ public class ImageUtil2 {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);//空心矩形框
 //        paint.setStyle(Paint.Style.FILL);//实心矩形框
+        paint.setStrokeWidth(3f);
         paint.setAntiAlias(true);
         paint.setColor(card1Color);
         card2Rect.set(borderRect.left + space, borderRect.top + space, borderRect.right - space, borderRect.bottom - space);

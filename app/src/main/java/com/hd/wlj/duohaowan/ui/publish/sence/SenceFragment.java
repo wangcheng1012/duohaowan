@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -118,7 +119,6 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
         int width = 0;
         int height  = 0;
         ImageAdjustmentActivity activity = (ImageAdjustmentActivity) getActivity();
-
 
         MergeBitmap mergeBitmap = activity.getMergeBitmap();
         Bitmap bitmap = mergeBitmap.getBorderBitmap();
@@ -377,14 +377,11 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
 //        String year = complateYear.getText() + "";
 //        String money = complateMoney.getText() + "";
 //        String intro = complateIntro.getText() + "";
+        Intent intent = getActivity().getIntent();
+        PublishModel model = intent.getParcelableExtra("publishModel");
 
-        PublishModel model = new PublishModel(getActivity());
-
+        model.setActivity(getActivity());
         model.setHavebachground(true);
-
-//        model.setName(name);
-//        model.setYears(year);
-//        model.setPrice(money);
 
         ArrayList<MergeBitmap> objects = new ArrayList<>();
         objects.add(tmp);
