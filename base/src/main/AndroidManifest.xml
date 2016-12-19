@@ -15,6 +15,15 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.Transparent" />
 
+        <receiver
+            android:name=".NetWorkStatusReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.hd.wlj.duohaowan.ui.publish.adjustmentmore.border;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -23,6 +24,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
+import com.hd.wlj.duohaowan.ui.pay.PayActivity;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.AdjustmentImageActivity;
 import com.hd.wlj.duohaowan.ui.publish.adjustmentmore.sencemore.SenceMoreActivity;
@@ -48,7 +50,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BorderFragment extends BaseFragment implements BorderView, SeekBar.OnSeekBarChangeListener {
+public class BorderFragment extends Fragment implements BorderView, SeekBar.OnSeekBarChangeListener {
 
     @BindView(R.id.adjust_height_sb)
     SeekBar adjustHeightSb;
@@ -71,6 +73,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     private View preSelectClassifyView;
     private AdjustmentImageActivity activity;
     private int progress = 100;
+    private int REQUESTCODE = 258;
 
     public BorderFragment() {
     }
@@ -82,26 +85,26 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         presenter = new BorderPresenter(getActivity());
         presenter.attachView(this);
 
-//        View view = inflater.inflate(R.layout.fragment_adjust_image, container, false);
-//        ButterKnife.bind(this, view);
-//        initView();
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_adjust_image, container, false);
+        ButterKnife.bind(this, view);
+        initView();
+//        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         return view;
     }
 
-    @Override
-    protected int getlayout() {
-        return R.layout.fragment_adjust_image;
-    }
+//    @Override
+//    protected int getlayout() {
+//        return R.layout.fragment_adjust_image;
+//    }
 
     private void setBiliTV( double scale) {
         biliTv.setText( "缩放比例："+ (int)(scale*100) +"%" );
     }
 
     protected void initView() {
-        ButterKnife.bind(this, view);
-        view.setMinimumHeight(0);
+//        ButterKnife.bind(this, view);
+//        view.setMinimumHeight(0);
 
         activity = (AdjustmentImageActivity) getActivity();
 
@@ -125,7 +128,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
 
         MergeBitmap mergeBitmap = activity.getMergeBitmap();
 
-        mergeBitmap.buildMore(mcontext, new ImageLoader.BackBitmap() {
+        mergeBitmap.buildMore(getActivity().getApplicationContext(), new ImageLoader.BackBitmap() {
             @Override
             public void back(Bitmap mBitmap) {
                 activity.getmRectClickImageView().setImageBitmap(mBitmap);
@@ -227,7 +230,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         mergeBitmap.setCard2space(0);
 
 
-        mergeBitmap.buildMore(mcontext, new ImageLoader.BackBitmap() {
+        mergeBitmap.buildMore(getActivity().getApplicationContext(), new ImageLoader.BackBitmap() {
             @Override
             public void back(Bitmap mBitmap) {
                 activity.getmRectClickImageView().setImageBitmap(mBitmap);
@@ -257,7 +260,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         Rect rect = ImageUtil2.resizeRectangle(borkRectOld, divide);
         activity.getMergeBitmap().setWorkRect(rect);
 
-        activity.getMergeBitmap().buildMore(mcontext, new ImageLoader.BackBitmap() {
+        activity.getMergeBitmap().buildMore(getActivity().getApplicationContext(), new ImageLoader.BackBitmap() {
             @Override
             public void back(Bitmap mBitmap) {
                 activity.getmRectClickImageView().setImageBitmap(mBitmap);
@@ -313,18 +316,36 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                Base tag = (Base) view.getTag(R.id.tag_first);
+                JSONObject jsonObject = tag.getResultJsonObject();
 
-                //选中效果添加
-                if (preSelectClassifyView != null) {
-                    preSelectClassifyView.setSelected(false);
-                }
-                if (preSelectBiliView != null) {
-                    preSelectBiliView.setSelected(false);
-                }
-                preSelectClassifyView = view;
-                preSelectClassifyView.setSelected(true);
+                double price_fen = jsonObject.optDouble("price_fen", 0d);
+                if(price_fen > 0){
 
-                presenter.loadBorderBiliData(view, activity.getMergeBitmap());
+                    //支付页面
+                    Intent intent = new Intent(getContext(), PayActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("payMoneyFen",price_fen);
+                    intent.putExtra("payName","画框");
+                    intent.putExtra("borderid",jsonObject.optString("pub_id"));
+
+                    startActivityForResult(intent,REQUESTCODE);
+
+                }else{
+                    //选中效果添加
+                    if (preSelectClassifyView != null) {
+                        preSelectClassifyView.setSelected(false);
+                    }
+                    if (preSelectBiliView != null) {
+                        preSelectBiliView.setSelected(false);
+                    }
+                    preSelectClassifyView = view;
+                    preSelectClassifyView.setSelected(true);
+
+                    presenter.loadBorderBiliData(view, activity.getMergeBitmap());
+                }
+
+
             }
 
             @Override
@@ -340,6 +361,13 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         ImageView mImg = holder.getView(R.id.item_border);
 
         final JSONObject resultJsonObject = base.getResultJsonObject();
+        //价格
+        double price_fen = resultJsonObject.optDouble("price_fen", 0d);
+        if(price_fen > 0){
+            holder.setText(R.id.item_money, "¥ "+MathUtil.divide(price_fen,100,1).doubleValue());
+        }else{
+            holder.setText(R.id.item_money,"免费");
+        }//end
 
         final String pics = resultJsonObject.optString("pic");
         if (pics != null && pics.length() > 0) {
@@ -387,4 +415,14 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     }//end
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == getActivity().RESULT_OK && REQUESTCODE == requestCode && presenter != null){
+
+            presenter.loadBorderClassifyData();
+
+        }
+
+    }
 }

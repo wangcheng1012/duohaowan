@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
+import com.hd.wlj.duohaowan.ui.home.classify.artview.ask.AskedActivity;
+import com.wlj.base.util.GoToHelp;
 
 import java.util.ArrayList;
 
@@ -50,7 +52,7 @@ public class ClassifyListActivity extends AppCompatActivity {
         toolbarRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                GoToHelp.go(ClassifyListActivity.this, AskedActivity.class);
             }
         });
 
@@ -143,7 +145,7 @@ public class ClassifyListActivity extends AppCompatActivity {
                 tabBarList.add("预告");
                 tabBarList.add("最新");
                 tabBarList.add("艺术馆");
-                tabBarList.add("得意艺术馆");
+                tabBarList.add("得艺艺术馆");
                 for (String tmpBarStr : tabBarList) {
                     fragments.add(ClassifyListFragment.newInstance(tmpBarStr, classify));
                 }

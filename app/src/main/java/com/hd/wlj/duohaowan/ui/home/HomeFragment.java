@@ -2,10 +2,12 @@ package com.hd.wlj.duohaowan.ui.home;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
@@ -29,6 +32,7 @@ import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListActivity;
 import com.hd.wlj.duohaowan.ui.home.view.KamHorizontalScrollView;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
+import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.GoToHelp;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
@@ -114,8 +118,10 @@ public class HomeFragment extends BaseFragment implements HomeView, LoadMoreWrap
         initRecyclerView();
 
         //SWRVPresenterAdapter
-        homePresenter = new HomePresenterImpl(getActivity());
-        homePresenter.attachView(this);
+        if (homePresenter == null) {
+            homePresenter = new HomePresenterImpl(getActivity());
+            homePresenter.attachView(this);
+        }
 
         //初始化 网络请求
         homePresenter.loadBannerData();
@@ -177,6 +183,11 @@ public class HomeFragment extends BaseFragment implements HomeView, LoadMoreWrap
         homeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mData = new ArrayList<Base>();
 
+        WindowManager windowManager = getActivity().getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        final Point point = new Point();
+        display.getSize(point);
+
         CommonAdapter<Base> commonAdapter = new CommonAdapter<Base>(getContext(), R.layout.item_home_recyclerview, mData) {
             @Override
             protected void convert(ViewHolder holder, Base o, int position) {
@@ -184,24 +195,35 @@ public class HomeFragment extends BaseFragment implements HomeView, LoadMoreWrap
 
                 JSONObject resultJsonObject = o.getResultJsonObject();
                 final ImageView view = holder.getView(R.id.item_home_recyclerView_image);
-                holder.setImageResource(R.id.item_home_recyclerView_image, R.drawable.project_bg);
+
+                int pic_width = resultJsonObject.optInt("pic_width", 50);
+                int pic_height = resultJsonObject.optInt("pic_height", 50);
+
+//                int width1 = point.x / 2 - DpAndPx.dpToPx(getContext(), 20);
+                int height1 = pic_height * point.x / pic_width;
+
+                view.setMinimumHeight(height1);
+
+//                holder.setImageResource(R.id.item_home_recyclerView_image, R.drawable.project_bg);
                 Glide.with(HomeFragment.this)
                         .load(Urls.HOST + resultJsonObject.optString("pic"))
-                        .asBitmap()
-                        .placeholder(R.drawable.project_bg)
+//                        .asBitmap()
+//                        .placeholder(R.drawable.shape_hui_hui)
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
 //                        .thumbnail(0.4f)
-                        .into(new SimpleTarget<Bitmap>(500, 500) {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                int intrinsicWidth = resource.getWidth();
-                                int height = view.getWidth() * resource.getHeight() / intrinsicWidth;
-
-                                view.setMinimumWidth(intrinsicWidth);
-                                view.setMinimumHeight(height);
-
-                                view.setImageBitmap(resource);
-                            }
-                        });
+                        .into(view);
+//                        .into(new SimpleTarget<Bitmap>(500, 500) {
+//                            @Override
+//                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                                int intrinsicWidth = resource.getWidth();
+//                                int height = view.getWidth() * resource.getHeight() / intrinsicWidth;
+//
+//                                view.setMinimumWidth(intrinsicWidth);
+//                                view.setMinimumHeight(height);
+//
+//                                view.setImageBitmap(resource);
+//                            }
+//                        });
 
 //               LoadImage.getinstall().addTask(Urls.HOST + resultJsonObject.optString("pic"), view).doTask();
                 //
@@ -358,8 +380,8 @@ public class HomeFragment extends BaseFragment implements HomeView, LoadMoreWrap
     private View createHotItem(int index) {
 
         int height = mHorizontalScrollView.getHeight();
-        height -=  mHorizontalScrollView.getPaddingTop();
-        height -=  mHorizontalScrollView.getPaddingBottom();
+        height -= mHorizontalScrollView.getPaddingTop();
+        height -= mHorizontalScrollView.getPaddingBottom();
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_hot, null);
         ImageView mImg = (ImageView) view.findViewById(R.id.home_hot_img);

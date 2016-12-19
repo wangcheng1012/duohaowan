@@ -65,6 +65,7 @@ public class ComplateFragment extends BaseFragment {
 
     @Override
     protected void initView() {
+        view.setMinimumHeight(0);
         ButterKnife.bind(this, view);
         ImageAdjustmentActivity activity = (ImageAdjustmentActivity) getActivity();
         mergeBitmap = activity.getMergeBitmap();
@@ -77,6 +78,9 @@ public class ComplateFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.complate_save:
 
+                if (getPublishModel() == null) {
+                    return;
+                }
                 for (MergeBitmap tmp : ImageAdjustmentActivity.mergeBitmaps) {
 
                     try {
@@ -89,15 +93,20 @@ public class ComplateFragment extends BaseFragment {
                 }
 
                 break;
+
             case R.id.complate_backgound:
 
-                Bundle bundle = new Bundle();
-                bundle.putInt("from", ImageAdjustmentActivity.from_border_sece);
-                bundle.putParcelable("publishModel",getPublishModel());
-                Intent intent = new Intent(getActivity(), ImageAdjustmentActivity.class);
-                intent.putExtras(bundle);
+                if (getPublishModel() != null) {
 
-                startActivity(intent);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("from", ImageAdjustmentActivity.from_border_sece);
+                    bundle.putParcelable("publishModel",getPublishModel());
+                    Intent intent2 = new Intent(getActivity(), ImageAdjustmentActivity.class);
+                    intent2.putExtras(bundle);
+
+                    startActivity(intent2);
+                }
+
                 break;
         }
     }
@@ -105,7 +114,7 @@ public class ComplateFragment extends BaseFragment {
     private void save(MergeBitmap tmp) {
 
         PublishModel model = getPublishModel();
-
+        if(model == null) return;
         model.setHavebachground(false);
         ArrayList<MergeBitmap> objects = new ArrayList<>();
         objects.add(tmp);
@@ -137,9 +146,18 @@ public class ComplateFragment extends BaseFragment {
         String height = complateHeight.getText() + "";
         String tag = complateTag.getText() + "";
 
+        if (StringUtils.isEmpty(name) ||
+                StringUtils.isEmpty(year) ||
+                StringUtils.isEmpty(money) ||
+                StringUtils.isEmpty(width) ||
+                StringUtils.isEmpty(height) ||
+                StringUtils.isEmpty(tag)
+                ) {
+            UIHelper.toastMessage(getActivity(), "请填完作品信息");
+            return null;
+        }
 
         PublishModel model = new PublishModel(getActivity());
-
 
         model.setName(name);
         model.setYears(year);

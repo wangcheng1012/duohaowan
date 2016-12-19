@@ -24,7 +24,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hd.wlj.duohaowan.been.Load;
 import com.wlj.base.bean.Base;
+import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.GoToHelp;
+import com.wlj.base.util.StringUtils;
 import com.wlj.base.web.asyn.AsyncCall;
 
 import org.json.JSONObject;
@@ -53,6 +55,14 @@ public class LoadingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String firstlogin = AppConfig.getAppConfig().get(AppConfig.CONF_FIRSRLOGIN);
+        if (!StringUtils.isEmpty(firstlogin)) {
+            GoToHelp.go(this,MainActivity.class);
+            finish();
+        }
+        AppConfig.getAppConfig().set(AppConfig.CONF_FIRSRLOGIN,AppConfig.CONF_FIRSRLOGIN );
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_loading);
         mData = new ArrayList<>();

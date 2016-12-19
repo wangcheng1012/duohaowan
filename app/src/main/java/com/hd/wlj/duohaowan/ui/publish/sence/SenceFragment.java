@@ -286,6 +286,20 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
 
     @OnClick(R.id.sence_save)
     public void onClick() {
+        Intent intent = getActivity().getIntent();
+        PublishModel publishModel = intent.getParcelableExtra("publishModel");
+
+        if ( StringUtils.isEmpty(publishModel.getName()) ||
+                StringUtils.isEmpty(publishModel.getYears()) ||
+                StringUtils.isEmpty(publishModel.getPrice()) ||
+                StringUtils.isEmpty(publishModel.getWidth()) ||
+                StringUtils.isEmpty(publishModel.getHeight()) ||
+                StringUtils.isEmpty(publishModel.getTag())
+                ) {
+            UIHelper.toastMessage(getContext(), "请填完作品信息");
+            return;
+        }
+
 
         for ( MergeBitmap tmp : ImageAdjustmentActivity.mergeBitmaps) {
 
@@ -309,7 +323,7 @@ public class SenceFragment extends BaseFragment implements BorderView, InvokeLis
      */
     public  void uploadChucks(final MergeBitmap tmp) throws Exception {
 
-        UIHelper.loading("图片上传中，请耐心等候……",getActivity());
+        UIHelper.loading("图片上传中……",getActivity());
 
         Integer file_size = 1024 * 200;
 

@@ -31,8 +31,8 @@ public class HttpPost {
     private StringBuilder paremeter = new StringBuilder();
     private String charset = null;
 
-
     private static Map<String, String> cookies = new HashMap<String, String>();
+    private boolean jiami;
 
     public HttpPost(String paramString) throws IOException {
         this(new URL(paramString));
@@ -57,7 +57,6 @@ public class HttpPost {
         this.openConnection.setReadTimeout(10000);
         this.jSONObjectParemeter = new JSONObject();
         this.charset = charset;
-
     }
 
     /**
@@ -75,18 +74,24 @@ public class HttpPost {
         this.jSONObjectParemeter = new JSONObject();
     }
 
+    /**
+     * 需要 jiami 为false才添加的进去，是为了防止与加密地方的参数重复
+     * @param paramString
+     * @param paramObject
+     */
     public void addParemeter(String paramString, Object paramObject) {
 
         if (paramString == null) {
             this.paremeter.append(paramObject).append("&");
             return;
         }
-        this.paremeter.append(paramString).append("=").append(URLEncoder.encode(paramObject + "")).append("&");
+        if (!jiami) {
+            this.paremeter.append(paramString).append("=").append(URLEncoder.encode(paramObject + "")).append("&");
+        }
         try {
-            this.jSONObjectParemeter.put(paramString, paramObject);
-            return;
-        } catch (JSONException localJSONException) {
-            localJSONException.printStackTrace();
+            jSONObjectParemeter.put(paramString, paramObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -94,7 +99,7 @@ public class HttpPost {
         openConnection.addRequestProperty(key, value);
     }
 
-    public InputStream getInputStream()throws IOException {
+    public InputStream getInputStream() throws IOException {
         InputStream inputStream = null;
 
         if (this.paremeter.length() > 1) {
@@ -222,21 +227,25 @@ public class HttpPost {
     }
 
 
-    public JSONObject getJSONObjectParemeter()
-    {
+    public JSONObject getJSONObjectParemeter() {
 
         return this.jSONObjectParemeter;
     }
 
-    public StringBuilder getParemeter()
-    {
+    public StringBuilder getParemeter() {
 
         return this.paremeter;
     }
 
-    public URL getUrl()
-    {
-
+    public URL getUrl() {
         return this.url;
+    }
+
+    public boolean isJiami() {
+        return jiami;
+    }
+
+    public void setJiami(boolean jiami) {
+        this.jiami = jiami;
     }
 }

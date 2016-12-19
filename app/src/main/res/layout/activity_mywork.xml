@@ -11,6 +11,17 @@
         android:paddingTop="8dp"
         android:id="@+id/mywork_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/local_pic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_back"
+        android:text="本地图片"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
 </LinearLayout>

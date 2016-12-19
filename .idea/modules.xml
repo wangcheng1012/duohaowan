@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/base/base.iml" filepath="$PROJECT_DIR$/base/base.iml" />
       <module fileurl="file://$PROJECT_DIR$/duohaowan.iml" filepath="$PROJECT_DIR$/duohaowan.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gesturelock/gesturelock.iml" filepath="$PROJECT_DIR$/gesturelock/gesturelock.iml" />
       <module fileurl="file://$PROJECT_DIR$/photopicker/photopicker.iml" filepath="$PROJECT_DIR$/photopicker/photopicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/third/third.iml" filepath="$PROJECT_DIR$/third/third.iml" />
     </modules>

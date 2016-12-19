@@ -178,18 +178,26 @@ public class SnackbarUtil {
         snackbarLayout.addView(add_view, index, p);
     }
     /**
-     * 向Snackbar中添加view
+     * 向Snackbar中添加输入框
      *
      * @param snackbar
      * @param view
      * @param index    新加布局在Snackbar中的位置
      */
     public static void SnackbarAddView(Snackbar snackbar, View view, int index) {
+
         View snackbarview = snackbar.getView();
+        if(snackbarview != null) {
+            //把原来的textview隐藏，设置setVisibility有问题
+            snackbarview.findViewById(R.id.snackbar_text).setLayoutParams(new LinearLayout.LayoutParams(1,LinearLayout.LayoutParams.WRAP_CONTENT));
+//            snackbarview.findViewById(R.id.snackbar_action).setBackgroundResource(R.drawable.shape_hui_white);
+
+        }
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbarview;
 
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         p.gravity = Gravity.CENTER_VERTICAL;
+        p.weight = 1;
 
         snackbarLayout.addView(view, index, p);
     }

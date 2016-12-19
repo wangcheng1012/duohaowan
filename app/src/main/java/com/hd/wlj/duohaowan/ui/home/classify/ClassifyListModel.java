@@ -5,7 +5,9 @@ import android.app.Activity;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.wlj.base.bean.Base;
+import com.wlj.base.util.AppConfig;
 import com.wlj.base.web.HttpPost;
+import com.wlj.base.web.MsgContext;
 import com.wlj.base.web.asyn.AsyncRequestModle;
 import com.wlj.base.web.asyn.BaseAsyncModle;
 
@@ -49,7 +51,6 @@ public class ClassifyListModel extends BaseAsyncModle {
         switch (classify) {
             case R.id.home_artist:
                 //艺术家
-
                 /**
                  *  secondPubConlumnId			581407b20e9f110d8cbbdb94	//搜索作家
                  * tag_string							标签名称	国画,油画,书法
@@ -107,7 +108,6 @@ public class ClassifyListModel extends BaseAsyncModle {
                         httpPost.addParemeter("tag_string", tabBarStr);
                         break;
                 }
-
                 break;
 
             case R.id.home_artview:
@@ -119,14 +119,24 @@ public class ClassifyListModel extends BaseAsyncModle {
                     httpPost.addParemeter("pubConlumnId", "5833e686d6c4592b41d886ef");
                 } else {
                     //问学篇
-                    httpPost.addParemeter("pubConlumnId", "5833e67ed6c4592b41d886ee");
+                    httpPost.addParemeter("pubConlumnId", "5833e68dd6c4592b41d886f0");
+                    String s = AppConfig.getAppConfig().get(AppConfig.CONF_ID);
+                    httpPost.addParemeter("artist_id", s);
                 }
                 break;
 
         }
+
+        if (classify == R.id.home_artview && "问答篇".equals(tabBarStr)) {
+
+            asRequestModle.setJiami(true);
+        } else {
+
+            asRequestModle.setJiami(false);
+        }
         //直接setpage  setpagesize就可以了
         asRequestModle.setHttpPost(httpPost);
-        asRequestModle.setJiami(false);
+
     }
 
     @Override
@@ -135,8 +145,14 @@ public class ClassifyListModel extends BaseAsyncModle {
         if (type == request_type_seach) {
 
             HttpPost httpPost = new HttpPost(Urls.list_pub);
-            httpPost.addParemeter("name", seachName);
-            httpPost.addParemeter("secondPubConlumnId", seachType);
+            if (seachType == MsgContext.seachtag) {
+                //热门标签点击搜索
+                httpPost.addParemeter("tag_string", seachName);
+                httpPost.addParemeter("secondPubConlumnId", MsgContext.seachWork);
+            } else {
+                httpPost.addParemeter("secondPubConlumnId", seachType);
+                httpPost.addParemeter("name", seachName);
+            }
 
             asRequestModle.setHttpPost(httpPost);
             asRequestModle.setJiami(false);

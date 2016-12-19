@@ -3,9 +3,11 @@ package com.wlj.base.web.asyn;
 import android.app.Activity;
 
 import com.wlj.base.bean.Base;
+import com.wlj.base.util.AppConfig;
 import com.wlj.base.util.AppContext;
 import com.wlj.base.util.UIHelper;
 import com.wlj.base.web.HttpPost;
+import com.wlj.base.web.MsgContext;
 
 import java.io.IOException;
 
@@ -39,24 +41,25 @@ public abstract class BaseAsyncModle extends Base implements AsyncCall.callWeb {
     public AsyncCall Request(int type) {
 
         try {
-            AsyncRequestModle localAsyncRequestModle = new AsyncRequestModle();
-            localAsyncRequestModle.setActivity(this.activity);
-            localAsyncRequestModle.setParserCla(getClass());
-            localAsyncRequestModle.setJiami(true);
-            localAsyncRequestModle.setRefresh(this.refresh);
+            AsyncRequestModle modle = new AsyncRequestModle();
+            modle.setActivity(this.activity);
+            modle.setParserCla(getClass());
+            modle.setJiami(true);
+            modle.setRefresh(this.refresh);
             if (type == -1) {
-                addRequestParemeter(localAsyncRequestModle);
+                addRequestParemeter(modle);
             }else{
-                localAsyncRequestModle.setType(type);
-                addRequestParemeter(localAsyncRequestModle, type);
+                modle.setType(type);
+                addRequestParemeter(modle, type);
             }
 
-            HttpPost localHttpPost = localAsyncRequestModle.getHttpPost();
+            HttpPost httpPost = modle.getHttpPost();
+            httpPost.setJiami(modle.isJiami());
             if (getPage() != -1) {
-                localHttpPost.addParemeter("page", Integer.valueOf(getPage()));
-                localHttpPost.addParemeter("pageSize", Integer.valueOf(getPageSize()));
+                httpPost.addParemeter(MsgContext.key_page, Integer.valueOf(getPage()));
+                httpPost.addParemeter(MsgContext.key_pageSize, Integer.valueOf(getPageSize()));
             }
-            AsyncCall localAsyncCall = new AsyncCall(localAsyncRequestModle);
+            AsyncCall localAsyncCall = new AsyncCall(modle);
             localAsyncCall.execute();
             return localAsyncCall;
 

@@ -224,6 +224,8 @@ public class ShareUI {
                     ShareUI.this.callwebShouChang(str, v, j);
                 }
             });
+        }else{
+            shouchang.setVisibility(View.GONE);
         }
     }
 

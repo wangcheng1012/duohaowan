@@ -19,6 +19,7 @@ import java.io.IOException;
 
 public class ShouCang extends BaseAsyncModle {
 
+
     public final static int type_list_shoucang_arist = 2;
 
     /**

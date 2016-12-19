@@ -10,13 +10,14 @@ public class Encrpt {
     public static final Integer client_type_json = Integer.valueOf(2);
     public static final Integer client_type_xml = Integer.valueOf(1);
 
-    public static void encrypt(AsyncRequestModle paramAsyncRequestModle, HttpPost paramHttpPost) {
+    public static void encrypt(AsyncRequestModle paramAsyncRequestModle, HttpPost httpPost) {
 
+        httpPost.setJiami(false);
         String key = AppContext.getAppContext().getProperty("key");
         String name = AppContext.getAppContext().getProperty("name");
 //        String type = AppContext.getAppContext().getProperty("type");
 
-        String data = paramHttpPost.getJSONObjectParemeter().toString();
+        String data = httpPost.getJSONObjectParemeter().toString();
 
         String randCode = System.currentTimeMillis() + "";
 
@@ -28,14 +29,14 @@ public class Encrpt {
             e.printStackTrace();
         }
 
-        paramHttpPost.addParemeter("name", name);
-        paramHttpPost.addParemeter("randCode", randCode);
-        paramHttpPost.addParemeter("encrpt", "enAes");
-        paramHttpPost.addParemeter("sign_only", Boolean.TRUE.toString());
-        paramHttpPost.addParemeter("mode", client_type_json + "");
-//        paramHttpPost.addParemeter("type", type);
-        paramHttpPost.addParemeter("data", data);
-        paramHttpPost.addParemeter("mac", mac);
+        httpPost.addParemeter("name", name);
+        httpPost.addParemeter("randCode", randCode);
+        httpPost.addParemeter("encrpt", "enAes");
+        httpPost.addParemeter("sign_only", Boolean.TRUE.toString());
+        httpPost.addParemeter("mode", client_type_json + "");
+//        httpPost.addParemeter("type", type);
+        httpPost.addParemeter("data", data);
+        httpPost.addParemeter("mac", mac);
     }
 
 }

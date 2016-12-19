@@ -214,9 +214,8 @@ public class MergeBitmap implements Parcelable, Cloneable {
         bitmap_final = buildCard1(bitmap_final);
 
         //-----------加作品
-        bitmap_final = buildWork(mContext, backBitmap, bitmap_final);
+        buildWork(mContext, backBitmap, bitmap_final);
 
-        backBitmap.back(bitmap_final);
     }
 
     /**
@@ -227,11 +226,11 @@ public class MergeBitmap implements Parcelable, Cloneable {
      * @param bitmap_final
      * @return
      */
-    private Bitmap buildWork(Context mContext, final ImageLoader.BackBitmap backBitmap, Bitmap bitmap_final) {
+    private void buildWork(Context mContext, final ImageLoader.BackBitmap backBitmap, Bitmap bitmap_final) {
 
         if (workBitmap != null) {
-
             bitmap_final = ImageUtil2.imageSynthesis(bitmap_final, workBitmap, workRect, true);
+            backBitmap.back(bitmap_final);
         } else if (!StringUtils.isEmpty(workPath)) {
 
             final Bitmap finalBitmap_final = bitmap_final;
@@ -246,7 +245,6 @@ public class MergeBitmap implements Parcelable, Cloneable {
                 }
             });
         }
-        return bitmap_final;
     }
 
     /**

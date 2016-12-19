@@ -1,14 +1,18 @@
 package com.hd.wlj.duohaowan.ui.home.classify.artview;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +21,9 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.ui.home.classify.v2.SWRVContract;
 import com.hd.wlj.duohaowan.ui.home.classify.v2.SWRVPresenter;
+import com.hd.wlj.duohaowan.ui.home.classify.work.DetailsModelImpl;
+import com.hd.wlj.duohaowan.ui.home.classify.work.DetailsPresenterImpl;
+import com.hd.wlj.duohaowan.ui.home.classify.work.DetailsView;
 import com.hd.wlj.duohaowan.ui.my.comment.CommentModle;
 import com.hd.wlj.duohaowan.util.SnackbarUtil;
 import com.wlj.base.bean.Base;
@@ -28,16 +35,18 @@ import com.wlj.base.web.asyn.BaseAsyncModle;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implements SWRVContract.View, SWRVContract.SWRVPresenterAdapter {
-
+public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implements SWRVContract.View, SWRVContract.SWRVPresenterAdapter, DetailsView {
 
     @BindView(R.id.title_back)
     ImageView titleBack;
@@ -50,6 +59,9 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
     @BindView(R.id.askedandLearn_fab)
     FloatingActionButton fab;
     private SWRVPresenter swrvPresenter;
+    private DetailsPresenterImpl presenter;
+    private View headview;
+    private JSONObject jsonData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +72,22 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
         title();
         comment();
 
+        presenter = new DetailsPresenterImpl(this);
+        presenter.attachView(this);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar snackbar = Snackbar.make(v, "fake", Snackbar.LENGTH_LONG).setAction("发送", new View.OnClickListener() {
+
+                final EditText editText = new EditText(getApplicationContext());
+                Snackbar snackbar = Snackbar.make(v, "", Snackbar.LENGTH_INDEFINITE).setAction("发送", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(ArtViewAskedandLearnActivity.this, "你点击了action", Toast.LENGTH_SHORT).show();
+                        presenter.comment(jsonData,editText);
                     }
                 });
-//                EditText editText = new EditText(getApplicationContext());
-
-//                SnackbarUtil.SnackbarAddView(snackbar,editText,0);
+                editText.setHint("说点什么吧！");
+                SnackbarUtil.SnackbarAddView(snackbar,editText,0);
                 snackbar.show();
             }
         });
@@ -80,11 +95,12 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
     }
 
     private void head() {
-        TextView textView = new TextView(getApplicationContext());
-        textView.setText("sfjksdlnfjks");
+
+        headview = LayoutInflater.from(getApplicationContext()).inflate(R.layout.part_skedandlearn_heard, null);
+        headview.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,RecyclerView.LayoutParams.WRAP_CONTENT));
 
         HeaderAndFooterWrapper headerAndFooterWrapper = new HeaderAndFooterWrapper(swrvPresenter.getAdapter());
-        headerAndFooterWrapper.addHeaderView(textView);
+        headerAndFooterWrapper.addHeaderView(headview);
 
         recycerview.setAdapter(headerAndFooterWrapper);
         swrvPresenter.setAdapter(headerAndFooterWrapper);//里面刷新
@@ -99,7 +115,7 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
                 finish();
             }
         });
-        titleTitle.setText("sd");
+        titleTitle.setText("");
     }
 
     /**
@@ -184,9 +200,11 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
      */
     @Override
     public BaseAsyncModle getBaseAsyncModle() {
-        CommentModle workModle = new CommentModle(this);
+        Intent intent = getIntent();
+        String id = intent.getStringExtra("id");
+        DetailsModelImpl workModle = new DetailsModelImpl(this);
+        workModle.setId(id);
 //        workModle.set
-
         return workModle;
     }
 
@@ -210,8 +228,37 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
      */
     @Override
     public List<Base> handleBackData(List<Base> list, Base base, int requestType) {
+        jsonData = base.getResultJsonObject();
+        titleTitle.setText(jsonData.optString("name"));
+        String intro = jsonData.optString("intro");
+        long time = jsonData.optLong("time");
+        JSONArray comment_list = jsonData.optJSONArray("comment_list");
 
-        return list;
+        TextView context = (TextView) headview.findViewById(R.id.part_askandlearn_context);
+        TextView huifu = (TextView) headview.findViewById(R.id.part_askandlearn_huifu);
+        TextView timeTV = (TextView) headview.findViewById(R.id.part_askandlearn_time);
+
+        context.setText(CyptoUtils.decryptBASE64(intro));
+        timeTV.setText(StringUtils.getTime(time,"yyyy/MM/dd"));
+
+        ArrayList<Base> bases = new ArrayList<>();
+        if(comment_list != null){
+            huifu.setText(comment_list.length()+"");
+            for (int i = 0; i < comment_list.length(); i++) {
+                JSONObject object = comment_list.optJSONObject(i);
+
+                bases.add(new Base(object){
+                    @Override
+                    public Base parse(JSONObject jsonObject) throws JSONException {
+                        return null;
+                    }
+                });
+            }
+        }else{
+            huifu.setText("0");
+        }
+
+        return bases;
     }
 
     /**
@@ -221,6 +268,26 @@ public class ArtViewAskedandLearnActivity extends BaseFragmentActivity implement
      */
     @Override
     public View getEmptyView() {
-        return null;
+        TextView empty = new TextView(this);
+        empty.setText("暂无数据");
+        empty.setTextColor(Color.BLACK);
+//      empty.setGravity(Gravity.CENTER);
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = DpAndPx.dpToPx(this, 10);
+        params.topMargin = DpAndPx.dpToPx(this, 10);
+        empty.setLayoutParams(params);
+
+        return empty;
+    }
+
+    //~~
+    @Override
+    public void showDetailsData(Base paramBase) {
+
+    }
+
+    @Override
+    public void showComment() {
+        swrvPresenter.onRefresh();
     }
 }

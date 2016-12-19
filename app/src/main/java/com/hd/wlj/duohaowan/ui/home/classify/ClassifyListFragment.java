@@ -4,6 +4,7 @@ package com.hd.wlj.duohaowan.ui.home.classify;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
@@ -25,6 +26,7 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.been.ShouCang;
 import com.hd.wlj.duohaowan.been.Zan;
+import com.hd.wlj.duohaowan.ui.home.classify.work.WorkDetailsActivity;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragment;
@@ -45,10 +47,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
+import static com.hd.wlj.duohaowan.R.id.view;
+
 /**
  * SwipeRefreshLayout下拉刷新 和RecyclerView加载跟多实现的一个fragment，多个地方都可以调用
  */
-public class ClassifyListFragment extends BaseFragment implements ClassifyListView {
+public class ClassifyListFragment extends Fragment implements ClassifyListView {
 
     @BindView(R.id.classify_list_recycerview)
     RecyclerView recycerview;
@@ -74,23 +78,27 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+//        View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        return view;
-    }
-
-    @Override
-    protected int getlayout() {
-        return R.layout.fragment_classify_list;
-    }
-
-    @Override
-    protected void initView() {
-        ButterKnife.bind(this, view);
+        View inflate = inflater.inflate(R.layout.fragment_classify_list, container, false);
+        ButterKnife.bind(this, inflate);
         init();
         initSwipeRefreshLayout();
+
+        return inflate;
     }
 
+//    @Override
+//    protected int getlayout() {
+//        return R.layout.fragment_classify_list;
+//    }
+//
+//    @Override
+//    protected void initView() {
+//        ButterKnife.bind(this, view);
+//        init();
+//        initSwipeRefreshLayout();
+//    }
     private void initSwipeRefreshLayout() {
 
         //设置刷新时动画的颜色，可以设置4个
@@ -107,6 +115,7 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
     public void onDetach() {
         super.onDetach();
         presenter.detachView();
+        presenter = null;
     }
 
     private void init() {
@@ -169,6 +178,7 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
 
         holder.setText(R.id.classify_artist_liulan, jsonObject.optInt("viewcount", 0) + "");
         holder.setText(R.id.classify_artist_zan, jsonObject.optInt("nice_count", 0) + "");
+        holder.setText(R.id.classify_artist_guanzhu, jsonObject.optInt("shoucang_count", 0) + "");
         //song
 
         //点赞
@@ -191,10 +201,34 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
             }
         });
 
+        holder.getView(R.id.classify_artist_guanzhu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ShouCang shouCang = new ShouCang(getActivity());
+                shouCang.setId(jsonObject.optString("pub_id"));
+                shouCang.Request().setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                    @Override
+                    public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                        JSONObject jsonObject1 = base.getResultJsonObject();
+                        UIHelper.toastMessage(getActivity(), jsonObject1.optString("message"));
+//                        v.setEnabled(false);
+//                        TextView tv = (TextView) v;
+//                        tv.setText("已关注");
+                    }
+
+                    @Override
+                    public void fail(Exception paramException) {
+                        UIHelper.toastMessage(getActivity(), "关注失败");
+                    }
+                });
+
+            }
+        });
     }
 
     /**
-     * 艺术馆
+     * 艺术展
      *
      * @param viewHolder
      * @param item
@@ -276,7 +310,7 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
         Point point = new Point();
         display.getSize(point);
 
-        int width1 = point.x/2 - DpAndPx.dpToPx(mcontext,20);
+        int width1 = point.x/2 - DpAndPx.dpToPx(getContext(),20);
         int height1 = pic_height * width1 /pic_width;
 
         image.setMinimumHeight(height1);
@@ -285,28 +319,30 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
                 .load(artist != null ? Urls.HOST + artist.optString("picname") : R.drawable.project_bg)
                 .error(R.drawable.project_bg)
                 .bitmapTransform(new CropCircleTransformation(getContext()))
-                .crossFade(1000)
+//                .crossFade(1000)
                 .into(head);
 
         Glide.with(ClassifyListFragment.this)
                 .load(Urls.HOST + jsonObject.optString("pic"))
-                .error(R.drawable.project_bg)
+//                .error(R.drawable.project_bg)
                 .fitCenter()
-                .into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-//                        int width = resource.getIntrinsicWidth();
-//                        int height = resource.getIntrinsicHeight();
-//
-//                        int width1 = image.getWidth();
-//                        int height1 = height * width1 /width;
-//
-//                        image.setMinimumHeight(height1);
-//
-//                        Logger.i("width:%s,height:%s",width,height);
-                        image.setImageDrawable(resource);
-                    }
-                });
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(image);
+//                        new SimpleTarget<GlideDrawable>() {
+//                    @Override
+//                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+////                        int width = resource.getIntrinsicWidth();
+////                        int height = resource.getIntrinsicHeight();
+////
+////                        int width1 = image.getWidth();
+////                        int height1 = height * width1 /width;
+////
+////                        image.setMinimumHeight(height1);
+////
+////                        Logger.i("width:%s,height:%s",width,height);
+//                        image.setImageDrawable(resource);
+//                    }
+//                });
 
     }
 
@@ -349,11 +385,11 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
         imagell.removeAllViews();
 
         if(pics != null){
-            viewHolder.getView(R.id.view).setVisibility(View.GONE);
+            viewHolder.getView(view).setVisibility(View.GONE);
             for (int i = 0; i < pics.length(); i++) {
                 String s = pics.optString(i);
 
-                ImageView imageView = new ImageView(mcontext);
+                ImageView imageView = new ImageView(getContext());
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setAdjustViewBounds(true);
 
@@ -363,11 +399,17 @@ public class ClassifyListFragment extends BaseFragment implements ClassifyListVi
             }
         }else{
 
-            viewHolder.getView(R.id.view).setVisibility(View.VISIBLE);
+            viewHolder.getView(view).setVisibility(View.VISIBLE);
         }
 
     }
 
+    /**
+     * 艺术观——问答篇
+     * @param viewHolder
+     * @param item
+     * @param position
+     */
     @Override
     public void artviewAskandLearnRecycerview(ViewHolder viewHolder, Base item, int position) {
 

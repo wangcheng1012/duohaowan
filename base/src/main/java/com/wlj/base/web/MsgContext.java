@@ -17,7 +17,7 @@ public class MsgContext  {
 
 	public static final String key_page = "page";
 	public static final String key_pageSize = "pageSize";
-	public static final int pageSize = 20;
+	public static final int pageSize = 10;
 	
 	public static final String login = "login";
 	public static final String key_username = "username";
@@ -31,6 +31,7 @@ public class MsgContext  {
 
 	public static String seachArtist = "581407b20e9f110d8cbbdb94";
 	public static String seachWork = "5812ef5478e0802052dd7a2f";
+	public static String seachtag = "tag";
 
 	public final static String gallery =  "581ef1a1d6c4594f90fa046c";	//艺术馆
 	public final static String zhixun =   "581b09c7d6c45925f82e4917";	//资讯

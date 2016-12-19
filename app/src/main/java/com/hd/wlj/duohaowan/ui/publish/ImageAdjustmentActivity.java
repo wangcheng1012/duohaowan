@@ -2,6 +2,7 @@ package com.hd.wlj.duohaowan.ui.publish;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,7 +16,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -31,6 +34,7 @@ import com.hd.wlj.duohaowan.view.WrapContentHeightViewPager;
 import com.lling.photopicker.utils.ImageLoader;
 import com.orhanobut.logger.Logger;
 import com.wlj.base.ui.BaseFragmentActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,6 +173,30 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
                 return super.getPageTitle(position);
             }
         });
+
+        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 3) {
+                    mRectClickImageView.setVisibility(View.GONE);
+                } else {
+                    mRectClickImageView.setVisibility(View.VISIBLE);
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mRectClickImageView.getWindowToken(),0);
+                }
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**
@@ -226,7 +254,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
                 mergeBitmap.setBackgroundBitmap(bitmap);
 
                 Bitmap mBitmap = mergeBitmap.buildBackgroundBitmap();
-                if(mBitmap != null) {
+                if (mBitmap != null) {
                     mRectClickImageView.setImageBitmap(mBitmap);
                 }
                 break;
@@ -259,6 +287,7 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
 
     /**
      * space
+     *
      * @param space
      * @param type
      */
@@ -347,10 +376,10 @@ public class ImageAdjustmentActivity extends BaseFragmentActivity implements Ima
     public void onBackPressed() {
         //冲场景返回 画框 卡兹界面
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        for (Fragment  f :fragments){
-            if(f instanceof SenceFragment){
-                int from = getIntent().getIntExtra("from",-1);
-                if(from == from_border_sece){
+        for (Fragment f : fragments) {
+            if (f instanceof SenceFragment) {
+                int from = getIntent().getIntExtra("from", -1);
+                if (from == from_border_sece) {
                     mergeBitmap.setBackgroundBitmap(null);
                     break;
                 }

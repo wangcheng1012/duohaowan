@@ -14,7 +14,13 @@ import com.hd.wlj.duohaowan.MainActivity;
 import com.hd.wlj.duohaowan.been.User;
 import com.hd.wlj.duohaowan.view.ImgInpImg;
 import com.hd.wlj.duohaowan.R;
+import com.hd.wlj.third.quicklogin.qq.QQLogin;
+import com.hd.wlj.third.quicklogin.qq.UserInfoBack;
 import com.hd.wlj.third.quicklogin.wx.WXLogin;
+import com.hd.wlj.third.share.qq.BaseUIListener;
+import com.hd.wlj.third.share.qq.QQshare;
+import com.tencent.connect.common.Constants;
+import com.tencent.tauth.Tencent;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.AppConfig;
@@ -58,6 +64,7 @@ public class LoginActivity extends BaseFragmentActivity {
     ImageView loginWxImageView;
     @BindView(R.id.login_rg_tv)
     TextView loginRgTv;
+    private QQLogin qqLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +72,7 @@ public class LoginActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        AppContext.getAppContext().loginOut();
+//        AppContext.getAppContext().loginOut();
 
         loginAccount.getIconFontView1().setTextSize(20f);
         String digists = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -90,7 +97,6 @@ public class LoginActivity extends BaseFragmentActivity {
                 break;
             case R.id.login_login_button:
                 login();
-
 //                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 break;
             case R.id.login_forgetPswTV:
@@ -98,7 +104,13 @@ public class LoginActivity extends BaseFragmentActivity {
                 startActivity(new Intent(getApplicationContext(), ForgetPSWActivity.class));
                 break;
             case R.id.login_qq_imageView:
-
+                qqLogin = new QQLogin(this);
+                qqLogin.login(new UserInfoBack() {
+                    @Override
+                    public void back(Object object) {
+                        regest(object);
+                    }
+                });
                 break;
 
             case R.id.login_wx_imageView:
@@ -108,9 +120,38 @@ public class LoginActivity extends BaseFragmentActivity {
             case R.id.login_rg_tv:
                 //注册
                 startActivity(new Intent(getApplicationContext(), RegesterActivity.class));
-
                 break;
         }
+    }
+
+    private void regest(Object object) {
+        JSONObject jo = (JSONObject) object;
+
+        final User user = new User(this);
+        user.setPhone(jo.optString("nickname"));
+        user.setHeadimgurl(jo.optString("figureurl_qq_2"));
+        user.setSex(jo.optString("gender"));
+        user.setThird_user_id(qqLogin.mTencent.getOpenId());
+        user.setThird_user_type("2");
+
+        user.Request(User.register_third).setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+            @Override
+            public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                JSONObject jsonObject = base.getResultJsonObject();
+
+                AppConfig appConfig = AppConfig.getAppConfig();
+                appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
+                appConfig.set(AppConfig.CONF_NAME, qqLogin.mTencent.getOpenId());
+                appConfig.set(AppConfig.CONF_ID, jsonObject.optString("userId"));
+
+                finish();
+            }
+
+            @Override
+            public void fail(Exception paramException) {
+
+            }
+        });
     }
 
     private void login() {
@@ -136,6 +177,7 @@ public class LoginActivity extends BaseFragmentActivity {
                 AppConfig appConfig = AppConfig.getAppConfig();
                 appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
                 appConfig.set(AppConfig.CONF_NAME, phone);
+                appConfig.set(AppConfig.CONF_ID, jsonObject.optString("userId"));
 
 //                GoToHelp.go(LoginActivity.this, MainActivity.class);
                 finish();
@@ -146,7 +188,6 @@ public class LoginActivity extends BaseFragmentActivity {
 
             }
         });
-
     }
 
     private boolean verify(String phone, String psw) {
@@ -170,5 +211,15 @@ public class LoginActivity extends BaseFragmentActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Tencent.onActivityResultData(requestCode, resultCode, data, qqLogin.authListener);
+//        if (requestCode == Constants.REQUEST_QQ_SHARE) {
+//            Tencent.onActivityResultData(requestCode, resultCode, data, new BaseUIListener(this));
+//        }
     }
 }

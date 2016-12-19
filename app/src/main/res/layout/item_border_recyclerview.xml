@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:layout_marginLeft="10dp"
     android:layout_marginStart="10dp"
     android:background="@drawable/shape_selected_hui_back"
     android:orientation="vertical"
-    android:padding="5dp">
+   >
     <!-- 相框 -->
 
     <ImageView
+        android:layout_margin="5dp"
         android:id="@+id/item_border"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/_e2e2e2"
         android:adjustViewBounds="true" />
 
-</LinearLayout>
+    <TextView
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/item_money"
+        android:gravity="bottom|right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="5sp"
+        android:text="免费"
+        android:textColor="@color/white"
+        android:padding="1dp"
+        android:background="@drawable/border_money"
+        />
+
+</RelativeLayout>

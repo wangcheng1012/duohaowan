@@ -31,7 +31,6 @@
         android:layout_height="match_parent"
         android:background="@color/_e2e2e2"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" >
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/askedandLearn_recycerview"
             android:layout_width="match_parent"
@@ -70,6 +69,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_dialer" />
+        app:srcCompat="@drawable/input" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -191,7 +191,7 @@ public class SWRVPresenter extends BasePresenter<SWRVContract.View> {
             @Override
             public void OnAsyncBack(List<Base> paramList, Base paramBase, int requesttype) {
                 //以此判定为刷新 就清除原油数据
-                if (asyncCall.getPageIndex() == 1) {
+                if (asyncCall.getPageIndex() <= 1) {
                     datas.clear();
                 }
                 List<Base> list = presenterAdapter.handleBackData(paramList, paramBase, requesttype);

@@ -1,14 +1,17 @@
 package com.hd.wlj.duohaowan.ui.publish.adjustmentmore;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +34,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
 
 public class AdjustmentImageActivity extends BaseFragmentActivity {
 
@@ -61,7 +63,9 @@ public class AdjustmentImageActivity extends BaseFragmentActivity {
 
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { onBackPressed();  }
+            public void onClick(View v) {
+                onBackPressed();
+            }
         });
     }
 
@@ -116,14 +120,37 @@ public class AdjustmentImageActivity extends BaseFragmentActivity {
                 return super.getPageTitle(position);
             }
         });
+
+        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 3) {
+                    mRectClickImageView.setVisibility(View.GONE);
+                } else {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mRectClickImageView.getWindowToken(),0);
+                    mRectClickImageView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     public MergeBitmap getMergeBitmap() {
 
         Intent intent = getIntent();
         // 场景界面 选择作品
-        Rect rect = (Rect)intent.getParcelableExtra("rect");
-        PublishModel publishModel = (PublishModel)intent.getParcelableExtra("publishModel");
+        Rect rect = (Rect) intent.getParcelableExtra("rect");
+        PublishModel publishModel = (PublishModel) intent.getParcelableExtra("publishModel");
 //        String path = intent.getStringExtra("path");
         MergeBitmap mergeBitmap = publishModel.getMergeBitmap(rect);
         return mergeBitmap;

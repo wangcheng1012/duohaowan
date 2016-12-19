@@ -127,8 +127,18 @@ public class ImageUtil2 {
 
         Integer width_zuopin = findRectangle.width();
         Integer height_zuopin = findRectangle.height();
-        //根据最大宽高 保持比例缩放图片
-        Bitmap scaledInstance = getScaledInstanceMax(bufferedImage_input, width_zuopin, height_zuopin);
+
+        if (bufferedImage_input.isRecycled()) {
+            Logger.e("isRecycled");
+            return bufferedImage_input = null;
+        }
+        Bitmap scaledInstance;
+        try {
+            //根据最大宽高 保持比例缩放图片
+            scaledInstance = getScaledInstanceMax(bufferedImage_input, width_zuopin, height_zuopin);
+        } catch (Exception e) {
+            return null;
+        }
 
         int width_zuopin_scale = scaledInstance.getWidth();
         int height_zuopin_scale = scaledInstance.getHeight();
@@ -184,8 +194,12 @@ public class ImageUtil2 {
      */
     public static Bitmap mergeCard1(Bitmap backGroudImage, Rect card1Rect, float space, int color, float lineinner, float lineoutside) {
         int w = 2;
-        if(lineinner == 0){ lineinner = 3; }
-        if(lineoutside == 0){ lineoutside = 1.5f; }
+        if (lineinner == 0) {
+            lineinner = 3;
+        }
+        if (lineoutside == 0) {
+            lineoutside = 1.5f;
+        }
         Bitmap bitmap = Bitmap.createBitmap(backGroudImage.getWidth(), backGroudImage.getHeight(), backGroudImage.getConfig());
         Canvas canvas = new Canvas(bitmap);
 

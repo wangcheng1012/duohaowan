@@ -31,6 +31,7 @@ public class CardPresenter extends BasePresenter<CardView> {
         request.setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
             @Override
             public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                UIHelper.loadingClose();
                 UIHelper.toastMessage(mActivity,"保存成功");
                 mActivity.finish();
             }

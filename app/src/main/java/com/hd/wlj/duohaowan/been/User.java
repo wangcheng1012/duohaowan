@@ -49,6 +49,10 @@ public class User extends BaseAsyncModle {
      * 获取用户详情
      */
     public static final int getUserInfo = 5;
+    /**
+     * 三方注册
+     */
+    public static final  int register_third = 6;
 
     private String phone;
     /**
@@ -75,6 +79,20 @@ public class User extends BaseAsyncModle {
      * 头衔
      */
     private String  touxian;
+
+    //注册
+    private String  headimgurl;
+    private String  sex;
+    private String  third_user_id;
+
+    /**
+     * 微信   1
+
+     QQ    2
+
+     微博   3
+     */
+    private String  third_user_type;
 
     //    private String realname	;//真实姓名
     //    private String  phone;//	手机号码
@@ -159,6 +177,17 @@ public class User extends BaseAsyncModle {
 
             paramAsyncRequestModle.setHttpPost(httpPost);
             paramAsyncRequestModle.setShowLoading(true);
+        }else if(type == register_third){
+            HttpPost httpPost = new HttpPost(Urls.register_third_user);
+            httpPost.addParemeter("nickname",phone);
+            httpPost.addParemeter("headimgurl",headimgurl);
+            httpPost.addParemeter("sex",sex);
+            httpPost.addParemeter("third_user_id",third_user_id);
+            httpPost.addParemeter("third_user_type",third_user_type);
+
+            paramAsyncRequestModle.setHttpPost(httpPost);
+            paramAsyncRequestModle.setShowLoading(true);
+
         }
 
 
@@ -231,6 +260,38 @@ public class User extends BaseAsyncModle {
 
     public void setTouxian(String touxian) {
         this.touxian = touxian;
+    }
+
+    public String getHeadimgurl() {
+        return headimgurl;
+    }
+
+    public void setHeadimgurl(String headimgurl) {
+        this.headimgurl = headimgurl;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getThird_user_id() {
+        return third_user_id;
+    }
+
+    public void setThird_user_id(String third_user_id) {
+        this.third_user_id = third_user_id;
+    }
+
+    public String getThird_user_type() {
+        return third_user_type;
+    }
+
+    public void setThird_user_type(String third_user_type) {
+        this.third_user_type = third_user_type;
     }
 
     public void setCardPicBitmap(Bitmap cardPicBitmap) {

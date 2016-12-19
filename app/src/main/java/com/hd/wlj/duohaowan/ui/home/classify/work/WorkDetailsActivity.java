@@ -1,15 +1,18 @@
 package com.hd.wlj.duohaowan.ui.home.classify.work;
 
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +23,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.been.ShouCang;
@@ -28,10 +32,12 @@ import com.hd.wlj.duohaowan.view.MyDialogFragment;
 import com.hd.wlj.duohaowan.view.RectClickImageView;
 import com.hd.wlj.third.share.ShareModle;
 import com.hd.wlj.third.share.ShareUI;
+import com.orhanobut.logger.Logger;
 import com.tencent.connect.common.Constants;
 import com.tencent.tauth.Tencent;
 import com.wlj.base.bean.Base;
 import com.wlj.base.ui.BaseFragmentActivity;
+import com.wlj.base.util.CyptoUtils;
 import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.MathUtil;
 import com.wlj.base.util.StringUtils;
@@ -112,8 +118,9 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         if (StringUtils.isEmpty(intro)) {
             intro = "暂无简介";
         }
+        shareModle.setId(jsonData.optString("pub_id"));
         shareModle.setName(jsonData.optString("name"));
-        shareModle.setContent(intro);
+        shareModle.setContent(CyptoUtils.decryptBASE64(intro));
         shareModle.setResPic(R.mipmap.ic_launcher);
         shareModle.setPic(Urls.HOST + jsonData.optString("pic"), WorkDetailsActivity.this);
     }
@@ -234,15 +241,17 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             // 图片区域点击
             imageRectOnClick(jsonData);
 
-            holder.img.setAutoHeight(true);
             Glide.with(WorkDetailsActivity.this)
                     .load(StringUtils.isEmpty(pic) ? R.drawable.project_bg : Urls.HOST + pic)
-                    .placeholder(R.drawable.project_bg)
+//                    .placeholder(R.drawable.project_bg)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-//                    .override(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL)
+                    .override(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL)
                     .into(new SimpleTarget<GlideDrawable>() {
                         @Override
                         public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            int width = resource.getIntrinsicWidth();
+                            int height = resource.getIntrinsicHeight();
+                            Logger.e("width:height = %s:%s",width,height);
                             holder.img.setImageDrawable(resource);
                         }
                     });
@@ -430,6 +439,8 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
 
     @Override
     public void onClick(final View v) {
+
+        String artistId = null;
         switch (v.getId()) {
             case R.id.work_details_zan:
 //                UIHelper.toastMessage(this, "work_details_zan");
@@ -448,17 +459,27 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
                     }
                 });
                 break;
+            case R.id.work_detail_head:
+                JSONObject artist = jsonData.optJSONObject("artist");
+                if(artist != null){
+                      artistId = artist.optString("pub_id");
+                }
             case R.id.work_details_guanzhu:
-
+                String shouCangId = artistId;
+                if(artistId == null){
+                    shouCangId = jsonData.optString("pub_id");
+                }
                 ShouCang shouCang = new ShouCang(this);
-                shouCang.setId(jsonData.optString("pub_id"));
+                shouCang.setId(shouCangId);
                 shouCang.Request().setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
                     @Override
                     public void OnAsyncBack(List<Base> list, Base base, int requestType) {
-                        UIHelper.toastMessage(WorkDetailsActivity.this, "关注成功");
-                        v.setEnabled(false);
-                        TextView tv = (TextView) v;
-                        tv.setText("已关注");
+                        JSONObject jsonObject1 = base.getResultJsonObject();
+                        UIHelper.toastMessage(WorkDetailsActivity.this, jsonObject1.optString("message"));
+                        if(v instanceof TextView) {
+                            TextView tv = (TextView) v;
+                            tv.setText("已关注");
+                        }
                     }
 
                     @Override
@@ -475,6 +496,8 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
             case R.id.work_details_more:
 
                 break;
+
+
         }
     }
 
@@ -526,10 +549,12 @@ public class WorkDetailsActivity extends BaseFragmentActivity implements Details
         View.OnClickListener listenter;
 
         ViewHolder(View view) {
+
             ButterKnife.bind(this, view);
+            img.setAutoHeight(true);
         }
 
-        @OnClick({R.id.work_details_zan, R.id.work_details_guanzhu, R.id.work_details_song, R.id.work_details_more})
+        @OnClick({R.id.work_detail_head,R.id.work_details_zan, R.id.work_details_guanzhu, R.id.work_details_song, R.id.work_details_more})
         public void onClick(View view) {
             listenter.onClick(view);
         }

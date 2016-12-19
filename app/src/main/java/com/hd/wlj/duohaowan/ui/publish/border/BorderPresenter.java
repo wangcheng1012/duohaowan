@@ -3,6 +3,7 @@ package com.hd.wlj.duohaowan.ui.publish.border;
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
 
+import com.hd.wlj.duohaowan.been.Order;
 import com.hd.wlj.duohaowan.ui.mvp.BasePresenter;
 import com.wlj.base.bean.Base;
 import com.wlj.base.web.asyn.AsyncCall;
@@ -62,8 +63,6 @@ public class BorderPresenter extends BasePresenter<BorderView> {
 
     }
 
-
-
     public void loadSenceData(int width, int height) {
         borderModel.setHeight(height+"");
         borderModel.setWidth(width +"");
@@ -82,4 +81,6 @@ public class BorderPresenter extends BasePresenter<BorderView> {
                     }
                 });
     }
+
+
 }

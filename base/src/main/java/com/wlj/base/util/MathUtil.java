@@ -185,7 +185,7 @@ public class MathUtil {
 	 * obj1 / obj2
 	 * @param obj1
 	 * @param obj2
-	 * @return  舍弃 余数
+	 * @return  相除舍弃 余数
 	 */
 	public static BigDecimal divideDwon(Object obj1,Object obj2){
 		if(obj1 == null){

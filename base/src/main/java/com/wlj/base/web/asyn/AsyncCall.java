@@ -56,7 +56,7 @@ public class AsyncCall
 
         try {
 
-            BaseList localObject = AsyncRequestWebClient.getInstall().RequestConnected(this.asyncRequestModle);
+            BaseList localObject = AsyncRequestWebClient.getInstall().Request(asyncRequestModle);
 
             if (!isCancelled()) {
                 return localObject;
@@ -124,12 +124,13 @@ public class AsyncCall
         if (this.onBackListener != null) {
             if ((paramObject instanceof BaseList)) {
 
-                BaseList localBaseList = (BaseList) paramObject;
-                List localList = localBaseList.getList();
-                Base localBase = localBaseList.getBaseData();
-                this.lastpage = localBaseList.getLastpage();
-                pageIndex = localBaseList.getPageIndex();
+                BaseList baseList = (BaseList) paramObject;
+                List localList = baseList.getList();
+                Base localBase = baseList.getBaseData();
+                this.lastpage = baseList.getLastpage();
+                pageIndex = baseList.getPageIndex();
 
+                baseList = null;//释放
 
                 if ((localList != null) || (localBase != null)) {
                     this.onBackListener.OnAsyncBack(localList, localBase, this.asyncRequestModle.getType());
@@ -140,7 +141,7 @@ public class AsyncCall
                 this.onBackListener.OnAsyncBack(null, (Base) paramObject, this.asyncRequestModle.getType());
             }
         }
-
+        UIHelper.loadingClose();
         UIHelper.closeProgressbar();
     }
 

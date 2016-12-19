@@ -48,14 +48,14 @@ public class UIHelper {
     }
 
     private static ProgressDialog progressDialog;
-    static long starttime;
 
     public static void loading(String str, Activity mContext) {
-        starttime = System.currentTimeMillis();
+        loadingClose( );
         progressDialog = ProgressDialog.show(mContext, "提示", str);
     }
 
     public static void loadingCir(Activity context) {
+        loadingClose( );
         progressDialog = new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
@@ -118,7 +118,9 @@ public class UIHelper {
         builder.setTitle(R.string.app_tipr);
         builder.setMessage(message);
         builder.setPositiveButton("确认", positivelistener);
-        builder.setNegativeButton("取消", negativelistener);
+        if(negativelistener != null) {
+            builder.setNegativeButton("取消", negativelistener);
+        }
         builder.show();
     }
 

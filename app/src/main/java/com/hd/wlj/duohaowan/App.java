@@ -18,8 +18,6 @@ import java.util.List;
  */
 public class App extends AppContext {
 
-
-
     @Override
     protected void init() {
 

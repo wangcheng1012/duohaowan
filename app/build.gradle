@@ -45,7 +45,6 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     compile project(':base')
-    compile project(':gesturelock')
     compile project(':third')
     //添加这一句
     apt 'com.jakewharton:butterknife-compiler:8.4.0'

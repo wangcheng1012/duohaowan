@@ -26,6 +26,5 @@ public class WXLogin {
         req.scope = "snsapi_userinfo";
         req.state = "login";
         api.sendReq(req);
-
     }
 }

@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide;
 import com.hd.wlj.third.R;
 import com.hd.wlj.third.share.Constants;
 import com.hd.wlj.third.share.ShareModle;
+import com.tencent.connect.UserInfo;
 import com.tencent.connect.share.QQShare;
 import com.tencent.open.t.Weibo;
 import com.tencent.tauth.IUiListener;
@@ -26,7 +27,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class QQshare implements IUiListener {
-    public static Tencent mTencent;
+    private final UserInfo mInfo;
+    public  Tencent mTencent;
     public IUiListener loginListener;
     private Activity mActivity;
     private ShareModle mShareModle;
@@ -42,17 +44,63 @@ public class QQshare implements IUiListener {
         mTencent = Tencent.createInstance(Constants.QQ_APP_ID, mActivity);
         // 1.4版本:此处需新增参数，传入应用程序的全局context，可通过activity的getApplicationContext方法获取
 
-        loginListener = new BaseUiListener() {
+        loginListener = new BaseUIListener(mActivity) {
             @Override
-            public void doComplete(JSONObject values) {
-                initOpenidAndToken(values);
+            public void onComplete(Object values) {
+
+                if (values == null) {
+                    UIHelper.toastMessage(QQshare.this.mActivity, "返回为空, 授权失败");
+                    return;
+                }
+                JSONObject localJSONObject = (JSONObject) values;
+                if ((localJSONObject != null) && (localJSONObject.length() == 0)) {
+                    UIHelper.toastMessage(QQshare.this.mActivity, "返回为空,授权失败");
+                    return;
+                }
+                UIHelper.toastMessage(QQshare.this.mActivity, "授权成功");
+
+                initOpenidAndToken(localJSONObject,mTencent);
+
                 onClickAddPicUrlTweet();
             }
         };
 
         mWeibo = new Weibo(mActivity, mTencent.getQQToken());
+        mInfo = new UserInfo(mActivity, mTencent.getQQToken());
     }
 
+//
+//    public class BaseUiListener implements IUiListener {
+//
+//        public BaseUiListener() {
+//        }
+//
+//        public void doComplete(JSONObject paramJSONObject) {
+//        }
+//
+//        public void onCancel() {
+//            UIHelper.toastMessage(mActivity, "取消");
+//        }
+//
+//        public void onComplete(Object paramObject) {
+//
+//            if (paramObject == null) {
+//                UIHelper.toastMessage(mActivity, "返回为空, 登录失败");
+//                return;
+//            }
+//            JSONObject localJSONObject = (JSONObject) paramObject;
+//            if ((localJSONObject != null) && (localJSONObject.length() == 0)) {
+//                UIHelper.toastMessage(mActivity, "返回为空,登录失败");
+//                return;
+//            }
+//            UIHelper.toastMessage(mActivity, "登录成功");
+//            doComplete((JSONObject) paramObject);
+//        }
+//
+//        public void onError(UiError paramUiError) {
+//            UIHelper.toastMessage(mActivity, "onError: " + paramUiError.errorDetail);
+//        }
+//    }
     private void QZoneShare() {
 
         Bundle localBundle = new Bundle();
@@ -66,7 +114,7 @@ public class QQshare implements IUiListener {
         mTencent.shareToQzone(this.mActivity, localBundle, this);
     }
 
-    public static void initOpenidAndToken(JSONObject paramJSONObject) {
+    public static void initOpenidAndToken(JSONObject paramJSONObject,Tencent mTencent) {
         String str1 = paramJSONObject.optString("access_token");
         String str2 = paramJSONObject.optString("expires_in");
         String str3 = paramJSONObject.optString("openid");
@@ -84,17 +132,15 @@ public class QQshare implements IUiListener {
             mWeibo.sendPicText(mShareModle.getContent(), pic, new TQQApiListener("add_pic_t", false, this.mActivity));
         }
         UIHelper.loading("请稍后……", this.mActivity);
-
-
     }
 
-    public static boolean ready(Context paramContext) {
+    public boolean ready(Context paramContext) {
         if (mTencent == null)
             return false;
         if ((mTencent.isSessionValid()) && (mTencent.getQQToken().getOpenId() != null)) {
             return true;
         } else {
-            Toast.makeText(paramContext, "login and get openId first, please!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(paramContext, "先授权", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -142,40 +188,10 @@ public class QQshare implements IUiListener {
 
     @Override
     public void onCancel() {
-        UIHelper.toastMessage(mActivity, "onCancel: ");
+        UIHelper.toastMessage(mActivity, "取消");
     }
 
-    public class BaseUiListener implements IUiListener {
 
-        public BaseUiListener() {
-        }
-
-        public void doComplete(JSONObject paramJSONObject) {
-        }
-
-        public void onCancel() {
-            UIHelper.toastMessage(mActivity, "onCancel: ");
-        }
-
-        public void onComplete(Object paramObject) {
-
-            if (paramObject == null) {
-                UIHelper.toastMessage(mActivity, "返回为空, 登录失败");
-                return;
-            }
-            JSONObject localJSONObject = (JSONObject) paramObject;
-            if ((localJSONObject != null) && (localJSONObject.length() == 0)) {
-                UIHelper.toastMessage(mActivity, "返回为空,登录失败");
-                return;
-            }
-            UIHelper.toastMessage(mActivity, "登录成功");
-            doComplete((JSONObject) paramObject);
-        }
-
-        public void onError(UiError paramUiError) {
-            UIHelper.toastMessage(mActivity, "onError: " + paramUiError.errorDetail);
-        }
-    }
 
     public class TQQApiListener extends BaseUIListener {
         private Activity mActivity;
@@ -201,7 +217,7 @@ public class QQshare implements IUiListener {
                 if ((i == 100030) && (this.mNeedReAuth.booleanValue()))
                     localActivity.runOnUiThread(new Runnable() {
                         public void run() {
-                            QQshare.mTencent.reAuth(localActivity, "all", new BaseUIListener(localActivity));
+                             mTencent.reAuth(localActivity, "all", new BaseUIListener(localActivity));
                         }
                     });
 

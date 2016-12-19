@@ -171,7 +171,7 @@ public class SenceMoreActivity extends BaseFragmentActivity implements SenceMore
 
                 String pics = resultJsonObject.optString("pic");
                 if (pics != null && pics.length() > 0) {
-                    Glide.with(SenceMoreActivity.this).load(Urls.HOST + pics).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE).centerCrop().into(mImg);
+                    Glide.with(SenceMoreActivity.this).load(Urls.HOST + pics).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(mImg);
                     // 这里用裁剪了 要私人
 //                    LoadImage.getinstall().addTask(Urls.HOST + pics, mImg).doTask();
                 }

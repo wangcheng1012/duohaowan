@@ -26,7 +26,9 @@ import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
 import com.hd.wlj.duohaowan.been.User;
 import com.hd.wlj.duohaowan.ui.my.card.bg.ChooseBackgroundActivity;
+import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
 import com.hd.wlj.duohaowan.util.TakePhotoCrop;
+import com.hd.wlj.duohaowan.util.UploadChucks;
 import com.hd.wlj.duohaowan.view.ImgInpImg;
 import com.jph.takephoto.model.TResult;
 import com.lling.photopicker.PhotoPickerActivity;
@@ -35,13 +37,18 @@ import com.wlj.base.ui.BaseFragmentActivity;
 import com.wlj.base.util.CyptoUtils;
 import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.StringUtils;
+import com.wlj.base.util.UIHelper;
+import com.wlj.base.web.asyn.AsyncCall;
 import com.wlj.base.widget.IconfontTextview;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,10 +83,11 @@ public class CardActivity extends BaseFragmentActivity implements CardView, Take
     private TakePhotoCrop takePhotoCrop;
     private int textlength = 50;
     public int requestcode = 500;
-    private Base BackgroundBase;
     private EditText nickName;
     private EditText leibie;
     private EditText intro;
+    private String picpath;
+    private boolean localPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +138,7 @@ public class CardActivity extends BaseFragmentActivity implements CardView, Take
     }
 
     private void initView() {
+
 
         int toPx = DpAndPx.dpToPx(this, 11);
         //设置布局
@@ -252,13 +261,11 @@ public class CardActivity extends BaseFragmentActivity implements CardView, Take
             }
         } else if (requestCode == requestcode && resultCode == RESULT_OK && data != null) {
             //背景返回
-            Serializable base = data.getSerializableExtra("base");
-            if (base != null) {
-                BackgroundBase = (Base) base;
-                JSONObject jsonObject = BackgroundBase.getResultJsonObject();
-                String pic = jsonObject.optString("pic");
+            picpath = data.getStringExtra("picpath");
+            localPic = data.getBooleanExtra("local", false);
+            if (picpath != null) {
 
-                Glide.with(this).load(Urls.HOST + pic).crossFade(1000)
+                Glide.with(this).load(localPic ? picpath : Urls.HOST + picpath).crossFade(1000)
                         .into(new SimpleTarget<GlideDrawable>() {
                             @Override
                             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
@@ -290,22 +297,16 @@ public class CardActivity extends BaseFragmentActivity implements CardView, Take
                 startActivityForResult(intent, requestcode);
                 break;
             case R.id.card_save:
-                //card头像
-                Drawable drawable = artistHeadimage.getDrawable();
-                Bitmap cardPicBitmap = null;
-                if(drawable != null && drawable instanceof BitmapDrawable){
-                    BitmapDrawable  bd = (BitmapDrawable)drawable;
-                    cardPicBitmap = bd.getBitmap();
+
+                if (localPic) {
+                    try {
+                        uploadChucks(picpath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    save(picpath);
                 }
-
-                User user = new User();
-                user.setNickname(nickName.getText()+"");
-                user.setTouxian(leibie.getText()+"");
-                user.setCardPicBitmap(cardPicBitmap);
-                user.setCardbg(BackgroundBase == null ? jsonObject.optString("pic_back") : BackgroundBase.getResultJsonObject().optString("pic"));
-                user.setIntro(intro.getText()+"");
-
-                cardPresenter.save(user);
                 break;
         }
     }
@@ -317,6 +318,96 @@ public class CardActivity extends BaseFragmentActivity implements CardView, Take
         Glide.with(this).load(image).asBitmap()
 //                .bitmapTransform(new BlurTransformation(this))
                 .into(artistHeadimage);
+
+    }
+
+    /**
+     * 分段上传文件
+     *
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public void uploadChucks(String path) throws Exception {
+
+        UIHelper.loading("图片上传中……", this);
+
+        Integer file_size = 1024 * 200;
+
+        File file_input = new File(path);
+
+        FileInputStream fis = new FileInputStream(file_input);
+
+        byte[] file_bytes = new byte[file_size];
+
+        Long chunks = file_input.length() / file_size;
+        if (file_input.length() % file_size != 0) {
+            chunks += 1;
+        }
+
+        Long chunk = 0l;
+        String name = file_input.getName();
+
+        Long had_upload = 0l;
+        while (had_upload < file_input.length()) {
+            fis.read(file_bytes);
+
+            final UploadChucks uploadChucks = new UploadChucks();
+            uploadChucks.setName(name);
+            uploadChucks.setFile_bytes(file_bytes);
+            uploadChucks.setChunks(chunks);
+            uploadChucks.setChunk(chunk);
+
+            AsyncCall request = uploadChucks.Request();
+            request.setOnAsyncBackListener(new AsyncCall.OnAsyncBackListener() {
+                @Override
+                public void OnAsyncBack(List<Base> list, Base base, int requestType) {
+                    JSONObject jsonObject = base.getResultJsonObject();
+                    String fileName = jsonObject.optString("fileName");
+                    if (!StringUtils.isEmpty(fileName)) {
+                        save(fileName);
+                    }
+                }
+
+                @Override
+                public void fail(Exception paramException) {
+                    uploadChucks.Request();
+                }
+            });
+
+//            String uploadChuckOne = uploadChuckOne(file_bytes, name, chunk, chunks);
+            /**
+             * {"statusCode":"200","message":"上传成功!"}	上传单片
+             {"data":{"fileName":"attachFiles/temp/bbd093b570e1201aa17b9f0b3be7960a"},"statusCode":"200","message":"上传成功!"}//上传完成
+             */
+
+//            System.out.println(uploadChuckOne);
+
+            had_upload += file_size;
+            chunk++;
+        }
+
+        fis.close();
+    }
+
+    private void save(String fileName) {
+
+        //card头像
+        Drawable drawable = artistHeadimage.getDrawable();
+        Bitmap cardPicBitmap = null;
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable) drawable;
+            cardPicBitmap = bd.getBitmap();
+        }
+
+        User user = new User();
+        user.setNickname(nickName.getText() + "");
+        user.setTouxian(leibie.getText() + "");
+        user.setCardPicBitmap(cardPicBitmap);
+        user.setCardbg(fileName == null ? jsonObject.optString("pic_back") : fileName);
+        user.setIntro(intro.getText() + "");
+
+        cardPresenter.save(user);
 
     }
 }

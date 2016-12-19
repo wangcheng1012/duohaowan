@@ -1,20 +1,25 @@
 package com.hd.wlj.duohaowan.ui.seach;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListFragment;
 import com.hd.wlj.duohaowan.ui.home.classify.ClassifyListModel;
 import com.wlj.base.ui.BaseFragment;
+import com.wlj.base.util.DpAndPx;
 import com.wlj.base.util.StringUtils;
 import com.wlj.base.util.UIHelper;
 import com.wlj.base.web.MsgContext;
@@ -45,6 +50,10 @@ public class SeachFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         initRecyclerView();
+
+        String[] spin_arry = getResources().getStringArray(R.array.seachSpenner);
+        CustomArrayAdapter<String> mAdapter = new CustomArrayAdapter<String>(getContext(), spin_arry);
+        seachSpinner.setAdapter(mAdapter);
     }
 
     @Override
@@ -67,40 +76,74 @@ public class SeachFragment extends BaseFragment {
 
     }
 
-    @OnClick({R.id.seach_tv,R.id.seach_tag1, R.id.seach_tag2, R.id.seach_tag3, R.id.seach_tag4})
+    @OnClick({R.id.seach_tv, R.id.seach_tag1, R.id.seach_tag2, R.id.seach_tag3, R.id.seach_tag4})
     public void onClick(View view) {
+
+
+        type = MsgContext.seachtag;
+        String text = seachText.getText() + "";
         switch (view.getId()) {
 
             case R.id.seach_tv:
 
-                type = MsgContext.seachArtist;
                 int position = seachSpinner.getSelectedItemPosition();
                 if (position == 0) {
                     type = MsgContext.seachWork;
+                } else if (position == 1) {
+                    type = MsgContext.seachArtist;
                 }
-                String text = seachText.getText() + "";
+
                 if (StringUtils.isEmpty(text)) {
                     UIHelper.toastMessage(getContext(), "关键字为空");
                     return;
                 }
-                fragment.seach(type, text);
-
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(seachText.getWindowToken(), 0);
                 break;
             case R.id.seach_tag1:
-                seachText.setText("国画");
+                text = "国画";
                 break;
             case R.id.seach_tag2:
-                seachText.setText("油画");
+                text= "油画";
                 break;
             case R.id.seach_tag3:
-                seachText.setText("书法");
+                text = "书法";
                 break;
             case R.id.seach_tag4:
-                seachText.setText("工艺美术");
+                text = "其他";
                 break;
         }
+
+        fragment.seach(type, text);
+
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(seachText.getWindowToken(), 0);
     }
 
+
+    static class CustomArrayAdapter<T> extends ArrayAdapter<T> {
+        public CustomArrayAdapter(Context ctx, T[] objects) {
+            super(ctx, android.R.layout.simple_spinner_item, objects);
+        }
+
+        //其它构造函数
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+
+            // simple_spinner_item 有 android.R.id.text1 TextView视图:
+
+        /* if(isDroidX) {*/
+            TextView text = (TextView) view.findViewById(android.R.id.text1);
+            text.setGravity(Gravity.CENTER_VERTICAL);
+            text.setHeight(DpAndPx.dpToPx(parent.getContext(), 45));
+//            int dpToPx_5 = DpAndPx.dpToPx(convertView.getContext(), 5);
+//            int dpToPx_5 = DpAndPx.dpToPx(convertView.getContext(), 10);
+//            text.setPadding(dpToPx_5,);
+            text.setTextColor(Color.BLACK);//choose your color :)
+        /*}*/
+
+            return view;
+
+        }
+    }
 }

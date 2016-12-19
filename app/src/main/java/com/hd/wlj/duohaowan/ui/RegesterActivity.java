@@ -59,8 +59,6 @@ public class RegesterActivity extends BaseFragmentActivity {
         ButterKnife.bind(this);
 
         init();
-
-
     }
 
     private void init() {
@@ -191,6 +189,7 @@ public class RegesterActivity extends BaseFragmentActivity {
                 AppConfig appConfig = AppConfig.getAppConfig();
                 appConfig.set(AppConfig.CONF_KEY,jsonObject.optString("key"));
                 appConfig.set(AppConfig.CONF_NAME, phone);
+                appConfig.set(AppConfig.CONF_ID, jsonObject.optString("userId"));
 //                GoToHelp.go(RegesterActivity.this, MainActivity.class);
                 finish();
 

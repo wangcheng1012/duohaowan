@@ -1,14 +1,18 @@
 package com.wlj.base.web.asyn;
 
+import android.support.annotation.NonNull;
+
 import com.orhanobut.logger.Logger;
 import com.wlj.base.bean.BaseList;
 import com.wlj.base.util.AppContext;
+import com.wlj.base.util.ListUtils;
 import com.wlj.base.util.RequestException;
 import com.wlj.base.web.HttpPost;
 import com.wlj.base.web.Md5Util;
 import com.wlj.base.web.MsgContext;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.json.JSONObject;
 
@@ -26,22 +30,34 @@ public class AsyncRequestWebClient {
         return requestWebClient;
     }
 
-    private BaseList callWeb(AsyncRequestModle paramAsyncRequestModle)
-            throws Exception {
+    /**
+     * 访问网络
+     *
+     * @param paramAsyncRequestModle
+     * @return
+     * @throws Exception
+     */
+    private BaseList callWeb(AsyncRequestModle paramAsyncRequestModle) throws Exception {
 
         try {
             JSONObject localJSONObject = encryptionCall(paramAsyncRequestModle);
             return parse(localJSONObject, paramAsyncRequestModle);
         } catch (Exception localException) {
             if ((localException instanceof FileNotFoundException)) {
-                throw new RequestException("(FileNotFoundException)");
+                throw new RequestException("(文件没找到)");
             }
             throw localException;
         }
     }
 
-    private JSONObject encryptionCall(AsyncRequestModle paramAsyncRequestModle)
-            throws Exception {
+    /**
+     * 给你网络请求加密
+     *
+     * @param paramAsyncRequestModle
+     * @return
+     * @throws Exception
+     */
+    private JSONObject encryptionCall(AsyncRequestModle paramAsyncRequestModle) throws Exception {
         HttpPost localHttpPost = paramAsyncRequestModle.getHttpPost();
         if (localHttpPost == null) {
             throw new RequestException("HttpPost为空");
@@ -53,7 +69,7 @@ public class AsyncRequestWebClient {
         if (paramAsyncRequestModle.isJiami()) {
             Encrpt.encrypt(paramAsyncRequestModle, localHttpPost);
         } else {
-                //不加密
+            //不加密
 //            String key = AppContext.getAppContext().getProperty("key");
 //            String name = AppContext.getAppContext().getProperty("name");
 //            String cur = "" + System.currentTimeMillis();
@@ -64,14 +80,25 @@ public class AsyncRequestWebClient {
         }
         String parem = localHttpPost.getJSONObjectParemeter().toString();
 
-        String str8 = localHttpPost.getResult();
-        Logger.d(str2 + "：" + parem  );
-        Logger.json(str8);
-        return new JSONObject(str8);
-
+        try {
+            String str8 = localHttpPost.getResult();
+            Logger.d(str2 + "：" + parem + "\n" + str8);
+//        Logger.json(str8);
+            return new JSONObject(str8);
+        } catch (IOException e) {
+            throw new RequestException("网络链接异常");
+        }
     }
 
-    private BaseList parse(JSONObject paramJSONObject, AsyncRequestModle paramAsyncRequestModle)
+    /**
+     * 解析
+     *
+     * @param paramJSONObject
+     * @param requestModle
+     * @return
+     * @throws Exception
+     */
+    private BaseList parse(JSONObject paramJSONObject, AsyncRequestModle requestModle)
             throws Exception {
         int i = paramJSONObject.optInt("statusCode");
         if (i == 0) {
@@ -81,18 +108,16 @@ public class AsyncRequestWebClient {
         if (MsgContext.request_loginError == i) {
             //登陆
             throw new RequestException(MsgContext.request_loginError + "");
-        } else
-        if ((MsgContext.request_success == i) || (MsgContext.request_success2 == i)) {
-            BaseAsyncModle localBaseAsyncModle = paramAsyncRequestModle.getParserBase();
-            if (localBaseAsyncModle == null) {
-                return new BaseList().parse(paramJSONObject, paramAsyncRequestModle.getParserCla());
+        } else if ((MsgContext.request_success == i) || (MsgContext.request_success2 == i)) {
+            BaseAsyncModle asyncModle = requestModle.getParserBase();
+            if (asyncModle == null) {
+                return new BaseList().parse(paramJSONObject, requestModle.getParserCla());
             }
-            localBaseAsyncModle.parseThis(paramJSONObject.optJSONObject("data"));
+            asyncModle.parseThis(paramJSONObject.optJSONObject("data"));
             BaseList localBaseList = new BaseList();
-            localBaseList.setBaseData(localBaseAsyncModle);
+            localBaseList.setBaseData(asyncModle);
             return localBaseList;
-        } else
-        if ((MsgContext.request_false2 == i) || (MsgContext.request_false == i) || (MsgContext.request_system_error2 == i)
+        } else if ((MsgContext.request_false2 == i) || (MsgContext.request_false == i) || (MsgContext.request_system_error2 == i)
                 || (MsgContext.request_system_error == i)) {
 
             String str = paramJSONObject.optString("message");
@@ -105,31 +130,63 @@ public class AsyncRequestWebClient {
         throw new RequestException("未知异常");
     }
 
-    public BaseList Request(AsyncRequestModle paramAsyncRequestModle)
-            throws Exception {
+    /**
+     * 如果 requestModle.isSave() 就会缓存请求的数据
+     *
+     * @param requestModle
+     * @return
+     * @throws Exception
+     */
+    public BaseList Request(AsyncRequestModle requestModle) throws Exception {
 
-        String str = paramAsyncRequestModle.getCachekey();
-        AppContext localAppContext = AppContext.getAppContext();
-        Logger.w("key", new Object[]{str});
-        BaseList localBaseList = null;
-        if ((!localAppContext.isReadDataCache(str)) || (paramAsyncRequestModle.isRefresh())) {
-            localBaseList = RequestConnected(paramAsyncRequestModle);
-            if ((localBaseList != null) && (paramAsyncRequestModle.isSave())) {
-                localAppContext.saveObject(localBaseList, str);
+        String str = requestModle.getCachekey();
+        AppContext appContext = AppContext.getAppContext();
+        Logger.w("key: " + str);
+        BaseList baseList = null;
+        if (requestModle.isRefresh()) {
+            baseList = RequestConnected(requestModle);
+            if ((baseList != null) && (requestModle.isSave())) {
+                appContext.saveObject(baseList, str);
             }
+        } else {
+            baseList = getLocaData(requestModle, appContext);
         }
-        return localBaseList;
+
+        return baseList;
     }
 
-    public BaseList RequestConnected(AsyncRequestModle paramAsyncRequestModle)
-            throws Exception {
-        AppContext localAppContext = AppContext.getAppContext();
-        if (localAppContext.isNetworkAvailable()) {
-            return callWeb(paramAsyncRequestModle);
+    /**
+     * 不带缓存的请求
+     *
+     * @param requestModle
+     * @return
+     * @throws Exception
+     */
+    public BaseList RequestConnected(AsyncRequestModle requestModle) throws Exception {
+
+        AppContext appContext = AppContext.getAppContext();
+        boolean networkConnected = NetWorkUtils.isNetworkConnected(appContext);
+
+        if (networkConnected) {
+            return callWeb(requestModle);
         }
-        BaseList localBaseList = (BaseList) localAppContext.readObject(paramAsyncRequestModle.getCachekey());
-        if (localBaseList == null) {
-            throw new RequestException("数据为空");
+        return getLocaData(requestModle, appContext);
+    }
+
+    /**
+     * 获取本地数据
+     *
+     * @param requestModle
+     * @param appContext
+     * @return
+     * @throws RequestException
+     */
+    @NonNull
+    private BaseList getLocaData(AsyncRequestModle requestModle, AppContext appContext) throws RequestException {
+        BaseList localBaseList = (BaseList) appContext.readObject(requestModle.getCachekey());
+        if (localBaseList == null || (localBaseList.getBaseData() == null && ListUtils.isEmpty(localBaseList.getList()) ) ) {
+
+            throw new RequestException("网络异常");
         }
         return localBaseList;
     }

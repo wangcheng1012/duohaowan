@@ -97,7 +97,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                     itemlayout = R.layout.item_classify_artview_history;
                 } else if ("现实篇".equals(tabBarStr)) {
                     itemlayout = R.layout.item_classify_artview_reality;
-                }else{
+                } else {
                     //问学篇
                     itemlayout = R.layout.item_classify_artview_askandlearn;
                 }
@@ -110,7 +110,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                     recycerview.setLayoutManager(new LinearLayoutManager(mActivity));
                     itemlayout = R.layout.item_classify_artist;
                 } else {
-                    seachType = MsgContext.seachWork;
+//                    seachType = MsgContext.seachWork;
                     //默认是 艺术品 和上面的艺术品一样
                     staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                     recycerview.setLayoutManager(staggeredGridLayoutManager);
@@ -154,7 +154,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                             view.artviewHistoryRecycerview(viewHolder, item, position);
                         } else if ("现实篇".equals(tabBarStr)) {
                             view.artviewRealityRecycerview(viewHolder, item, position);
-                        }else{
+                        } else {
                             //问学篇
                             view.artviewAskandLearnRecycerview(viewHolder, item, position);
                         }
@@ -162,12 +162,14 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
 
                     case ClassifyListModel.request_type_seach:
                         //搜索
-                        if (MsgContext.seachWork.equals(seachType)) {
-                            //艺术品 和上面的艺术品一样
-                            view.workOfArtRecycerview(viewHolder, item, position);
-                        } else if (MsgContext.seachArtist.equals(seachType)) {
+                        if (MsgContext.seachArtist.equals(seachType)) {
                             //艺术家 和上面的艺术家一样
                             view.artistRecycerview(viewHolder, item, position);
+                        } else
+//                              if (MsgContext.seachWork.equals(seachType))
+                        {
+                            //艺术品 和上面的艺术品一样
+                            view.workOfArtRecycerview(viewHolder, item, position);
                         }
                         break;
                 }
@@ -203,7 +205,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
 
                             } else if ("现实篇".equals(tabBarStr)) {
                                 cla = ArtViewRealityActivity.class;
-                            }else{
+                            } else {
                                 cla = ArtViewAskedandLearnActivity.class;
                             }
                             break;
@@ -287,6 +289,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
     private void loadData(int page) {
 
         mSWRVModel.setPage(page);
+        mSWRVModel.setPageSize(6);
 
         if (classify == ClassifyListModel.request_type_seach) {
             // 搜索
@@ -312,6 +315,7 @@ public class ClassifyListPresenter extends BasePresenter<ClassifyListView> {
                     datas.clear();
                 }
                 datas.addAll(paramList);
+                paramList = null;
                 loadMoreWrapper.notifyDataSetChanged();
                 loadComplate();
 

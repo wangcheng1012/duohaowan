@@ -1,13 +1,17 @@
 package com.hd.wlj.duohaowan.ui.publish.border;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +28,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.hd.wlj.duohaowan.R;
 import com.hd.wlj.duohaowan.Urls;
+import com.hd.wlj.duohaowan.ui.pay.PayActivity;
 import com.hd.wlj.duohaowan.ui.publish.ImageAdjustmentActivity;
 import com.hd.wlj.duohaowan.ui.publish.ImageMergeListener;
 import com.hd.wlj.duohaowan.ui.publish.MergeBitmap;
@@ -77,6 +82,7 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
     private Bitmap workBitmap;
     private ImageAdjustmentActivity activity;
     private int progress = 100;
+    private int REQUESTCODE = 245;
 
     public BorderFragment() {
     }
@@ -201,7 +207,6 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         return biliAdapter;
     }
 
-
     private void createBiliItem(ViewHolder holder, Base o, int position) {
 
         holder.getConvertView().setTag(R.id.tag_first, o);
@@ -236,26 +241,41 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
 
-                //选中效果添加
-                if (preSelectClassifyView != null) {
-                    preSelectClassifyView.setSelected(false);
-                }
-                if (preSelectBiliView != null) {
-                    preSelectBiliView.setSelected(false);
-                }
-                preSelectClassifyView = view;
-                preSelectClassifyView.setSelected(true);
-                //
                 Base tag = (Base) view.getTag(R.id.tag_first);
                 JSONObject jsonObject = tag.getResultJsonObject();
 
-                if (workBitmap == null) {
-                    workBitmap = activity.getMergeBitmap().getWorkBitmap();
-                }
+                double price_fen = jsonObject.optDouble("price_fen", 0d);
+                if(price_fen > 0){
 
-                int width = workBitmap.getWidth();
-                int height = workBitmap.getHeight();
-                presenter.loadBorderBiliData(jsonObject.optString("pub_id"), width + "", height + "");
+                     //支付页面
+                    Intent intent = new Intent(getContext(), PayActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("payMoneyFen",price_fen);
+                    intent.putExtra("payName","画框");
+                    intent.putExtra("borderid",jsonObject.optString("pub_id"));
+
+                    startActivityForResult(intent,REQUESTCODE);
+
+                }else{
+                    //选中效果添加
+                    if (preSelectClassifyView != null) {
+                        preSelectClassifyView.setSelected(false);
+                    }
+                    if (preSelectBiliView != null) {
+                        preSelectBiliView.setSelected(false);
+                    }
+                    preSelectClassifyView = view;
+                    preSelectClassifyView.setSelected(true);
+                    //
+                    if (workBitmap == null) {
+                        workBitmap = activity.getMergeBitmap().getWorkBitmap();
+                    }
+
+                    int width = workBitmap.getWidth();
+                    int height = workBitmap.getHeight();
+                    presenter.loadBorderBiliData(jsonObject.optString("pub_id"), width + "", height + "");
+
+                }
             }
 
             @Override
@@ -263,14 +283,22 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
                 return false;
             }
         });
+
         return commonAdapter;
     }
 
     private void createBorderItem(ViewHolder holder, Base base, int position) {
 
         ImageView mImg = holder.getView(R.id.item_border);
-
         final JSONObject resultJsonObject = base.getResultJsonObject();
+
+        //价格
+        double price_fen = resultJsonObject.optDouble("price_fen", 0d);
+        if(price_fen > 0){
+            holder.setText(R.id.item_money, "¥ "+MathUtil.divide(price_fen,100,2).doubleValue());
+        }else{
+            holder.setText(R.id.item_money,"免费");
+        }//end
 
         final String pics = resultJsonObject.optString("pic");
         if (pics != null && pics.length() > 0) {
@@ -336,5 +364,14 @@ public class BorderFragment extends BaseFragment implements BorderView, SeekBar.
         }
     }//end
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == getActivity().RESULT_OK && REQUESTCODE == requestCode && presenter != null){
 
+            presenter.loadBorderClassifyData();
+
+        }
+
+    }
 }

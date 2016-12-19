@@ -113,18 +113,6 @@
     </LinearLayout>
 
 
-    <!-- 中间按钮背景 -->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/toggle_btn"-->
-    <!--android:padding="5dp"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_alignParentBottom="true"-->
-    <!--android:layout_alignTop="@+id/frameMenu"-->
-    <!--android:layout_centerInParent="true"-->
-    <!--android:src="@drawable/tab_fabu" />-->
-
     <!-- 中间按钮 -->
 
     <FrameLayout
@@ -137,6 +125,18 @@
         android:layout_alignParentTop="true">
 
     </FrameLayout>
+
+    <!-- 中间按钮背景 -->
+
+    <ImageView
+        android:id="@+id/toggle_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/frameMenu"
+        android:layout_centerInParent="true"
+        android:padding="5dp"
+        android:src="@drawable/logo_wan" />
 
     <ImageView
         android:id="@+id/publish_fabu"

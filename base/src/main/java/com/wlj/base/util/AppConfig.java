@@ -23,6 +23,7 @@ import com.wlj.base.util.img.ImageFileCache;
 public class AppConfig {
 
 	public final static String CONF_APP_UNIQUEID = "APP_UNIQUEID";
+	public final static String CONF_FIRSRLOGIN = "firstlogin";
 	public final static String CONF_COOKIE = "cookie";
 	public final static String CONF_ACCESSTOKEN = "accessToken";
 	public final static String CONF_ACCESSSECRET = "accessSecret";
@@ -34,6 +35,7 @@ public class AppConfig {
 	public final static String CONF_NAME = "name";
 	public final static String CONF_KEY = "key";
 	public final static String CONF_PHONE = "phone";
+	public static final String CONF_ID = "id";
 	private final static String APP_CONFIG = "config";
 	private static Context mContext;
 	private static AppConfig appConfig;

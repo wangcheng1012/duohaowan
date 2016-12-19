@@ -1,20 +1,23 @@
 package com.hd.wlj.third.share.qq;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
+import org.json.JSONObject;
 
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.UiError;
 import com.wlj.base.util.UIHelper;
 
-import org.json.JSONObject;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 
 public class BaseUIListener implements IUiListener {
-    private static final int ON_CANCEL = 2;
+    private Context mContext;
+    private String mScope;
+    private boolean mIsCaneled;
     private static final int ON_COMPLETE = 0;
     private static final int ON_ERROR = 1;
-    private Context mContext;
+    private static final int ON_CANCEL = 2;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message paramAnonymousMessage) {
@@ -34,49 +37,56 @@ public class BaseUIListener implements IUiListener {
             UIHelper.toastMessage(mContext, "onCancel");
         }
     };
-    private boolean mIsCaneled;
-    private String mScope;
 
-    public BaseUIListener(Context paramContext) {
-        this.mContext = paramContext;
+    public BaseUIListener(Context mContext) {
+        super();
+        this.mContext = mContext;
     }
 
-    public BaseUIListener(Context paramContext, String mScope) {
-        this.mContext = paramContext;
+
+    public BaseUIListener(Context mContext, String mScope) {
+        super();
+        this.mContext = mContext;
         this.mScope = mScope;
     }
 
     public void cancel() {
-        this.mIsCaneled = true;
+        mIsCaneled = true;
+    }
+
+
+    @Override
+    public void onComplete(Object response) {
+        if (mIsCaneled) return;
+        Message msg = mHandler.obtainMessage();
+        msg.what = ON_COMPLETE;
+        msg.obj = response;
+        mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void onError(UiError e) {
+        if (mIsCaneled) return;
+        Message msg = mHandler.obtainMessage();
+        msg.what = ON_ERROR;
+        msg.obj = e;
+        mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void onCancel() {
+        if (mIsCaneled) return;
+        Message msg = mHandler.obtainMessage();
+        msg.what = ON_CANCEL;
+        mHandler.sendMessage(msg);
     }
 
     public Context getmContext() {
-        return this.mContext;
+        return mContext;
     }
 
-    public void onCancel() {
-        Message localMessage = this.mHandler.obtainMessage();
-        localMessage.what = 2;
-        this.mHandler.sendMessage(localMessage);
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
     }
 
-    public void onComplete(Object paramObject) {
-
-        Message localMessage = this.mHandler.obtainMessage();
-        localMessage.what = 0;
-        localMessage.obj = paramObject;
-        this.mHandler.sendMessage(localMessage);
-    }
-
-    public void onError(UiError paramUiError) {
-        Message localMessage = this.mHandler.obtainMessage();
-        localMessage.what = 1;
-        localMessage.obj = paramUiError;
-        this.mHandler.sendMessage(localMessage);
-    }
-
-    public void setmContext(Context paramContext) {
-
-        this.mContext = paramContext;
-    }
 }

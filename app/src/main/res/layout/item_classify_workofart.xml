@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:background="@color/_ededed"
-        android:scaleType="fitCenter" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/classify_workofart_intro"

@@ -251,8 +251,8 @@ public class FollowFragment extends Fragment {
 
                 holder.setText(R.id.classify_artist_liulan, jsonObject.optInt("viewcount", 0) + "");
                 holder.setText(R.id.classify_artist_zan, jsonObject.optInt("nice_count", 0) + "");
+                holder.setText(R.id.classify_artist_guanzhu, jsonObject.optInt("shoucang_count", 0) + "");
                 //song
-
                 //点赞
                 holder.getView(R.id.classify_artist_zan).setOnClickListener(new View.OnClickListener() {
                     @Override

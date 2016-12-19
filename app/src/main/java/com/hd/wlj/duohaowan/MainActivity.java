@@ -45,7 +45,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
     // 定义图片组件对象
     private ImageView homeIv, seachIv, followIv, myIv;
     // 定义按钮图片组件
-    private ImageView /*toggleImageView, */publishImageView;
+    private ImageView toggleImageView, publishImageView;
     // 定义PopupWindow
     private PopupWindow popWindow;
     // 获取手机屏幕分辨率的类
@@ -68,7 +68,6 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         initData();
 
         homeFl.performClick();
-
     }
 
     @Override
@@ -94,10 +93,11 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         myIv = (ImageView) findViewById(R.id.image_my);
 
         // 实例化按钮图片组件
-//        toggleImageView = (ImageView) findViewById(R.id.toggle_btn);
+        toggleImageView = (ImageView) findViewById(R.id.toggle_btn);
         publishImageView = (ImageView) findViewById(R.id.publish_fabu);
 
         Glide.with(this).load(R.drawable.logo_wan).bitmapTransform(new CropCircleTransformation(this)).into(publishImageView);
+        Glide.with(this).load(R.drawable.logo_wan).bitmapTransform(new CropCircleTransformation(this)).into(toggleImageView);
     }
 
     /**
@@ -112,6 +112,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
         // 给按钮图片设置监听
         publishImageView.setOnClickListener(this);
+        toggleImageView.setOnClickListener(this);
+
     }
 
     /**
@@ -142,10 +144,13 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
                 break;
             // 点击中间按钮
-//            case R.id.toggle_btn:
-//                clickToggleBtn();
-//
-//                break;
+            case R.id.toggle_btn:
+                if (popWindow != null && popWindow.isShowing()) {
+                    popWindow.dismiss();
+                }
+                toggleImageView.setVisibility(View.GONE);
+                publishImageView.setVisibility(View.VISIBLE);
+                break;
 
             case R.id.publish_choosework:
                 takePhotoCrop.photoPicker();
@@ -158,14 +163,16 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
                 popWindow.dismiss();
                 break;
             case R.id.publish_fabu:
-                clickToggleBtn();
-//                popWindow.dismiss();
+
+                showPopupWindow(publishImageView);
+
+                toggleImageView.setVisibility(View.VISIBLE);
+                publishImageView.setVisibility(View.GONE);
                 break;
 //            case R.id.publish_bianji:
 //
 ////                popWindow.dismiss();
 //                break;
-
 
         }
     }
@@ -221,27 +228,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         }
         view.setSelected(true);
         preSelected = view;
-    }
-
-    /**
-     * 点击了中间按钮
-     */
-    private void clickToggleBtn() {
-        if (popWindow != null && popWindow.isShowing()) {
-
-            popWindow.dismiss();
-        } else {
-            showPopupWindow(publishImageView);
-        }
-        // 改变按钮显示的图片为按下时的状态
-        publishImageView.setSelected(true);
-    }
-
-    /**
-     * 改变显示的按钮图片为正常状态
-     */
-    private void changeButtonImage() {
-        publishImageView.setSelected(false);
+        toggleImageView.performClick();
     }
 
     /**
@@ -264,7 +251,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         }
 
         // 设置允许在外点击消失
-        popWindow.setOutsideTouchable(true);
+        popWindow.setOutsideTouchable(false);
         // 设置背景，这个是为了点击“返回Back”也能使其消失，并且并不会影响你的背景
         popWindow.setBackgroundDrawable(new BitmapDrawable());
         // PopupWindow的显示及位置设置
@@ -275,7 +262,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
             @Override
             public void onDismiss() {
                 // 改变显示的按钮图片为正常状态
-                changeButtonImage();
+//                changeButtonImage();
             }
         });
 
@@ -292,6 +279,16 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 //        });
     }
 
+
+    /**
+     * 改变显示的按钮图片为正常状态
+     */
+    private void changeButtonImage() {
+        if(publishImageView.getVisibility() != View.VISIBLE ) {
+            toggleImageView.setVisibility(View.GONE);
+            publishImageView.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -325,8 +322,6 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
         //以下代码为处理Android6.0、7.0动态权限所需
         takePhotoCrop.onRequestPermissionsResult_(requestCode, permissions, grantResults);
     }
-
-
 
     @Override
     public void cropback(TResult result) {

@@ -33,11 +33,11 @@
 
             <Spinner
                 android:id="@+id/seach_spinner"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/spinner_bg"
-                android:entries="@array/seachSpenner" />
+                android:background="@drawable/spinner_bg"  />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
             android:layout_marginStart="10dp"
             android:background="@drawable/shape_hui_white_5corners"
             android:padding="5dp"
-            android:text="工艺美术"
+            android:text="其他"
             android:textColor="@color/black1" />
 
     </LinearLayout>

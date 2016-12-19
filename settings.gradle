@@ -1,1 +1,1 @@
-include ':app', ':base', ':gesturelock', ':third', ':photopicker'
+include ':app', ':base', ':third', ':photopicker'

@@ -112,7 +112,7 @@ public class AppContext extends Application {
 				if (info != null) {
 					for (int i = 0; i < info.length; i++) {
 						if (info[i].isAvailable()) {
-//							Logger.d( "network is available");
+							Logger.d( "network is available");
 							return true;
 						}
 					}
